@@ -35,3 +35,21 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+submittable/.idea/.name
+
+submittable/.idea/compiler.xml
+
+submittable/.idea/encodings.xml
+
+submittable/.idea/copyright/profiles_settings.xml
+
+submittable/.idea/misc.xml
+
+submittable/.idea/modules.xml
+
+submittable/.idea/uiDesigner.xml
+
+submittable/.idea/workspace.xml
+
+*.iml

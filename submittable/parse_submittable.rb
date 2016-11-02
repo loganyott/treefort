@@ -11,18 +11,31 @@ class Performer
   attr_accessor :bio
   attr_accessor :forts
   attr_accessor :home_town
-  attr_accessor :image_url
   attr_accessor :name
-  attr_accessor :social_url
-  attr_accessor :song_url
   attr_accessor :wave
+  attr_accessor :genres
+
+  # URLs to our CDN in S3
+  attr_accessor :image_url
+  attr_accessor :song_url
+
+  # social URLs
+  attr_accessor :music_url
+  attr_accessor :video_url
+  attr_accessor :website_url
+  attr_accessor :facebook_url
+  attr_accessor :twitter_url
+  attr_accessor :instagram_url
 
   attr_accessor :orig_song_name
+
+  # Submittable URLs for things that we will upload into S3 to store in our own CDN
   attr_accessor :orig_image_url # from submittable
   attr_accessor :orig_song_url  # from submittable
 
   def initialize
     @forts = []
+    @genres = []
   end
 
   def to_json
@@ -31,13 +44,19 @@ class Performer
       bio: bio,
       forts: forts,
       home_town: home_town,
-      image_url: image_url,
       name: name,
-      social_url: social_url,
+      genres: genres,
+      wave: wave,
+      image_url: image_url,
       song_url: song_url,
-      wave: wave
-      # ,orig_song_name: orig_song_name   # not yet in API
-      }
+
+      music_url: music_url,
+      video_url: video_url,
+      website_url: website_url,
+      facebook_url: facebook_url,
+      twitter_url: twitter_url,
+      instagram_url: instagram_url
+    }
   end
 end
 
@@ -51,6 +70,7 @@ class ParseSubmittable
   SONG_BUCKET_NAME  = 'treefort-songs'.freeze
   IMAGE_BUCKET_URL = "https://s3-us-west-2.amazonaws.com/#{IMAGE_BUCKET_NAME}/".freeze
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
+
   def run
     @opts = Trollop.options do
       banner <<-EOS
@@ -61,17 +81,20 @@ class ParseSubmittable
 
       EOS
 
-      opt :submittable_auth, 'token to use for submittable login. See @gregb', type: :string
+      opt :auth_token_submittable, 'token to use for submittable login. See @gregb',
+          type: :string
       opt :debug, 'For debugging, only load a small number of results'
-      opt :write_data, 'Actually write data to AWS DynamoDB'
+      opt :write_performers, 'Actually write data to AWS DynamoDB',
+          short: 'p'
+      opt :write_files, 'Actually write songs and images to AWS S3',
+          short: 'f'
       opt :performer_to_start_at, 'Writing MP3s takes time, in case something fails, start with this named performer',
+          short: 's',
           type: :string
     end
 
-    # text = File.read('categories.json')
-
     CurbFu::Request.global_headers = {
-        :'Authorization' => "Basic #{@opts[:submittable_auth]}",
+        :'Authorization' => "Basic #{@opts[:auth_token_submittable]}",
         :'Cache-Control' => 'no-cache'
     }
     # Using a "Treefort" AWS profile on my machine as described on
@@ -83,10 +106,8 @@ class ParseSubmittable
     year_categories = categories['items'].select { |cat| cat['name'].include?('2017') }
     year_filter = year_categories.collect { |cat| "&category_id=#{cat['category_id']}" }.join
 
-    # response = CurbFu.get(HOST + "/v1/submissions?status=accepted")
-    # TODO: waiting for Megan to response on how to filter the submissions - not by "accepted" status
     result_page = 1
-    page_size = 20
+    page_size = @opts[:debug] ? 20 : 100
     performers = []
     ready_to_start = @opts[:performer_to_start_at].nil?
 
@@ -97,10 +118,21 @@ class ParseSubmittable
       page_count = [2, page_count].min if @opts[:debug]
 
       submissions['items'].each do |submission|
-        # filter by label?
-        # next unless labels.include?('TO WEB TEAM')
+        # filter by label
+        if submission['labels'].nil?
+          labels = []
+        else
+          label_items = submission['labels']['items']
+          labels = label_items.collect { |label| "#{label['label_text']}" }
+        end
 
-        # for debugging, let the app skip a bunch of work
+        # if not debugging, pick the "real" artists
+        next unless @opts[:debug] ||
+            labels.include?("1st announce (#{YEAR})") ||
+            labels.include?("2nd announce (#{YEAR})") ||
+            labels.include?("3rd announce (#{YEAR})")
+
+        # allows the app skip a bunch of work if it failed in the middle of a batch of processing
         unless @opts[:performer_to_start_at].nil?
           ready_to_start = ready_to_start || (submission['title'] == @opts[:performer_to_start_at])
         end
@@ -109,7 +141,42 @@ class ParseSubmittable
         p = Performer.new
         p.name = submission['title']
         p.code = "#{YEAR}-#{submission['submission_id']}"
-        p.forts = [ submission['category']['name'].strip ] # some have trailing spaces
+        category = submission['category']['name'].strip # some have trailing spaces
+        fort =
+            case category
+              when 'MUSIC SUBMISSIONS 2017'               then 'Treefort'
+              when 'CONFIRMED ARTIST ASSETS 2017'         then 'Treefort'
+              when 'PERFORMANCE ART SUBMISSIONS 2017'     then 'Performance Art'
+              when 'FILMFORT SUBMISSIONS 2017'            then 'Filmfort'
+              when 'COMEDYFORT SUBMISSIONS 2017'          then 'Comedyfort'
+              when 'YOGAFORT 2017 PERFORMER SUBMISSIONS'  then 'Yogafort'
+              when 'YOGAFORT 2017 TEACHER SUBMISSIONS'    then 'Yogafort'
+              else
+                puts "Warning: unknown caetgory #{category}"
+                ''
+            end
+        p.forts = [fort] # array of 1 item for now
+
+        if labels.include?("1st announce (#{YEAR})")
+          p.wave = 1
+        elsif labels.include?("2nd announce (#{YEAR})")
+          p.wave = 2
+        elsif labels.include?("3rd announce (#{YEAR})")
+          p.wave = 3
+        else
+          p.wave = 0
+        end
+
+        p.home_town     = submission_form_field(submission, 'City, State')
+        p.bio           = submission_form_field(submission, 'Description')
+        p.genres        = submission_form_field(submission, 'Genre')
+        p.genres = p.genres.split(',') unless p.genres.nil?
+        p.music_url     = submission_form_field(submission, 'Music')
+        p.video_url     = submission_form_field(submission, 'Video 1')
+        p.website_url   = submission_form_field(submission, 'Website')
+        p.facebook_url  = submission_form_field(submission, 'Facebook')
+        p.twitter_url   = submission_form_field(submission, 'Twitter')
+        p.instagram_url = submission_form_field(submission, 'Instagram')
 
         if submission['files']
           images = submission['files'].select { |file| file['mime_type'].start_with?('image/jpeg') }
@@ -119,34 +186,42 @@ class ParseSubmittable
           puts "Warning: #{songs.count} songs for #{p.name}. Using first one." if songs.count > 1
           puts "Warning: No songs for #{p.name}." if songs.count == 0
 
-          p.orig_image_url = HOST + images.first['url'] if images.count == 1
-          p.orig_song_url = HOST + songs.first['url'] if songs.count == 1
-          p.orig_song_name = songs.first['file_name'] if songs.count == 1
+          if images.count == 1
+            p.orig_image_url = HOST + images.first['url']
+            p.image_url = "#{IMAGE_BUCKET_URL}#{p.code}.jpg"
+          end
+          if songs.count == 1
+            p.orig_song_url = HOST + songs.first['url']
+            p.orig_song_name = songs.first['file_name']
+            p.song_url = "#{SONG_BUCKET_URL}#{p.code}.mp3"
+          end
         else
           puts "Warning: No songs or images for #{p.name}."
         end
 
-        # think we might need these
-        if submission['labels'].nil?
-          labels = []
-        else
-          label_items = submission['labels']['items']
-          labels = label_items.collect { |label| "#{label['label_text']}" }
-        end
-
         performers << p
-        # puts "#{p.name}\t#{p.code}\t#{p.forts}\t#{labels}"
+        puts "Performer: #{p.name}"
       end
       result_page += 1
       break if result_page > page_count
 
     end
 
-    write_files(performers)
-    write_performers(performers) if @opts[:write_data]
+    puts
+    write_files(performers) if @opts[:write_files]
+    write_performers(performers) if @opts[:write_performers]
+  end
+
+  def submission_form_field(submission, field_name)
+    ret = nil
+    item = submission['form']['items'].find { |item| item['label'] == field_name }
+    ret = item['data'] unless item.nil?
+    ret = (ret == '') ? nil : ret
+    ret
   end
 
   def write_files(performers)
+    puts 'Writing image and song files to S3'
     resource = Aws::S3::Resource.new
     image_bucket = resource.bucket(IMAGE_BUCKET_NAME)
     song_bucket = resource.bucket(SONG_BUCKET_NAME)
@@ -197,6 +272,7 @@ class ParseSubmittable
   end
 
   def write_performers(performers)
+    puts 'Writing performer info to DynamoDB'
 
     db = Aws::DynamoDB::Client.new
     begin

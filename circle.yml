@@ -2,6 +2,7 @@ deployment:
   production:
     branch: master
     commands:
+      - echo 'region=us-west-2' >> ~/.aws/credentials
       - ./deploy.sh
 
 test:

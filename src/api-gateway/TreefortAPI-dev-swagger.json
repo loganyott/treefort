@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "version": "2016-10-23T22:54:46Z",
-    "title": "TreefortAPI1"
+    "title": "TreefortAPI"
   },
   "host": "v9q1oimkpd.execute-api.us-west-2.amazonaws.com",
   "basePath": "/dev",

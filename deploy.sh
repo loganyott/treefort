@@ -8,3 +8,5 @@ aws lambda update-function-code --function-name performersAPI --zip-file fileb:/
 
 zip venues-api.zip ./src/venues-api.js
 aws lambda update-function-code --function-name venuesAPI --zip-file fileb://venues-api.zip
+
+aws apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name dev

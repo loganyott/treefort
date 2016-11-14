@@ -13,6 +13,8 @@ exports.handler = (event, context, callback) => {
     body: err ? err.message : JSON.stringify(res),
     headers: {
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
     },
   });
 
@@ -61,10 +63,10 @@ exports.handler = (event, context, callback) => {
         'code': eventId,
       },
       // TODO: Update properties based upon what is passed in.
-      UpdateExpression: `set 
-                description = :d, 
+      UpdateExpression: `set
+                description = :d,
                 end_time    = :e,
-                forts       = :f, 
+                forts       = :f,
                 #n          = :n,
                 performers  = :p,
                 start_time  = :s,

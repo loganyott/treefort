@@ -9,5 +9,8 @@ aws lambda update-function-code --function-name performersAPI --zip-file fileb:/
 zip -j venues-api.zip ./src/venues-api.js
 aws lambda update-function-code --function-name venuesAPI --zip-file fileb://venues-api.zip
 
+pushd src; zip -r ../playlists-api.zip ./playlists-api.js ./lib ../node_modules; popd;
+aws lambda update-function-code --function-name playlistsAPI --zip-file fileb://playlists-api.zip
+
 aws apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'
 aws apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name dev

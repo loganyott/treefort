@@ -1,8 +1,8 @@
 'use strict';
 const _ = require('lodash');
-const Artist = require('../lib/artist');
-const Track = require('../lib/track');
-const Playlist = require('../lib/playlist');
+const Artist = require('../../lib/artist');
+const Track = require('../../lib/track');
+const Playlist = require('../../lib/playlist');
 const Promise = require('bluebird');
 
 // TODO: (bdietz) Note that the commented out properties below are artifacts from treefort 2016.

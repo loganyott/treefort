@@ -1,6 +1,6 @@
 const assert = require('chai').assert;
 const PlaylistController = require('./playlist-controller').PlaylistController;
-// const dynamoDbPerformers = require('./playlist-controller.mock').performers;
+// const dynamoDbPerformers = require('./playlist-controller.mock').performer;
 
 const AWS = require('aws-sdk');
 AWS.config.update({
@@ -22,4 +22,3 @@ describe('PlaylistController', function() {
         });
     });
 });
-

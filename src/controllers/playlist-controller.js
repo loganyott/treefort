@@ -6,7 +6,7 @@ const Playlist = require('../lib/playlist');
 const Promise = require('bluebird');
 
 // TODO: (bdietz) Note that the commented out properties below are artifacts from treefort 2016.
-// TODO: (bdietz) Also I think that the model capitalization is wonky af we should lower-snake-case at some point plz.
+// TODO: (bdietz) Also I think that the model capitalization is wonky af we should lower_snake_case at some point plz.
 // Keeping the casing for now just for the sake of uniformity.
 
 const mapItemToTrack = (item) => {
@@ -36,7 +36,6 @@ const mapItemToArtist = (item) => {
 };
 
 const mapPerformersToPlaylists = function(response) {
-
     const tracks = _.map(response.Items, (item) => mapItemToTrack(item));
     const tracksGroupedByWave = _.groupBy(tracks, (track) => track.Artist.Wave);
     const playlists = _.map(_.keys(tracksGroupedByWave), (key) => {
@@ -60,14 +59,7 @@ class PlaylistController {
     }
 
     get() {
-        // var params = {
-        //     TableName: 'Performer',
-        //     Key:{
-        //         "year": year
-        //     }
-        // };
-
-        const promise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             this.dynamo.scan({ TableName: 'Performer' }, (error, response) => {
                 if (error) {
                     reject(error);
@@ -76,13 +68,13 @@ class PlaylistController {
                 resolve(mapPerformersToPlaylists(response));
             });
         });
-
-        return promise;
     }
 }
 
 module.exports = {
     mapItemToArtist,
     mapItemToTrack,
+    mapPerformersToPlaylists,
+
     PlaylistController,
 };

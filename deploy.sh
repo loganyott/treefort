@@ -3,7 +3,7 @@
 zip -j events-api.zip ./src/events-api.js
 aws lambda update-function-code --function-name eventsAPI --zip-file fileb://events-api.zip
 
-zip -j performers-api.zip ./src/performers-api.js
+pushd src; zip -r ../performers-api.zip ./performers-api.js ./lib ./controllers ../node_modules; popd;
 aws lambda update-function-code --function-name performersAPI --zip-file fileb://performers-api.zip
 
 zip -j venues-api.zip ./src/venues-api.js

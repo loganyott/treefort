@@ -2,11 +2,11 @@
 
 class Track {
     constructor(config) {
-        this.Artist = config.Artist;
-        this.Id = config.Id || null;
-        this.Title = config.Title || null;
-        this.ArtworkUrl = config.ArtworkUrl || null;
-        this.StreamUrl = config.StreamUrl || null;
+        this.artist = config.artist;
+        this.id = config.Id || null;
+        this.title = config.Title || null;
+        this.artwork_url = config.artwork_url || null;
+        this.stream_url = config.stream_url || null;
     }
 }
 

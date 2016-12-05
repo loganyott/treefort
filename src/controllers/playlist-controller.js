@@ -13,41 +13,45 @@ const mapItemToTrack = (item) => {
     const artist = mapItemToArtist(item);
 
     return new Track({
-        Artist: artist,
+        artist: artist,
         //TODO: This doesn't feel right
-        Id: item.code ,
+        id: item.code ,
         // Title: item.Title,
         // SCTitle: item.SCTitle,
-        ArtworkUrl: item.image_url,
-        StreamUrl: item.song_url,
+        artwork_url: item.image_url,
+        stream_url: item.song_url,
     });
 };
 
 const mapItemToArtist = (item) => {
     return new Artist({
-        Id: item.code,
-        Name: item.name,
+        id: item.code,
+        name: item.name,
         // SCTrackId: item.SCTrackId,
         // LiveDate: item.LiveDate,
         // DisplayOrder: item.sort_order_within_tier,
-        Wave: item.wave,
-        Tier: item.tier,
+        wave: item.wave,
+        tier: item.tier,
     });
 };
 
-const mapPerformersToPlaylists = function(response) {
+const mapPerformersToPlaylists = (response) => {
     const tracks = _.map(response.Items, (item) => mapItemToTrack(item));
-    const tracksGroupedByWave = _.groupBy(tracks, (track) => track.Artist.Wave);
+    const tracksGroupedByWave = _.groupBy(tracks, (track) => track.artist.wave);
     const playlists = _.map(_.keys(tracksGroupedByWave), (key) => {
         return new Playlist({
-            Name: `Wave ${key}`,
-            Tracks: tracksGroupedByWave[key],
-            Id: key,
+            name: `Wave ${key}`,
+            tracks: tracksGroupedByWave[key],
+            id: key,
         });
     });
-    const playlistsByKeys = _.keyBy(playlists, 'Id');
+    const playlistsByKeys = _.keyBy(playlists, 'id');
 
     return playlistsByKeys;
+};
+
+const mapDynamoPlaylistTableToResponse = (dynamoPlaylists) => {
+    return _.keyBy(dynamoPlaylists, 'id');
 };
 
 class PlaylistController {
@@ -66,6 +70,7 @@ class PlaylistController {
                 }
 
                 resolve(mapPerformersToPlaylists(response));
+                // resolve(mapDynamoPlaylistTableToResponse(response.Items));
             });
         });
     }

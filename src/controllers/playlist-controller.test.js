@@ -16,7 +16,7 @@ describe('PlaylistController', function() {
             playlistController.get()
                 .then((result) => {
                     assert.property(result, '1', 'Playlists object contains a playlist that is keyed by 1');
-                    assert.lengthOf(result['1'].Tracks, 75), 'Playlist 1 has a length of 75';
+                    assert.lengthOf(result['1'].tracks, 75), 'Playlist 1 has a length of 75';
                     done();
                 });
         });

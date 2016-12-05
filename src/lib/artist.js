@@ -2,10 +2,10 @@
 
 class Artist {
     constructor(config) {
-       this.Id = config.Id || null;
-       this.Name = config.Name || null;
-       this.Wave = config.Wave || null;
-       this.Tier = config.Tier || null;
+       this.id = config.id || null;
+       this.name = config.name || null;
+       this.wave = config.wave || null;
+       this.tier = config.tier || null;
     }
 }
 

@@ -15,19 +15,18 @@ exports.handler = (event, context, callback) => {
     const playlistController = new PlaylistController(dynamo);
     const done = response(callback);
 
-        switch (event.httpMethod) {
-            case 'GET':
-                console.log('in get');
-                playlistController.get()
-                    .then((response) => {
-                        done(null, response);
-                    })
-                    .catch((error) => {
-                        done(error);
-                    });
-                break;
-            default:
-                done(new Error(`Unsupported method "${event.httpMethod}"`));
-        }
+    switch (event.httpMethod) {
+        case 'GET':
+            console.log('in get');
+            playlistController.get()
+                .then((response) => {
+                    done(null, response);
+                })
+                .catch((error) => {
+                    done(error);
+                });
+            break;
+        default:
+            done(new Error(`Unsupported method "${event.httpMethod}"`));
     }
 };

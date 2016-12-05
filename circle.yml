@@ -4,7 +4,3 @@ deployment:
     commands:
       - echo 'region=us-west-2' >> ~/.aws/credentials
       - ./deploy.sh
-
-test:
-  override:
-    - echo "No tests! This is a Wordpress theme"

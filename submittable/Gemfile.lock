@@ -1,0 +1,12 @@
+GEM
+  specs:
+    id3tag (0.8.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  id3tag
+
+BUNDLED WITH
+   1.13.6

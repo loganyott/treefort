@@ -5,6 +5,7 @@ require 'trollop'
 require 'json'
 require 'curb-fu'
 require 'aws-sdk'
+require 'mini_magick'
 
 class Performer
   attr_accessor :code
@@ -60,6 +61,7 @@ class Performer
       image_url_med: image_url_med,
       image_app_url: image_app_url,
       song_url: song_url,
+      orig_song_name: orig_song_name,
 
       music_url: music_url,
       video_url: video_url,
@@ -90,25 +92,22 @@ class ParseSubmittable
         Usage:
           xxx.rb [options]
 
-          sadhash
+          Read data from submittable. CURRENTLY ONLY WAVE 1.
+
+          Write data to AWS DynamoDB and files to S3. If files already exist in S3 they are not
+          rewritten unless you specify :overwrite
 
       EOS
 
       opt :auth_token_submittable, 'token to use for submittable login. See @gregb',
-          type: :string,
-          short: 'a'
-      opt :debug, 'For debugging, only load a small number of results',
-          short: 'd'
-      opt :write_performers, 'Actually write data to AWS DynamoDB',
-          short: 'w'
-      opt :write_files, 'Write songs and images to AWS S3, unless they already exist',
-          short: 'f'
-      opt :overwrite_files, 'Write songs and images to AWS S3, EVEN IF they already exist',
-          short: 'o'
-      opt :performer, 'just do this named performer',
-          short: 'p',
           type: :string
+      opt :debug, 'For debugging, only load a small number of results'
+      opt :overwrite, 'Write data to AWS DynamoDB and files to S3. Write files EVEN IF they already exist in S3'
+      opt :performer, 'just do this named performer',
+          type: :string
+
     end
+
 
     CurbFu::Request.global_headers = {
         :'Authorization' => "Basic #{@opts[:auth_token_submittable]}",
@@ -117,6 +116,8 @@ class ParseSubmittable
     # Using a "Treefort" AWS profile on my machine as described on
     # http://docs.aws.amazon.com/sdkforruby/api/index.html#Configuration
     Aws.config.update({region: 'us-west-2', profile:'Treefort'})
+    @s3 = Aws::S3::Resource.new
+    @db = Aws::DynamoDB::Client.new
 
     response = CurbFu.get(HOST + '/v1/categories')
     categories = JSON.parse(response.body)
@@ -125,8 +126,9 @@ class ParseSubmittable
 
     result_page = 1
     page_size = @opts[:debug] ? 20 : 200
-    performers = []
     ready_to_begin = @opts[:performer].nil?
+
+    puts 'Searching submittable for performers meeting your criteria'
 
     loop do
       response = CurbFu.get(HOST + "/v1/submissions?count=#{page_size}&page=#{result_page}#{year_filter}")
@@ -219,8 +221,9 @@ class ParseSubmittable
         if submission['files']
           images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }
           images_app = submission['files'].select { |file| IMAGE_APP_FORM_IDS.include?(file['form_field_id']) }
-
-          songs  = submission['files'].select { |file| file['mime_type'].start_with?('audio/mp3') || file['mime_type'].start_with?('audio/mpeg')}
+          songs  = submission['files'].select     { |file| file['mime_type'].start_with?('audio/mp3') || 
+                                                           file['mime_type'].start_with?('audio/mpeg')}
+          
           puts "Warning: #{images.count} images for #{p.name}. Using first one." if images.count > 1
           puts "Warning: No images for #{p.name}." if images.count == 0
 
@@ -239,11 +242,6 @@ class ParseSubmittable
             p.orig_image_app_url = HOST + images_app.first['url']
             p.image_app_url = "#{IMAGE_BUCKET_URL}#{p.code}-app.jpg"
           end
-          if images.count == 1
-            p.orig_image_url = HOST + images.first['url']
-            p.image_url = "#{IMAGE_BUCKET_URL}#{p.code}.jpg"
-            p.image_url_med = "#{IMAGE_BUCKET_URL}#{p.code}-med.jpg"
-          end
           if songs.count == 1
             p.orig_song_url = HOST + songs.first['url']
             p.orig_song_name = songs.first['file_name']
@@ -253,22 +251,20 @@ class ParseSubmittable
           puts "Warning: No songs or images for #{p.name}."
         end
 
-        performers << p
-        puts "Performer: #{p.name} sort #{p.sort_order_within_tier}"
+        puts "Performer: #{p.name}"
 
-        # stop doing stuff
+        write_files(p)
+        write_performer(p)
+
+        # stop doing stuff if only 1 performer
         unless @opts[:performer].nil?
-          ready_to_begin = false
+          exit
         end
       end
       result_page += 1
       break if result_page > page_count
 
     end
-
-    puts
-    write_files(performers) if @opts[:write_files] || @opts[:overwrite_files]
-    write_performers(performers) if @opts[:write_performers]
   end
 
   def submission_form_field(submission, field_name)
@@ -279,65 +275,45 @@ class ParseSubmittable
     ret
   end
 
-  def write_files(performers)
-    puts 'Writing image and song files to S3'
-    resource = Aws::S3::Resource.new
-    image_bucket = resource.bucket(IMAGE_BUCKET_NAME)
-    song_bucket = resource.bucket(SONG_BUCKET_NAME)
+  def write_files(p)
+    image_bucket = @s3.bucket(IMAGE_BUCKET_NAME)
+    song_bucket = @s3.bucket(SONG_BUCKET_NAME)
 
-    performers.each do |p|
-      begin
-          if p.orig_image_url
-          bucket_key = "#{p.code}.jpg"
-          begin
-            if image_bucket.object(bucket_key).exists? && !@opts[:overwrite_files]
-              puts "Skipping existing large image. Already in S3 for performer #{p.name}"
-            else
-              response = CurbFu.get(p.orig_image_url)
-              if response.status == 200
-
-                File.open("/tmp/#{bucket_key}", 'wb') do |f|
-                  f.binmode
-                  f.write response.body
-                  f.close
-                end
-                puts "Writing large image to S3 for performer #{p.name}"
-                image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
-                p.image_url = "#{IMAGE_BUCKET_URL}#{bucket_key}"
-              else
-                puts "Couldn't download image for performer #{p.name}: #{p.orig_image_url}"
-              end
-            end
-          rescue Aws::S3::Errors::ServiceError => error
-            puts 'Unable to add image'
-            puts "#{error.message}"
-          end
-        end
-
-        # if there is a medium size image locally (created by @gbernhardt batch process right now, upload it
-        # as well
+    begin # writing
+        if p.orig_image_url
+        bucket_key = "#{p.code}.jpg"
         begin
-          bucket_key = "#{p.code}-med.jpg"
-          if image_bucket.object(bucket_key).exists? && !@opts[:overwrite_files]
-            puts "Skipping existing medium image. Already in S3 for performer #{p.name}"
+          if image_bucket.object(bucket_key).exists? && !@opts[:overwrite]
+            puts "Skipping existing large image. Already in S3 for performer #{p.name}"
           else
-            if File.exists?("/tmp/#{bucket_key}")
-              puts "Writing medium image to S3 for performer #{p.name} #{bucket_key}"
+            response = CurbFu.get(p.orig_image_url)
+            if response.status == 200
+
+              File.open("/tmp/#{bucket_key}", 'wb') do |f|
+                f.binmode
+                f.write response.body
+                f.close
+              end
+
+              puts "Writing large image to S3 for performer #{p.name}"
               image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
-              p.image_url_med = "#{IMAGE_BUCKET_URL}#{bucket_key}"
             else
-              puts "Warning, No medium image locally for performer #{p.name} #{bucket_key}"
+              puts "Couldn't download image for performer #{p.name}: #{p.orig_image_url}"
             end
           end
         rescue Aws::S3::Errors::ServiceError => error
           puts 'Unable to add image'
           puts "#{error.message}"
         end
+      end
 
-        if p.orig_image_app_url
-          response = CurbFu.get(p.orig_image_app_url)
+      begin
+        bucket_key = "#{p.code}-med.jpg"
+        if image_bucket.object(bucket_key).exists? && !@opts[:overwrite]
+          puts "Skipping existing medium image. Already in S3 for performer #{p.name}"
+        else
+          response = CurbFu.get(p.orig_image_url)
           if response.status == 200
-            bucket_key = "#{p.code}-app.jpg"
 
             File.open("/tmp/#{bucket_key}", 'wb') do |f|
               f.binmode
@@ -345,66 +321,79 @@ class ParseSubmittable
               f.close
             end
 
+            # resize it, some images are huge
+            image = MiniMagick::Image.new("/tmp/#{bucket_key}")
+            image.resize '400' # 400 wide, as much height as needed to preserve aspect ratio
+
+            puts "Writing medium image to S3 for performer #{p.name} #{bucket_key}"
+            image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
+          end
+        end
+      rescue Aws::S3::Errors::ServiceError => error
+        puts 'Unable to add image'
+        puts "#{error.message}"
+      end
+
+      if p.orig_image_app_url
+        response = CurbFu.get(p.orig_image_app_url)
+        if response.status == 200
+          bucket_key = "#{p.code}-app.jpg"
+
+          File.open("/tmp/#{bucket_key}", 'wb') do |f|
+            f.binmode
+            f.write response.body
+            f.close
+          end
+
+          begin
+            if image_bucket.object(bucket_key).exists? && !@opts[:overwrite]
+              puts "Skipping existing app image. Already in S3 for performer #{p.name}"
+            else
+              puts "Writing app image to S3 for performer #{p.name}"
+              image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
+            end
+          rescue Aws::S3::Errors::ServiceError => error
+            puts 'Unable to add image'
+            puts "#{error.message}"
+          end
+        else
+          puts "Couldn't download app image for performer #{p.name}: #{p.orig_image_app_url}"
+        end
+      end
+
+      if p.orig_song_url
+        bucket_key = "#{p.code}.mp3"
+        if song_bucket.object(bucket_key).exists? && !@opts[:overwrite]
+          puts "Skipping existing song. Already in S3 for performer #{p.name}"
+        else
+          response = CurbFu.get(p.orig_song_url)
+          if response.status == 200
+            File.open("/tmp/#{bucket_key}", 'wb') do |f|
+              f.binmode
+              f.write response.body
+              f.close
+            end
+
             begin
-              if image_bucket.object(bucket_key).exists? && !@opts[:overwrite_files]
-                puts "Skipping existing app image. Already in S3 for performer #{p.name}"
-              else
-                puts "Writing app image to S3 for performer #{p.name}"
-                image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
-                p.image_app_url = "#{IMAGE_BUCKET_URL}#{bucket_key}"
-              end
+              puts "Writing song  to S3 for performer #{p.name}"
+              song_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
             rescue Aws::S3::Errors::ServiceError => error
-              puts 'Unable to add image'
+              puts 'Unable to add song'
               puts "#{error.message}"
             end
           else
-            puts "Couldn't download app image for performer #{p.name}: #{p.orig_image_app_url}"
+            puts "Couldn't download song for performer #{p.name}: #{p.orig_song_url}"
           end
         end
-
-        if p.orig_song_url
-          bucket_key = "#{p.code}.mp3"
-          if song_bucket.object(bucket_key).exists? && !@opts[:overwrite_files]
-            puts "Skipping existing song. Already in S3 for performer #{p.name}"
-          else
-            response = CurbFu.get(p.orig_song_url)
-            if response.status == 200
-              File.open("/tmp/#{bucket_key}", 'wb') do |f|
-                f.binmode
-                f.write response.body
-                f.close
-              end
-
-              begin
-                puts "Writing song  to S3 for performer #{p.name}"
-                song_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
-                p.song_url = "#{SONG_BUCKET_URL}#{bucket_key}"
-              rescue Aws::S3::Errors::ServiceError => error
-                puts 'Unable to add song'
-                puts "#{error.message}"
-              end
-            else
-              puts "Couldn't download song for performer #{p.name}: #{p.orig_song_url}"
-            end
-          end
-        end
-      rescue Error => error
-        puts 'Unable to so soemthing'
-        puts "#{error.message}"
-        puts "#{error.class}"
       end
     end
   end
 
-  def write_performers(performers)
+  def write_performer(p)
     puts 'Writing performer info to DynamoDB'
-
-    db = Aws::DynamoDB::Client.new
     begin
-      performers.each do |p|
-        jp = p.to_json
-        db.put_item({ table_name: 'Performer', item: jp})
-      end
+      jp = p.to_json
+      @db.put_item({ table_name: 'Performer', item: jp})
     rescue  Aws::DynamoDB::Errors::ServiceError => error
       puts 'Unable to add performer'
       puts "#{error.message}"

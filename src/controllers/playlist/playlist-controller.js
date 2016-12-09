@@ -5,51 +5,38 @@ const Track = require('../../lib/track');
 const Playlist = require('../../lib/playlist');
 const Promise = require('bluebird');
 
-// TODO: (bdietz) Note that the commented out properties below are artifacts from treefort 2016.
-
-const mapItemToTrack = (item) => {
-    const artist = mapItemToArtist(item);
-
-    return new Track({
-        artist: artist,
-        //TODO: This doesn't feel right
-        id: item.code ,
-        // Title: item.Title,
-        // SCTitle: item.SCTitle,
-        artwork_url: item.image_url,
-        stream_url: item.song_url,
-    });
-};
-
-const mapItemToArtist = (item) => {
-    return new Artist({
-        id: item.code,
-        name: item.name,
-        // SCTrackId: item.SCTrackId,
-        // LiveDate: item.LiveDate,
-        // DisplayOrder: item.sort_order_within_tier,
-        wave: item.wave,
-        tier: item.tier,
-    });
-};
-
-const mapPerformersToPlaylists = (response) => {
-    const tracks = _.map(response.Items, (item) => mapItemToTrack(item));
-    const tracksGroupedByWave = _.groupBy(tracks, (track) => track.artist.wave);
-    const playlists = _.map(_.keys(tracksGroupedByWave), (key) => {
-        return new Playlist({
-            name: `Wave ${key}`,
-            tracks: tracksGroupedByWave[key],
-            id: key,
-        });
-    });
-    const playlistsByKeys = _.keyBy(playlists, 'id');
-
-    return playlistsByKeys;
-};
-
 const mapDynamoPlaylistTableToResponse = (dynamoPlaylists) => {
     return _.keyBy(dynamoPlaylists, 'id');
+};
+
+const mergeSongOverrideTitleWithTitle = (song) => {
+    const title = song.override_title === null ? song.title : song.override_title;
+    const artwork_url = typeof song.album_art === "undefined" ? null : song.album_art;
+
+    // Get rid of override title
+    return {
+        id: song.id,
+        artwork_url,
+        title,
+    };
+};
+
+const joinSongsToArtistsInTracks = (partialPlaylist, songs) => {
+    const songsMap = _
+        .chain(songs)
+        .map(mergeSongOverrideTitleWithTitle)
+        .keyBy('id')
+        .value();
+
+    return _.map(partialPlaylist, (playlist) => {
+        const newTracks = _.map(playlist.tracks, (track) => {
+            return _.extend({ }, track, songsMap[track.id]);
+        });
+
+        const newFullPlaylist = _.extend({ }, playlist, { tracks: newTracks });
+
+        return newFullPlaylist;
+    });
 };
 
 class PlaylistController {
@@ -61,22 +48,30 @@ class PlaylistController {
     }
 
     get() {
+        // TODO: (bdietz) If this starts getting more arrow shaped we should look into making a nice promise solution or just getting one that already exists.
         return new Promise((resolve, reject) => {
-            this.dynamo.scan({ TableName: 'Playlist' }, (error, response) => {
+            this.dynamo.scan({ TableName: 'Playlist' }, (error, playlistResponse) => {
                 if (error) {
                     reject(error);
                 }
+                else {
+                    this.dynamo.scan({ TableName: 'Song' }, (error, songResponse) => {
+                        if (error) {
+                            reject(error);
+                        }
+                        else {
+                            const playlistWithPartialTracks = mapDynamoPlaylistTableToResponse(playlistResponse.Items);
+                            const playlistWithFullTracks = joinSongsToArtistsInTracks(playlistWithPartialTracks, songResponse.Items);
 
-                resolve(mapDynamoPlaylistTableToResponse(response.Items));
+                            resolve(_.keyBy(playlistWithFullTracks, 'id'));
+                        }
+                    });
+                }
             });
         });
     }
 }
 
 module.exports = {
-    mapItemToArtist,
-    mapItemToTrack,
-    mapPerformersToPlaylists,
-
     PlaylistController,
 };

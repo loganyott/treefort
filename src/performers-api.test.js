@@ -1,48 +1,18 @@
+/* eslint prefer-arrow-callback: "off" */
+
+'use strict';
+
 const assert = require('chai').assert;
 const performersApi = require('./performers-api').handler;
+const event = require('./performers-api.mock').event;
 
-const event = {
-    "resource": "/v1/performers",
-    "path": "/v1/performers",
-    "httpMethod": "GET",
-    "headers": null,
-    "queryStringParameters": null,
-    "pathParameters": null,
-    "stageVariables": null,
-    "requestContext": {
-    "accountId": "025660771593",
-        "resourceId": "vlrbjy",
-        "stage": "test-invoke-stage",
-        "requestId": "test-invoke-request",
-        "identity": {
-        "cognitoIdentityPoolId": null,
-            "accountId": "025660771593",
-            "cognitoIdentityId": null,
-            "caller": "AIDAICOEKTYNYAYXBOOLW",
-            "apiKey": "test-invoke-api-key",
-            "sourceIp": "test-invoke-source-ip",
-            "accessKey": "ASIAIDLCQNZCIJHUXDYQ",
-            "cognitoAuthenticationType": null,
-            "cognitoAuthenticationProvider": null,
-            "userArn": "arn:aws:iam::025660771593:user/blaked",
-            "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_102)",
-            "user": "AIDAICOEKTYNYAYXBOOLW"
-    },
-    "resourcePath": "/v1/performers",
-        "httpMethod": "GET",
-        "apiId": "7n74ikdn58"
-},
-    "body": null,
-    "isBase64Encoded": false
-};
-
-describe('performer-api', function() {
-    describe('#handler', function() {
-        it('', function(done) {
-            "use strict";
-            performersApi(event, { }, (headers) => {
-                console.log(headers);
-            });
-        });
+describe('performers-api', function testPerformersApi() {
+  describe('#handler', function testPerformersApiHandler() {
+    it('Errors when the stage variables are not set.', function testExistenceOfStageVariables(done) {
+      performersApi(event, { }, (ignore, response) => {
+        assert(response.statusCode, '400');
+        done();
+      });
     });
+  });
 });

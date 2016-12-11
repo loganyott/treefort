@@ -41,13 +41,13 @@ class PerformerController {
 
       if (performerId) {
         this.dynamo
-            .get({ TableName: dynamoTableName, Key: { code: performerId } }, (error, response) => {
-              if (!error && (response.Item.wave > this.currentWave)) {
-                reject(new Error('UNAUTHORIZED: You may not access performers that have not been released yet.'));
-              } else {
-                dynamoCallback(error, response);
-              }
-            });
+          .get({ TableName: dynamoTableName, Key: { code: performerId } }, (error, response) => {
+            if (!error && (response.Item.wave > this.currentWave)) {
+              reject(new Error('UNAUTHORIZED: You may not access performers that have not been released yet.'));
+            } else {
+              dynamoCallback(error, response);
+            }
+          });
       } else {
         const dynamoParams = {
           TableName: dynamoTableName,

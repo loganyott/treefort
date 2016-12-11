@@ -2,11 +2,11 @@
 
 'use strict';
 
-const assert = require('chai').assert;
-const _ = require('lodash');
-const PerformerController = require('./performer-controller').PerformerController;
-const testPerformer = require('./performer-controller.mock').testPerformer;
 const AWS = require('aws-sdk');
+const PerformerController = require('./performer-controller').PerformerController;
+const _ = require('lodash');
+const assert = require('chai').assert;
+const testPerformer = require('./performer-controller.mock').testPerformer;
 
 // const dynamoDbPerformers = require('./playlist-controller.mock').performer;
 
@@ -27,19 +27,19 @@ const cleanUpTestUser = (dynamoCallback) => {
   dynamo.delete(deleteParams, dynamoCallback);
 };
 
-beforeEach(function (done) {
+beforeEach(function beforeEach(done) {
   cleanUpTestUser(() => {
     dynamo.put({ TableName: 'Performer', Item: testPerformer }, done);
   });
 });
 
-afterEach(function (done) {
+afterEach(function afterEach(done) {
   cleanUpTestUser(done);
 });
 
-describe('PerformerController', function () {
-  describe('#get', function () {
-    it('The result does not contain a wave that is greater than the current wave.', function (done) {
+describe('PerformerController', function testPerformerController() {
+  describe('#get', function testGet() {
+    it('The result does not contain a wave that is greater than the current wave.', function testWaveNumbe(done) {
       const currentWave = '1';
       const performerController = new PerformerController(dynamo, currentWave);
 
@@ -63,7 +63,7 @@ describe('PerformerController', function () {
         });
     });
 
-    it('Deny requests that for performers that belong to a wave that is after the current wave.', function (done) {
+    it('Deny requests that for performers that belong to a wave that is after the current wave.', function testCurrentWave(done) {
       const currentWave = '1';
       const performerController = new PerformerController(dynamo, currentWave);
 

@@ -49,5 +49,6 @@ exports.handler = (event, context, callback) => {
       break;
     default:
       done(new Error(`Unsupported method "${event.httpMethod}"`));
+      break;
   }
 };

@@ -59,10 +59,9 @@ class PlaylistController {
             if (error) {
               reject(error);
             } else {
-              resolve(response);
+              resolve(response.Item);
             }
           });
-
       });
     } else {
       /**

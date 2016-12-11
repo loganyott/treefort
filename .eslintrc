@@ -11,6 +11,7 @@
     }
   },
   "rules": {
-    "strict": ["error", "global"]
+    "strict": ["error", "global"],
+    "no-console": 0
   }
 }

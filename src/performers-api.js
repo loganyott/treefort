@@ -43,7 +43,7 @@ exports.handler = (event, context, callback) => {
             break;
         case 'DELETE':
             performerController
-                .delete(event.pathParameters.performerId)
+                .remove(event.pathParameters.performerId)
                 .then((response) => done(null, response))
                 .catch((error) => done(error));
             break;

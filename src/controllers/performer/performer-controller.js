@@ -17,15 +17,19 @@ class PerformerController {
     this.currentWave = Number(currentWave);
   }
 
-  create(newPerformer) {
-        // TODO: (bdietz) update with promise pattern
-        // TODO: (bdietz) Replace this with the crypto package once I get to the point where
-        // we can upload functions to the cloud.
-    newPerformer.code = '123456789';
-    this.dynamo.put({ TableName: 'Performer', Item: newPerformer }, done);
-  }
+  // create() {
+  //   return new Promise((resolve, reject) => {
+  //     reject(new Error('ERROR: This method has not been implemented yet.'));
+  //   });
 
-    // TODO: (bdietz) is there support for default parameters in node 4.23?
+  // TODO: (bdietz) update with promise pattern
+  // TODO: (bdietz) Replace this with the crypto package once I get to the point where
+  // we can upload functions to the cloud.
+  // newPerformer.code = '123456789';
+  // this.dynamo.put({ TableName: 'Performer', Item: newPerformer }, done);
+  // }
+
+  // TODO: (bdietz) is there support for default parameters in node 4.23?
   get(performerId) {
     const dynamoTableName = 'Performer';
 
@@ -101,7 +105,7 @@ class PerformerController {
     });
   }
 
-  delete(performerId) {
+  remove(performerId) {
     const deleteParams = {
       TableName: 'Performer',
       Key: {
@@ -110,11 +114,12 @@ class PerformerController {
     };
 
     return new Promise((resolve, reject) => {
-      this.dynamo.delete(deleteParams, createDynamoCallback(resolve, reject));
+      this.dynamo.remove(deleteParams, createDynamoCallback(resolve, reject));
     });
   }
 }
 
+// noinspection JSUnresolvedVariable
 module.exports = {
   PerformerController,
 };

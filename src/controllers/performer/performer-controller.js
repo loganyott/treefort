@@ -1,6 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 const createDynamoCallback = (resolve, reject) => (error, response) => {
   if (error) {
@@ -8,6 +9,12 @@ const createDynamoCallback = (resolve, reject) => (error, response) => {
   } else {
     resolve(response);
   }
+};
+
+const joinSongWithPerformer = songs => (performer) => {
+  const newPerformer = _.extend({}, performer, { song: songs[performer.code] });
+
+  return newPerformer;
 };
 
 class PerformerController {
@@ -41,11 +48,15 @@ class PerformerController {
 
       if (performerId) {
         this.dynamo
-          .get({ TableName: dynamoTableName, Key: { code: performerId } }, (error, response) => {
-            if (!error && (response.Item.wave > this.currentWave)) {
+          .get({ TableName: dynamoTableName, Key: { code: performerId } }, (performerError, performerResponse) => {
+            if (!performerError && (performerResponse.Item.wave > this.currentWave)) {
               reject(new Error('UNAUTHORIZED: You may not access performers that have not been released yet.'));
             } else {
-              dynamoCallback(error, response);
+              this.get({ TableName: 'Song', Key: { id: performerId } }, (songError, songResponse) => {
+                const songs = _.keyBy([songResponse.Item], 'o');
+                const finalResponse = joinSongWithPerformer(songs)(performerResponse.Item);
+                dynamoCallback(songError, { Item: finalResponse });
+              });
             }
           });
       } else {
@@ -60,7 +71,22 @@ class PerformerController {
           },
         };
 
-        this.dynamo.scan(dynamoParams, dynamoCallback);
+        const songParams = {
+          TableName: 'Song',
+        };
+
+        this.dynamo.scan(dynamoParams, (performerError, performerResponse) => {
+          if (performerError) {
+            dynamoCallback(performerError);
+          } else {
+            this.dynamo.scan(songParams, (songError, songResponse) => {
+              const songsByKey = _.keyBy(songResponse.Items, 'id');
+              const performersWithSongs = _.map(performerResponse.Items, joinSongWithPerformer(songsByKey));
+
+              dynamoCallback(songError, { Items: performersWithSongs });
+            });
+          }
+        });
       }
     });
   }

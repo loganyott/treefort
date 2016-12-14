@@ -13,7 +13,7 @@ const createDynamoCallback = (resolve, reject) => (error, response) => {
 };
 
 const joinSongWithPerformer = songs => (performer) => {
-  const cleanedUpSong = mergeSongOverrideTitleWithTitle(songs[performer.code]);
+  const cleanedUpSong = _.extend({ }, mergeSongOverrideTitleWithTitle(songs[performer.code]), { stream_url: performer.song_url });
   const newPerformer = _.extend({}, performer, { song: cleanedUpSong });
 
   return newPerformer;

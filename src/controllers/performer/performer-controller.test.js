@@ -39,6 +39,25 @@ afterEach(function afterEach(done) {
 
 describe('PerformerController', function testPerformerController() {
   describe('#get', function testGet() {
+    it('Test get by code', function testGetByCode(done) {
+      const currentWave = '1';
+      const performerController = new PerformerController(dynamo, currentWave);
+
+      // TODO: (bdietz) eventullay just move to using promises instead of calling done.
+      performerController
+        .get('2017-6725769')
+        .then((result) => {
+          console.log(result);
+          // assert.lengthOf(waves, 0, 'Should not contain any performers that are part of a wave greater than the current wave');
+        })
+        .catch(() => {
+          assert(false, 'An error occured.');
+        })
+        .finally(() => {
+          done();
+        });
+    });
+
     it('The result does not contain a wave that is greater than the current wave.', function testWaveNumbe(done) {
       const currentWave = '1';
       const performerController = new PerformerController(dynamo, currentWave);

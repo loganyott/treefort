@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const _ = require('lodash');
+const mergeSongOverrideTitleWithTitle = require('../playlist/playlist-controller').mergeSongOverrideTitleWithTitle;
 
 const createDynamoCallback = (resolve, reject) => (error, response) => {
   if (error) {
@@ -12,7 +13,8 @@ const createDynamoCallback = (resolve, reject) => (error, response) => {
 };
 
 const joinSongWithPerformer = songs => (performer) => {
-  const newPerformer = _.extend({}, performer, { song: songs[performer.code] });
+  const cleanedUpSong = mergeSongOverrideTitleWithTitle(songs[performer.code]);
+  const newPerformer = _.extend({}, performer, { song: cleanedUpSong });
 
   return newPerformer;
 };
@@ -52,11 +54,12 @@ class PerformerController {
             if (!performerError && (performerResponse.Item.wave > this.currentWave)) {
               reject(new Error('UNAUTHORIZED: You may not access performers that have not been released yet.'));
             } else {
-              this.get({ TableName: 'Song', Key: { id: performerId } }, (songError, songResponse) => {
-                const songs = _.keyBy([songResponse.Item], 'o');
-                const finalResponse = joinSongWithPerformer(songs)(performerResponse.Item);
-                dynamoCallback(songError, { Item: finalResponse });
-              });
+              this.dynamo
+                .get({ TableName: 'Song', Key: { id: performerId } }, (songError, songResponse) => {
+                  const songs = _.keyBy([songResponse.Item], 'id');
+                  const finalResponse = joinSongWithPerformer(songs)(performerResponse.Item);
+                  dynamoCallback(songError, { Item: finalResponse });
+                });
             }
           });
       } else {

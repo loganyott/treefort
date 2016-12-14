@@ -95,5 +95,6 @@ class PlaylistController {
 }
 
 module.exports = {
+  mergeSongOverrideTitleWithTitle,
   PlaylistController,
 };

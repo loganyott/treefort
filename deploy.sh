@@ -13,4 +13,4 @@ cd src; zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../no
 aws lambda update-function-code --function-name playlistsAPI --zip-file fileb://playlists-api.zip
 
 aws apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'
-aws apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name dev
+aws apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name $1

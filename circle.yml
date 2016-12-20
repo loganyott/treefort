@@ -1,9 +1,9 @@
 deployment:
-  production:
-    branch: master
+  develop:
+    branch: develop
     commands:
       - echo 'region=us-west-2' >> ~/.aws/credentials
-      - ./deploy.sh
+      - ./deploy.sh dev
 
 test:
   override:

@@ -7,6 +7,7 @@ require 'curb-fu'
 require 'aws-sdk'
 require 'id3tag'
 require 'mini_magick'
+require_relative 'song_overrides'
 
 # see Trollop description
 class SongMetadata
@@ -28,11 +29,11 @@ class SongMetadata
 
       EOS
 
-      opt :write_files, 'Write songs and images to AWS S3, unless they already exist',
-          short: 'f'
-      opt :performer, 'just do this named performer',
-          short: 'p',
-          type: :string
+      # opt :write_files, 'Write songs and images to AWS S3, unless they already exist',
+      #     short: 'f'
+      # opt :performer, 'just do this named performer',
+      #     short: 'p',
+      #     type: :string
     end
 
     # Using a "Treefort" AWS profile on my machine as described on
@@ -56,13 +57,14 @@ class SongMetadata
         song = {id: performer_id, title: tag.title}
 
         # save the override_title if it already exists
-        existing_info = db.get_item({table_name:'Song', key: { id:performer_id} })
-        x = existing_info.item
-        if existing_info.item && existing_info.item['override_title']
-          song[:override_title] = existing_info.item['override_title']
-        else
-          song[:override_title] = nil
-        end
+        # existing_info = db.get_item({table_name:'Song', key: { id:performer_id} })
+        # x = existing_info.item
+        # if existing_info.item && existing_info.item['override_title']
+        #   song[:override_title] = existing_info.item['override_title']
+        # else
+        #   song[:override_title] = nil
+        # end
+        song[:override_title] = SongOverrides::OVERRIDES[performer_id.to_sym]
 
         if tag.get_frames(:PIC) == [] && tag.get_frames(:APIC) == []
           puts 'No album art'
@@ -72,6 +74,7 @@ class SongMetadata
           content = content.first.content
 
           image_filename = "#{performer_id}-albumart.jpg"
+          song[:album_art] = IMAGE_BUCKET_URL + image_filename
           image_full_path = "/tmp/albumart/#{image_filename}"
           File.open(image_full_path, 'wb') do |f|
             f.binmode
@@ -83,11 +86,8 @@ class SongMetadata
           image = MiniMagick::Image.new(image_full_path)
           image.resize '300x300'
 
-          if @opts[:write_files]
-            puts "Writing album art image to S3 for performer #{performer_id}"
-            image_bucket.object(image_filename).upload_file(image_full_path)
-          end
-          song[:album_art] = IMAGE_BUCKET_URL + image_filename
+          puts "Writing album art image to S3 for performer #{performer_id}"
+          image_bucket.object(image_filename).upload_file(image_full_path)
         end
         db.put_item({ table_name: 'Song', item: song})
       end

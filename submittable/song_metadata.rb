@@ -19,6 +19,8 @@ class SongMetadata
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
   IMAGE_BUCKET_URL = "https://s3-us-west-2.amazonaws.com/#{IMAGE_BUCKET_NAME}/".freeze
 
+  ENVIRONMENTS = %w(etl dev prod).freeze
+
   def run
     @opts = Trollop.options do
       banner <<-EOS
@@ -29,12 +31,17 @@ class SongMetadata
 
       EOS
 
+      opt :environment, "Where to write the data. Possible values: #{ENVIRONMENTS.join(', ')}",
+          type: :string,
+          default: ENVIRONMENTS.first()
+
       # opt :write_files, 'Write songs and images to AWS S3, unless they already exist',
       #     short: 'f'
-      # opt :performer, 'just do this named performer',
-      #     short: 'p',
-      #     type: :string
+      opt :performer_id, 'just do this IDed performer',
+          short: 'p',
+          type: :string
     end
+    Trollop.die 'Invalid environment' unless ENVIRONMENTS.include?(@opts[:environment])
 
     # Using a "Treefort" AWS profile on my machine as described on
     # http://docs.aws.amazon.com/sdkforruby/api/index.html#Configuration
@@ -43,27 +50,26 @@ class SongMetadata
     song_bucket = resource.bucket(SONG_BUCKET_NAME)
     image_bucket = resource.bucket(IMAGE_BUCKET_NAME)
 
+    Dir.mkdir('/tmp/albumart/') unless Dir.exist?('/tmp/albumart/')
+
     db = Aws::DynamoDB::Client.new
     begin
       # songs = []
       song_bucket.objects.select do |song_file|
+        performer_id = song_file.key.sub('.mp3','')
+        next if @opts[:performer_id] &&  @opts[:performer_id] != performer_id
+
         puts song_file.key
         song_file.get(response_target: "/tmp/#{song_file.key}")
         mp3_file = File.open("/tmp/#{song_file.key}", "rb")
         tag = ID3Tag.read(mp3_file)
         puts "#{tag.artist} - #{tag.title}"
 
-        performer_id = song_file.key.sub('.mp3','')
         song = {id: performer_id, title: tag.title}
+        song[:title] = nil if song[:title] == '' # Dynamo does not like empty strings
 
-        # save the override_title if it already exists
-        # existing_info = db.get_item({table_name:'Song', key: { id:performer_id} })
-        # x = existing_info.item
-        # if existing_info.item && existing_info.item['override_title']
-        #   song[:override_title] = existing_info.item['override_title']
-        # else
-        #   song[:override_title] = nil
-        # end
+        # write the override_title if it exists. These are done by hand by @gregb because MP3 files and metadata are
+        # usually wrong
         song[:override_title] = SongOverrides::OVERRIDES[performer_id.to_sym]
 
         if tag.get_frames(:PIC) == [] && tag.get_frames(:APIC) == []
@@ -89,7 +95,10 @@ class SongMetadata
           puts "Writing album art image to S3 for performer #{performer_id}"
           image_bucket.object(image_filename).upload_file(image_full_path)
         end
-        db.put_item({ table_name: 'Song', item: song})
+        db.put_item({ table_name: "#{@opts[:environment]}-song", item: song})
+
+        # get out early
+        exit if @opts[:performer_id]
       end
     end
 

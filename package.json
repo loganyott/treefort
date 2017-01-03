@@ -5,6 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.4.6",
+    "dynasty": "^0.2.6",
+    "inquirer": "^2.0.0",
     "lodash": "^4.17.2",
     "request": "^2.79.0",
     "request-promise": "^4.1.1"
@@ -27,7 +29,6 @@
     "deploy:performers": "zip -j performers-api.zip ./src/performers-api.js; aws lambda update-function-code --function-name performersAPI --zip-file fileb://performers-api.zip",
     "deploy:playlists": "pushd src; zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../node_modules; popd; aws lambda update-function-code --function-name playlistsAPI --zip-file fileb://playlists-api.zip",
     "deploy:venues": "zip -j venues-api.zip ./src/venues-api.js; aws lambda update-function-code --function-name venuesAPI --zip-file fileb://venues-api.zip",
-
     "lint": "eslint src"
   },
   "repository": {

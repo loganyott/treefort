@@ -2,8 +2,8 @@ const rp = require('request-promise');
 const _ = require('lodash');
 const fs = require('fs');
 
-const Artist = require('../src/lib/artist');
-const Track = require('../src/lib/track');
+const Artist = require('../src/lib/performer');
+const Track = require('../src/lib/song');
 const Playlist = require('../src/lib/playlist');
 
 const mapPerformerToTrack = (performer) => {

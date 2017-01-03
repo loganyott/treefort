@@ -1,11 +1,13 @@
+machine:
+  environment:
+    GIT_COMMIT_DESC: $(git log --format=oneline -n 1 $CIRCLE_SHA1)
+
 deployment:
   production:
     branch: develop
     commands:
       - echo 'region=us-west-2' >> ~/.aws/credentials
       - ./deploy.sh dev
-      environment:
-        GIT_COMMIT_DESC: $(git log --format=oneline -n 1 $CIRCLE_SHA1)
 
 test:
   override:

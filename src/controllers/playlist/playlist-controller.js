@@ -5,27 +5,9 @@ const Promise = require('bluebird');
 
 const mapDynamoPlaylistTableToResponse = dynamoPlaylists => _.keyBy(dynamoPlaylists, 'id');
 
-const mergeSongOverrideTitleWithTitle = (song) => {
-  const title = (song.override_title === null)
-    ? song.title
-    : song.override_title;
-
-  const artworkUrl = (typeof song.album_art === 'undefined')
-    ? null
-    : song.album_art;
-
-  // Get rid of override title
-  return {
-    id: song.id,
-    artwork_url: artworkUrl,
-    title,
-  };
-};
-
 const joinSongsToArtistsInTracks = (partialPlaylist, songs) => {
   const songsMap = _
         .chain(songs)
-        .map(mergeSongOverrideTitleWithTitle)
         .keyBy('id')
         .value();
 
@@ -95,6 +77,5 @@ class PlaylistController {
 }
 
 module.exports = {
-  mergeSongOverrideTitleWithTitle,
   PlaylistController,
 };

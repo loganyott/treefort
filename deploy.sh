@@ -22,4 +22,4 @@ aws apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'fi
 
 #aws lambda create-function --function-name dev-playlist --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler playlists-api.handler --zip-file ./performers-api.zip
 
-aws apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name $1 --description "$GIT_COMMIT_DESC"
+aws apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name $1 --description "$CIRCLE_SHA1"

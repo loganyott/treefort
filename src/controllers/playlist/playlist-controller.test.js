@@ -11,7 +11,6 @@ AWS.config.update({
   endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
 });
 const dynamo = new AWS.DynamoDB.DocumentClient();
-// const dynamoDbPerformers = require('./playlist-controller.mock').performer;
 
 describe('PlaylistController', function testPlaylistController() {
   describe('#get/0', function testGet() {

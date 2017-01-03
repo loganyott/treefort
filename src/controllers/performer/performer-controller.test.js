@@ -18,9 +18,9 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const cleanUpTestUser = (dynamoCallback) => {
   const deleteParams = {
-    TableName: 'Performer',
+    TableName: 'dev-performer',
     Key: {
-      code: testPerformer.code,
+      id: testPerformer.id,
     },
   };
 
@@ -29,7 +29,7 @@ const cleanUpTestUser = (dynamoCallback) => {
 
 beforeEach(function beforeEach(done) {
   cleanUpTestUser(() => {
-    dynamo.put({ TableName: 'Performer', Item: testPerformer }, done);
+    dynamo.put({ TableName: 'dev-performer', Item: testPerformer }, done);
   });
 });
 
@@ -39,7 +39,7 @@ afterEach(function afterEach(done) {
 
 describe('PerformerController', function testPerformerController() {
   describe('#get', function testGet() {
-    it('Test get by code', function testGetByCode(done) {
+    it('Test get by id', function testGetById(done) {
       const currentWave = '1';
       const performerController = new PerformerController(dynamo, currentWave);
 
@@ -48,6 +48,7 @@ describe('PerformerController', function testPerformerController() {
         .get('2017-6725769')
         .then((result) => {
           console.log(result);
+          /// TODO: (bdietz) fix this test mannnn
           // assert.lengthOf(waves, 0, 'Should not contain any performers that are part of a wave greater than the current wave');
         })
         .catch(() => {
@@ -87,7 +88,7 @@ describe('PerformerController', function testPerformerController() {
       const performerController = new PerformerController(dynamo, currentWave);
 
       performerController
-        .get(testPerformer.code)
+        .get(testPerformer.id)
         .then(() => {
           assert(false, 'This should have thrown an error because the we do not support requests for artists that belong to a wave that is greater than the current wave');
         })

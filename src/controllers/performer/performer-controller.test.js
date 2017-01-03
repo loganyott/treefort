@@ -15,6 +15,7 @@ AWS.config.update({
   endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
 });
 const dynamo = new AWS.DynamoDB.DocumentClient();
+const dbStage = 'dev';
 
 const cleanUpTestUser = (dynamoCallback) => {
   const deleteParams = {
@@ -41,7 +42,7 @@ describe('PerformerController', function testPerformerController() {
   describe('#get', function testGet() {
     it('Test get by id', function testGetById(done) {
       const currentWave = '1';
-      const performerController = new PerformerController(dynamo, currentWave);
+      const performerController = new PerformerController(dynamo, dbStage, currentWave);
 
       // TODO: (bdietz) eventullay just move to using promises instead of calling done.
       performerController
@@ -85,7 +86,7 @@ describe('PerformerController', function testPerformerController() {
 
     it('Deny requests that for performers that belong to a wave that is after the current wave.', function testCurrentWave(done) {
       const currentWave = '1';
-      const performerController = new PerformerController(dynamo, currentWave);
+      const performerController = new PerformerController(dynamo, dbStage, currentWave);
 
       performerController
         .get(testPerformer.id)

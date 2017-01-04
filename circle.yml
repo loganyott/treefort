@@ -1,6 +1,6 @@
 deployment:
   production:
-    branch: develop
+    branch: master
     commands:
       - AWS_STAGE=dev ./deploy.sh
   staging:

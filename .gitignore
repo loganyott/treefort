@@ -36,6 +36,7 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-submittable/.idea
+# Amazingly, not everyone uses IntelliJ ¯\_(ツ)_/¯
+.idea
 
 *.iml

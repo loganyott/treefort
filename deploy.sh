@@ -34,7 +34,7 @@ aws lambda update-function-code --function-name ${AWS_STAGE}-playlists-api --zip
 aws --region us-west-2 apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'
 
 # create our actual API Gateway deployment
-aws --region us-west-2 apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name $1 --description "${CIRCLE_SHA1}"
+aws --region us-west-2 apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name ${AWS_STAGE} --description "${CIRCLE_SHA1}"
 
 # OLD NOTES:
 # aws --region us-west-2 lambda create-function --function-name dev-playlist --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler playlists-api.handler --zip-file ./performers-api.zip

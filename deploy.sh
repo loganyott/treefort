@@ -13,21 +13,25 @@ echo "Deploying ${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH} to ${AWS_STAGE} stag
 
 # deploy the events lambda function
 # TODO: implement a staged approach here
-zip -j events-api.zip ./src/events-api.js
+zip -j events-api.zip ./src/events-api.js > /dev/null
 aws lambda update-function-code --function-name eventsAPI --zip-file fileb://events-api.zip
 
 # deploy the performers lambda function to the desired stage
 # NOTE: we use a naming convention to determine which lambda function to use, see ${AWS_STAGE}
-cd src; zip -r ../performers-api.zip ./performers-api.js ./lib ./controllers ../node_modules; cd ..;
+cd src
+zip -r ../performers-api.zip ./performers-api.js ./lib ./controllers ../node_modules > /dev/null
+cd ..
 aws lambda update-function-code --function-name ${AWS_STAGE}-performers-api --zip-file fileb://performers-api.zip
 
 # deploy the venues lambda function to the desired stage
 # TODO: implement a staged approach here
-zip -j venues-api.zip ./src/venues-api.js
+zip -j venues-api.zip ./src/venues-api.js > /dev/null
 aws lambda update-function-code --function-name venuesAPI --zip-file fileb://venues-api.zip
 
 # deploy the playlists lambda function to the desired stage, see ${AWS_STAGE}
-cd src; zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../node_modules; cd ..;
+cd src
+zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../node_modules > /dev/null
+cd ..
 aws lambda update-function-code --function-name ${AWS_STAGE}-playlists-api --zip-file fileb://playlists-api.zip
 
 # deploy our API Gateway definition

@@ -4,8 +4,9 @@
 CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME:-'api-fort'}
 CIRCLE_BRANCH=${CIRCLE_BRANCH:-`git branch | grep \* | cut -d ' ' -f2`}
 CIRCLE_SHA1=${CIRCLE_SHA1:-'developer deployment'}
-AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-'us-west-2'}
+
 AWS_STAGE=${AWS_STAGE:-'dev'}
+export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-'us-west-2'}
 
 # useful output to verify our settings
 echo "Deploying ${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH} to ${AWS_STAGE} stage in ${AWS_DEFAULT_REGION}"

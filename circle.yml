@@ -5,6 +5,12 @@ deployment:
       - echo 'region=us-west-2' >> ~/.aws/credentials
       - ./deploy.sh dev
 
+  staging:
+    branch: develop
+    commands:
+      - echo 'region=us-west-2' >> ~/.aws/credentials
+      - ./deploy.sh dev
+
 test:
   override:
     - echo "No tests! This is a Wordpress theme"

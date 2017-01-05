@@ -16,7 +16,15 @@ exports.handler = (event, context, callback) => {
     console.error('ERROR: event.stageVariables.current_wave has not been set');
     done(new Error('Internal server error.'));
   }
-  const performerController = new PerformerController(dynamo, event.stageVariables.current_wave);
+
+  let performerController;
+  try {
+    performerController = new PerformerController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
+  } catch (error) {
+    console.error(JSON.stringify(error));
+    done(new Error('ERROR: Internal server error'));
+  }
+
   let pathParameters = null;
 
   switch (event.httpMethod) {

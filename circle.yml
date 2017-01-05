@@ -2,8 +2,11 @@ deployment:
   production:
     branch: master
     commands:
-      - echo 'region=us-west-2' >> ~/.aws/credentials
-      - ./deploy.sh
+      - AWS_STAGE=prod ./deploy.sh
+  staging:
+    branch: develop
+    commands:
+      - AWS_STAGE=dev ./deploy.sh
 
 test:
   override:

@@ -2,7 +2,6 @@
 
 const Promise = require('bluebird');
 const _ = require('lodash');
-const mergeSongOverrideTitleWithTitle = require('../playlist/playlist-controller').mergeSongOverrideTitleWithTitle;
 
 const createDynamoCallback = (resolve, reject) => (error, response) => {
   if (error) {
@@ -13,17 +12,34 @@ const createDynamoCallback = (resolve, reject) => (error, response) => {
 };
 
 const joinSongWithPerformer = songs => (performer) => {
-  const cleanedUpSong = _.extend({ }, mergeSongOverrideTitleWithTitle(songs[performer.code]), { stream_url: performer.song_url });
-  const newPerformer = _.extend({}, performer, { song: cleanedUpSong });
+  const noAssociatedSongForPerformer = (typeof songs[performer.id] === 'undefined');
+  const song = noAssociatedSongForPerformer
+    ? null
+    : songs[performer.id];
 
-  return newPerformer;
+  if (noAssociatedSongForPerformer) {
+    console.log(`No associated song for performer: ${performer.id}`);
+  }
+
+  return _.extend({}, performer, { song });
 };
 
 class PerformerController {
-  constructor(dynamo, currentWave) {
+  constructor(dynamo, dbStage, currentWave) {
     this.dynamo = dynamo;
         // The API Gateway stage variable forces it to be a string cast to Number.
     this.currentWave = Number(currentWave);
+    this.dbStage = dbStage;
+
+    console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
+
+    if (!dbStage) {
+      console.error('stageVariables.db_stage');
+      throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
+    }
+
+    this.PERFORMER_TABLE_NAME = `${dbStage}-performer`;
+    this.SONG_TABLE_NAME = `${dbStage}-song`;
   }
 
   // create() {
@@ -34,14 +50,12 @@ class PerformerController {
   // TODO: (bdietz) update with promise pattern
   // TODO: (bdietz) Replace this with the crypto package once I get to the point where
   // we can upload functions to the cloud.
-  // newPerformer.code = '123456789';
+  // newPerformer.id = '123456789';
   // this.dynamo.put({ TableName: 'Performer', Item: newPerformer }, done);
   // }
 
   // TODO: (bdietz) is there support for default parameters in node 4.23?
   get(performerId) {
-    const dynamoTableName = 'Performer';
-
     console.log(`PerformersController#get: ${performerId}`);
 
     return new Promise((resolve, reject) => {
@@ -50,21 +64,22 @@ class PerformerController {
 
       if (performerId) {
         this.dynamo
-          .get({ TableName: dynamoTableName, Key: { code: performerId } }, (performerError, performerResponse) => {
-            if (!performerError && (performerResponse.Item.wave > this.currentWave)) {
-              reject(new Error('UNAUTHORIZED: You may not access performers that have not been released yet.'));
-            } else {
-              this.dynamo
-                .get({ TableName: 'Song', Key: { id: performerId } }, (songError, songResponse) => {
+          .get({ TableName: this.PERFORMER_TABLE_NAME, Key: { id: performerId } },
+            (performerError, performerResponse) => {
+              if (!performerError && (performerResponse.Item.wave > this.currentWave)) {
+                reject(new Error('UNAUTHORIZED: You may not access performers that have not been released yet.'));
+              } else {
+                this.dynamo
+                .get({ TableName: this.SONG_TABLE_NAME, Key: { id: performerId } }, (songError, songResponse) => {
                   const songs = _.keyBy([songResponse.Item], 'id');
                   const finalResponse = joinSongWithPerformer(songs)(performerResponse.Item);
                   dynamoCallback(songError, { Item: finalResponse });
                 });
-            }
-          });
+              }
+            });
       } else {
         const dynamoParams = {
-          TableName: dynamoTableName,
+          TableName: this.PERFORMER_TABLE_NAME,
           FilterExpression: '#wv <= :currentWave',
           ExpressionAttributeNames: {
             '#wv': 'wave',
@@ -75,7 +90,7 @@ class PerformerController {
         };
 
         const songParams = {
-          TableName: 'Song',
+          TableName: this.SONG_TABLE_NAME,
         };
 
         this.dynamo.scan(dynamoParams, (performerError, performerResponse) => {
@@ -96,9 +111,9 @@ class PerformerController {
 
   update(performerId, performerInfo) {
     const updateParams = {
-      TableName: 'Performer',
+      TableName: this.PERFORMER_TABLE_NAME,
       Key: {
-        code: performerId,
+        id: performerId,
       },
       // TODO: Update properties based upon what is passed in.
       UpdateExpression: `set
@@ -136,9 +151,9 @@ class PerformerController {
 
   remove(performerId) {
     const deleteParams = {
-      TableName: 'Performer',
+      TableName: this.PERFORMER_TABLE_NAME,
       Key: {
-        code: performerId,
+        id: performerId,
       },
     };
 

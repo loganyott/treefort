@@ -6,7 +6,7 @@ const performerMocks = require('./transform-performer.mock');
 const transform = require('./transform-playlist').transform;
 
 describe('transform-playlist', function () {
-  describe('#cleanPerformer', function () {
+  describe('#transform', function () {
     it('A song to the playlist', function () {
       const expectedPlaylist = playlistMocks.cleanPlaylist;
       const transformedPlaylist = transform(

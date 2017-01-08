@@ -8,7 +8,7 @@ const performerMocks = require('./transform-performer.mock');
 const transform = require('./transform-song').transform;
 
 describe('transform-song', function () {
-  describe('#transform', function () {
+  describe('#cleanSong', function () {
     it('Converts the dirty etl data to a clean model.', function () {
       const dirtySong = songMocks.dirtySong;
       const cleanSong = songMocks.cleanSong;

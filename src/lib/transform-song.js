@@ -37,5 +37,7 @@ const transform = (performers, dirtySongs) => dirtySongs
     .map(attachStreamUrlToSong(_.keyBy(performers, 'id')));
 
 module.exports = {
+  attachStreamUrlToSong,
+  cleanSongTitleAndArtwork,
   transform,
 };

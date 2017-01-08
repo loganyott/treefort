@@ -1,7 +1,9 @@
 'use strict';
 
 class Song {
-  constructor(config = {}) {
+  // TODO: (bdietz) webpack this so you can use all of the awesome features of es6 like default parameters
+  constructor(config) {
+    config = config || {};
     this.artist = config.artist || null;
     this.artwork_url = config.artwork_url || null;
     this.id = config.id || null;

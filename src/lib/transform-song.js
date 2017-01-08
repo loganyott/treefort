@@ -1,14 +1,7 @@
-const Song = require('../src/lib/song');
-const dynasty = require('dynasty')({
-  accessKeyId: process.env.AWS_TMF_ID,
-  secretAccessKey: process.env.AWS_TMF_KEY,
-  region: 'us-west-2',
-});
-const _ = require('lodash');
+'use strict';
 
-const etlSongTable = dynasty.table('etl-song');
-const devSongTable = dynasty.table('dev-song');
-const etlPerformerTable = dynasty.table('etl-performer');
+const Song = require('./song');
+const _ = require('lodash');
 
 const cleanSongTitleAndArtwork = (song) => {
   // Clean up song title
@@ -39,23 +32,9 @@ const attachStreamUrlToSong = (artistsById) => {
   };
 };
 
-const transform = () => {
-  Promise.all([
-    etlSongTable.scan(),
-    etlPerformerTable.scan(),
-  ])
-    .then(([
-      allETLSongs,
-      allETLPerformers,
-    ]) => {
-      allETLSongs
-      .map(cleanSongTitleAndArtwork)
-      .map(attachStreamUrlToSong(_.keyBy(allETLPerformers, 'id')))
-      .forEach((cleanedSong) => {
-        devSongTable.insert(cleanedSong);
-      });
-    });
-};
+const transform = (performers, dirtySongs) => dirtySongs
+    .map(cleanSongTitleAndArtwork)
+    .map(attachStreamUrlToSong(_.keyBy(performers, 'id')));
 
 module.exports = {
   transform,

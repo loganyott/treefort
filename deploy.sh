@@ -11,7 +11,14 @@ export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-'us-west-2'}
 # useful output to verify our settings
 echo "Deploying ${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH} to ${AWS_STAGE} stage in ${AWS_DEFAULT_REGION}"
 
+echo "Deploying transform-etl-song-to-dev-song lambda function";
+cd src;
+zip -r ../transform-etl-song-to-dev-song.zip ./transform-etl-song-to-dev-song.js ./lib ../node_modules > /dev/null;
+cd ..;
+aws lambda update-function-code --function-name transform-etl-song-to-dev-song --zip-file fileb://transform-etl-song-to-dev-song.zip;
+
 # deploy the events lambda function
+echo "Deploying events-api lambda function"
 # TODO: implement a staged approach here
 zip -j events-api.zip ./src/events-api.js > /dev/null
 aws lambda update-function-code --function-name eventsAPI --zip-file fileb://events-api.zip
@@ -42,3 +49,4 @@ aws --region us-west-2 apigateway create-deployment --rest-api-id 7n74ikdn58 --s
 
 # OLD NOTES:
 # aws --region us-west-2 lambda create-function --function-name dev-playlist --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler playlists-api.handler --zip-file ./performers-api.zip
+aws lambda create-function --function-name transform-etl-song-to-dev-song --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler transform-etl-song-to-dev-song.handler --zip-file fileb://transform-etl-song-to-dev-song.zip

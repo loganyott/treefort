@@ -3,21 +3,21 @@
 'use strict';
 
 const assert = require('chai').assert;
-const playlistMocks = require('./transform-playlist.mock');
 const performerMocks = require('./transform-performer.mock');
-const transform = require('./transform-playlist').transform;
+const cleanPerformer = require('./transform-performer').cleanPerformer;
 
-describe('transform-playlist', function () {
+
+describe('transform-performer', function () {
   describe('#cleanPerformer', function () {
-    it('A song to the playlist', function () {
-      const expectedPlaylist = playlistMocks.cleanPlaylist;
-      const transformedPlaylist = transform(
-        [playlistMocks.dirtyPlaylist],
-        [performerMocks.cleanPerformerWithSong])[0];
+    it('A song to the performer', function () {
+      const dirtyPerformer = performerMocks.dirtyPerformer;
+      const expectedPerformer = performerMocks.cleanPerformer;
 
-      Object.keys(expectedPlaylist)
+      const cleanedPerformer = cleanPerformer(dirtyPerformer);
+
+      Object.keys(expectedPerformer)
         .forEach((key) => {
-          assert.deepEqual(transformedPlaylist[key], expectedPlaylist[key]);
+          assert.deepEqual(cleanedPerformer[key], expectedPerformer[key]);
         });
     });
   });

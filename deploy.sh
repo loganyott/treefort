@@ -11,16 +11,17 @@ export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-'us-west-2'}
 # useful output to verify our settings
 echo "Deploying ${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH} to ${AWS_STAGE} stage in ${AWS_DEFAULT_REGION}"
 
-echo "Deploying transform-etl-song-to-dev-song lambda function";
+# deploy the etl-song-to-dev-song lambda function
 cd src;
 zip -r ../transform-etl-song-to-dev-song.zip ./transform-etl-song-to-dev-song.js ./lib ../node_modules > /dev/null;
 cd ..;
+# aws lambda create-function --function-name transform-etl-song-to-dev-song --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler transform-etl-song-to-dev-song.handler --zip-file fileb://transform-etl-song-to-dev-song.zip
 aws lambda update-function-code --function-name transform-etl-song-to-dev-song --zip-file fileb://transform-etl-song-to-dev-song.zip;
 
 # deploy the events lambda function
-echo "Deploying events-api lambda function"
 # TODO: implement a staged approach here
 zip -j events-api.zip ./src/events-api.js > /dev/null
+# aws lambda create-function --function-name eventsAPI --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler events-api.handler --zip-file fileb://events-api.zip
 aws lambda update-function-code --function-name eventsAPI --zip-file fileb://events-api.zip
 
 # deploy the performers lambda function to the desired stage
@@ -28,17 +29,20 @@ aws lambda update-function-code --function-name eventsAPI --zip-file fileb://eve
 cd src
 zip -r ../performers-api.zip ./performers-api.js ./lib ./controllers ../node_modules > /dev/null
 cd ..
+# aws lambda create-function --function-name ${AWS_STAGE}-performers-api --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler performers-api.handler --zip-file fileb://performers-api.zip
 aws lambda update-function-code --function-name ${AWS_STAGE}-performers-api --zip-file fileb://performers-api.zip
 
 # deploy the venues lambda function to the desired stage
 # TODO: implement a staged approach here
 zip -j venues-api.zip ./src/venues-api.js > /dev/null
+# aws lambda create-function --function-name venuesAPI --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler venues-api.handler --zip-file fileb://venues-api.zip
 aws lambda update-function-code --function-name venuesAPI --zip-file fileb://venues-api.zip
 
 # deploy the playlists lambda function to the desired stage, see ${AWS_STAGE}
 cd src
 zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../node_modules > /dev/null
 cd ..
+# aws lambda create-function --function-name ${AWS_STAGE}-playlists-api --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler playlists-api.handler --zip-file fileb://playlists-api.zip
 aws lambda update-function-code --function-name ${AWS_STAGE}-playlists-api --zip-file fileb://playlists-api.zip
 
 # deploy our API Gateway definition
@@ -46,7 +50,3 @@ aws --region us-west-2 apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode o
 
 # create our actual API Gateway deployment
 aws --region us-west-2 apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name ${AWS_STAGE} --description "${CIRCLE_SHA1}"
-
-# OLD NOTES:
-# aws --region us-west-2 lambda create-function --function-name dev-playlist --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler playlists-api.handler --zip-file ./performers-api.zip
-aws lambda create-function --function-name transform-etl-song-to-dev-song --runtime nodejs4.3 --role arn:aws:iam::025660771593:role/APIGatewayLambdaExecRole --handler transform-etl-song-to-dev-song.handler --zip-file fileb://transform-etl-song-to-dev-song.zip

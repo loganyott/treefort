@@ -6,6 +6,7 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 const dynamoPromise = require('./lib/dynamo-promise')(dynamo);
 const transformPerformer = require('./lib/transform-performer').transform;
 const transformSong = require('./lib/transform-song').transform;
+const transformPlaylist = require('./lib/transform-playlist').transform;
 
 console.log('Completed requires');
 
@@ -33,9 +34,13 @@ exports.handler = (event, context, callback) => {
       const allETLPlaylists = scanResponses[2];
 
       const transformedSongs = transformSong(allETLPerformers, allETLSongs);
-      const transformedPerformers = transformPerformer(allETLPerformers, transformedSongs);
+      const performersWithSongs = transformPerformer(allETLPerformers, transformedSongs);
+      const playlistsWithArtists = transformPlaylist(allETLPlaylists, performersWithSongs);
 
-      console.log(transformedSongs, transformedPerformers);
+      return Promise.all([
+        devPerformer.batchPut(performersWithSongs),
+        devPlaylist.batchPut(playlistsWithArtists),
+      ]);
     })
     .then(() => {
       callback(null, 'SUCCESS');

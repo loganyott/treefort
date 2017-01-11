@@ -2,9 +2,9 @@ machine:
   node:
     version: 4.3.0
 
-test:
-  override:
-    - echo "No tests! This is APIFORT"
+#test:
+#  override:
+#    - echo "No tests! This is APIFORT"
 
 #deployment:
 #  production:

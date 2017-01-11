@@ -43,14 +43,12 @@ describe('PerformerController', function testPerformerController() {
     it('Test get by id', function testGetById(done) {
       const currentWave = '1';
       const performerController = new PerformerController(dynamo, dbStage, currentWave);
-
+      const performerId = '2017-6725769';
       // TODO: (bdietz) eventullay just move to using promises instead of calling done.
       performerController
-        .get('2017-6725769')
+        .get(performerId)
         .then((result) => {
-          console.log(result);
-          /// TODO: (bdietz) fix this test mannnn
-          // assert.lengthOf(waves, 0, 'Should not contain any performers that are part of a wave greater than the current wave');
+          assert.equal(result.id, performerId);
         })
         .catch(() => {
           assert(false, 'An error occured.');

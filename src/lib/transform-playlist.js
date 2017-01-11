@@ -9,7 +9,7 @@ const cleanPlaylist = (dirtyPlaylist) => {
   return new Playlist(playlist);
 };
 
-const joinPlaylistWithPerformers = performersById => (playlist) => {
+const joinPlaylistWithSongs = performersById => (playlist) => {
   const songs = playlist.songs
     .map((track) => {
       if (!performersById[track.id]) {
@@ -17,7 +17,7 @@ const joinPlaylistWithPerformers = performersById => (playlist) => {
         return null;
       }
 
-      return performersById[track.id];
+      return performersById[track.id].song;
     });
 
   return new Playlist(Object.assign({}, playlist, { songs }));
@@ -26,7 +26,7 @@ const joinPlaylistWithPerformers = performersById => (playlist) => {
 const transform = (dirtyPlaylists, performersWithSongs) => {
   const cleanPlaylists = dirtyPlaylists
     .map(cleanPlaylist)
-    .map(joinPlaylistWithPerformers(_.keyBy(performersWithSongs, 'id')));
+    .map(joinPlaylistWithSongs(_.keyBy(performersWithSongs, 'id')));
 
   return cleanPlaylists;
 };

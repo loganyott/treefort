@@ -5,11 +5,19 @@ const Song = require('./song');
 const _ = require('lodash');
 
 const joinSongWithPerformer = songsById => (performer) => {
-  const song = songsById[performer.id]
-    ? null
-    : new Song(songsById[performer.id]);
+  let song = songsById[performer.id]
+    ? Object.assign({}, new Song(songsById[performer.id]))
+    : null;
 
-  return Object.assign({}, performer, { song });
+  if (song) {
+    delete song.artist;
+  }
+
+  let newPerformer = Object.assign({}, performer, { song: song });
+  delete newPerformer.orig_song_name;
+  delete newPerformer.stream_url;
+
+  return newPerformer;
 };
 
 const cleanPerformer = performer => new Performer(performer);

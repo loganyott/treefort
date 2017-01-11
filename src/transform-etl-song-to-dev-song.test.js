@@ -3,14 +3,15 @@
 'use strict';
 
 const assert = require('chai').assert;
-const transformEtlSongToDevSong = require('./transform-etl-song-to-dev-performer-and-dev-playlist').handler;
+const transformEtlSongToDevSong = require('./etl').handler;
 
-describe('transform-etl-song-to-dev-song', function testTransformEtlSongToDevSong() {
-  describe('#handler', function testTransformEtlSongToDevSongHandler() {
-    it('Runs', function testExistenceOfStageVariables(done) {
-      transformEtlSongToDevSong({}, {}, () => {
-        done();
-      });
-    });
-  });
+// describe('transform-etl-song-to-dev-song', function testTransformEtlSongToDevSong() {
+//   describe('#handler', function testTransformEtlSongToDevSongHandler() {
+//     it('Runs', function testExistenceOfStageVariables(done) {
+//     });
+//   });
+// });
+
+transformEtlSongToDevSong({}, {}, () => {
+  console.log('done');
 });

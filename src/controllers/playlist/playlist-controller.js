@@ -1,75 +1,32 @@
 'use strict';
 
-const _ = require('lodash');
-const Promise = require('bluebird');
-
-const mapDynamoPlaylistTableToResponse = dynamoPlaylists => _.keyBy(dynamoPlaylists, 'id');
-
-const joinSongsToArtistsInTracks = (partialPlaylist, songs) => {
-  const songsMap = _
-        .chain(songs)
-        .keyBy('id')
-        .value();
-
-  return _.map(partialPlaylist, (playlist) => {
-    const newTracks = _.map(playlist.tracks, track => _.extend({ }, track, songsMap[track.id]));
-
-    return _.extend({ }, playlist, { tracks: newTracks });
-  });
-};
+const dynamoPromiseFactory = require('../../lib/dynamo-promise');
 
 class PlaylistController {
   /**
   * @param dynamo A connection to dynamo db.
   */
-  constructor(dynamo) {
-    this.dynamo = dynamo;
+  constructor(dynamo, dbStage, currentWave) {
+    const dynamoPromise = dynamoPromiseFactory(dynamo);
+    console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
+
+    if (!dbStage) {
+      console.error('stageVariables.db_stage');
+      throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
+    }
+
+    this.playlistTable = dynamoPromise.table(`${dbStage}-playlist`);
   }
 
   get(playlistId) {
     let promise;
 
     if (playlistId) {
-      promise = new Promise((resolve, reject) => {
-        const dynamoParams = {
-          TableName: 'Playlist',
-          Key: { id: playlistId },
-        };
-
-        this.dynamo
-          .get(dynamoParams, (error, response) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(response.Item);
-            }
-          });
-      });
+      promise = this.playlistTable
+        .get(playlistId);
     } else {
-      /**
-       * TODO: (bdietz) If this starts getting more arrow shaped we should look into making
-       * a nice promise solution or just getting one that already exists.
-       */
-      promise = new Promise((resolve, reject) => {
-        this.dynamo.scan({ TableName: 'Playlist' }, (playlistError, playlistResponse) => {
-          if (playlistError) {
-            reject(playlistError);
-          } else {
-            this.dynamo.scan({ TableName: 'Song' }, (songError, songResponse) => {
-              if (songError) {
-                reject(songError);
-              } else {
-                const playlistWithPartialTracks =
-                  mapDynamoPlaylistTableToResponse(playlistResponse.Items);
-                const playlistWithFullTracks =
-                  joinSongsToArtistsInTracks(playlistWithPartialTracks, songResponse.Items);
-
-                resolve(_.keyBy(playlistWithFullTracks, 'id'));
-              }
-            });
-          }
-        });
-      });
+      promise = this.playlistTable
+      .scan();
     }
 
     return promise;

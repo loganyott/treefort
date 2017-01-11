@@ -1,10 +1,10 @@
-machine:
-  node:
-    version: 4.3.0
+#machine:
+#  node:
+#    version: 4.3.0
 
-#test:
-#  override:
-#    - echo "No tests! This is APIFORT"
+test:
+  override:
+    - echo 'Hello World'
 
 #deployment:
 #  production:

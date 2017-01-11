@@ -6,12 +6,12 @@ test:
   override:
     - echo "No tests! This is APIFORT"
 
-deployment:
-  production:
-    branch: master
-    commands:
-      - AWS_STAGE=prod ./deploy.sh
-  staging:
-    branch: develop
-    commands:
-      - AWS_STAGE=dev ./deploy.sh
+#deployment:
+#  production:
+#    branch: master
+#    commands:
+#      - AWS_STAGE=prod ./deploy.sh
+#  staging:
+#    branch: develop
+#    commands:
+#      - AWS_STAGE=dev ./deploy.sh

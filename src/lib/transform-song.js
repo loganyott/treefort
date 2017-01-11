@@ -18,7 +18,7 @@ const cleanSongTitleAndArtwork = (song) => {
   return new Song(songConfig);
 };
 
-const attachStreamUrlToSong = (artistsById) => {
+const attachStreamArtistInfoToSong = (artistsById) => {
   return (song) => {
     const currentArtist = artistsById[song.id];
     const noArtistFound = typeof currentArtist === 'undefined';
@@ -27,17 +27,17 @@ const attachStreamUrlToSong = (artistsById) => {
     }
     return ((noArtistFound)
       ? song
-      : new Song(Object.assign({}, song, { stream_url: currentArtist.song_url }))
+      : new Song(Object.assign({}, song, { stream_url: currentArtist.song_url }, { artist_name: currentArtist.name }))
     );
   };
 };
 
 const transform = (performers, dirtySongs) => dirtySongs
     .map(cleanSongTitleAndArtwork)
-    .map(attachStreamUrlToSong(_.keyBy(performers, 'id')));
+    .map(attachStreamArtistInfoToSong(_.keyBy(performers, 'id')));
 
 module.exports = {
-  attachStreamUrlToSong,
+  attachStreamArtistInfoToSong,
   cleanSongTitleAndArtwork,
   transform,
 };

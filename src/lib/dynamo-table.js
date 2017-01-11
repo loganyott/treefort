@@ -1,5 +1,7 @@
 'use strict';
 
+const Promise = require('bluebird');
+
 class DynamoTable {
   constructor(dynamoConnection, tableName) {
     this.dynamo = dynamoConnection;
@@ -30,10 +32,14 @@ class DynamoTable {
     });
   }
 
-  scan() {
-    const scanParams = {
+  scan(params) {
+    let scanParams = {
       TableName: this.tableName,
     };
+
+    if (params) {
+      scanParams = Object.assign({}, scanParams, params);
+    }
 
     return new Promise((resolve, reject) => {
       this.dynamo

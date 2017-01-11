@@ -1,3 +1,11 @@
+machine:
+  node:
+    version: 4.3.0
+
+test:
+  override:
+    - echo "No tests! This is APIFORT"
+
 deployment:
   production:
     branch: master
@@ -7,7 +15,3 @@ deployment:
     branch: develop
     commands:
       - AWS_STAGE=dev ./deploy.sh
-
-test:
-  override:
-    - echo "No tests! This is a Wordpress theme"

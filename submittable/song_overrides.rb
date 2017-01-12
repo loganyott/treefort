@@ -209,6 +209,8 @@ class SongOverrides
 
       # new proces 1/12
       '2017-7019416': 'Mexican Chef',
-
+      '2017-6985185':	'Gayatri Mantra (Feat Lisbeth Scott)',
+      '2017-7001477':	'Irene',
+      '2017-7004381':	'Restless',
   }.freeze
 end

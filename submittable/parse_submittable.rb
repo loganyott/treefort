@@ -5,7 +5,9 @@ require 'trollop'
 require 'json'
 require 'curb-fu'
 require 'aws-sdk'
+require 'id3tag'
 require 'mini_magick'
+require_relative 'song_overrides'
 
 class Performer
   attr_accessor :code
@@ -164,7 +166,7 @@ class ParseSubmittable
                                   write_capacity_units: 5
                               }
                          })
-      rescue Aws::DynamoDB::Errors::ServiceError => error
+      rescue Aws::DynamoDB::Errors::ServiceError
         puts "Not deleted yet. Try #{retries + 1}"
         sleep 2 # seconds
         retry if (retries += 1) < 10
@@ -447,11 +449,69 @@ class ParseSubmittable
             puts 'Unable to add song'
             puts "#{error.message}"
           end
+
+          orig_song_filename = p.orig_song_name.sub('.mp3','')
+
+          # extract title
+          mp3_file = File.open("/tmp/#{bucket_key}", "rb")
+          tag = ID3Tag.read(mp3_file)
+
+          song = {id: p.code, title: tag.title, performer: p.name, orig_song_filename: orig_song_filename}
+          song[:title] = nil if song[:title] == '' # Found an empty string from one song
+          song[:title] = orig_song_filename if song[:title].nil?
+
+          # write the override_title if it exists. These are done by hand by @gregb because MP3 files and metadata are
+          # usually wrong
+          if SongOverrides::OVERRIDES.key?(p.code.to_sym)
+            song[:override_title] = SongOverrides::OVERRIDES[p.code.to_sym]
+          else
+            # never seen this song before, note it for @gregb to process. Add more info to make it easier
+            write_item_to_table(song, "#{@opts[:environment]}-song-check")
+            song[:override_title] = nil
+          end
+
+          # extract the album art
+          if tag.get_frames(:PIC) == [] && tag.get_frames(:APIC) == []
+            puts 'No album art'
+          else
+            content = tag.get_frames(:PIC) unless tag.get_frames(:PIC) == []
+            content = tag.get_frames(:APIC) unless tag.get_frames(:APIC) == []
+            content = content.first.content
+
+            image_filename = "#{p.code}-albumart.jpg"
+            song[:album_art] = IMAGE_BUCKET_URL + image_filename
+            image_full_path = "/tmp/albumart/#{image_filename}"
+            File.open(image_full_path, 'wb') do |f|
+              f.binmode
+              f.write content
+              f.close
+            end
+
+            # resize it, some embedded mp3 images are huge (8.7Mb)
+            image = MiniMagick::Image.new(image_full_path)
+            image.resize '300x300'
+
+            puts "Writing album art to S3 for performer #{p.name}: #{image_filename}"
+            image_bucket.object(image_filename).upload_file(image_full_path)
+          end
+          write_item_to_table(song, "#{@opts[:environment]}-song")
+
         else
           puts "Couldn't download song for performer #{p.name}: #{p.orig_song_url}"
         end
       end
     end
+  end
+
+  def write_item_to_table(item, table_name)
+    begin
+      # j = item.to_json
+      @db.put_item({ table_name: table_name, item: item})
+    rescue  Aws::DynamoDB::Errors::ServiceError => error
+      puts 'Unable to add item'
+      puts "#{error.message}"
+    end
+
   end
 
   def write_performer(p)

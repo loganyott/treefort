@@ -33,7 +33,7 @@ class SongOverrides
       '2017-6774079': nil,
       '2017-6791335': nil,
       '2017-6186830': nil,
-      '2017-6202620': 'I''m Not a Doctor. That''s a Raisin. (feat. Matt Kupka of Southtowne Lanes)',
+      '2017-6202620': "I'm Not a Doctor. That's a Raisin. (feat. Matt Kupka of Southtowne Lanes)",
       '2017-6514632': 'Lay Me Down',
       '2017-6141580': nil,
       '2017-6135212': nil,
@@ -206,5 +206,9 @@ class SongOverrides
       '2017-6728111': 'Breeze',
       '2017-6877767': 'Libertad Cultura Fe',
       '2017-6959961': nil,
+
+      # new proces 1/12
+      '2017-7019416': 'Mexican Chef',
+
   }.freeze
 end

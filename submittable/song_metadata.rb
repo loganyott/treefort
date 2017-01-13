@@ -19,7 +19,7 @@ class SongMetadata
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
   IMAGE_BUCKET_URL = "https://s3-us-west-2.amazonaws.com/#{IMAGE_BUCKET_NAME}/".freeze
 
-  ENVIRONMENTS = %w(etl dev prod).freeze
+  ENVIRONMENTS = %w(etl dev).freeze
 
   def run
     @opts = Trollop.options do

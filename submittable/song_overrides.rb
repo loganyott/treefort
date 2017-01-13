@@ -33,7 +33,7 @@ class SongOverrides
       '2017-6774079': nil,
       '2017-6791335': nil,
       '2017-6186830': nil,
-      '2017-6202620': 'I''m Not a Doctor. That''s a Raisin. (feat. Matt Kupka of Southtowne Lanes)',
+      '2017-6202620': "I'm Not a Doctor. That's a Raisin. (feat. Matt Kupka of Southtowne Lanes)",
       '2017-6514632': 'Lay Me Down',
       '2017-6141580': nil,
       '2017-6135212': nil,
@@ -117,7 +117,7 @@ class SongOverrides
       '2017-6952496': 'This Is Your Year',
       '2017-6944746': nil,
       '2017-6945812': nil,
-      '2017-6947017': nil,
+      '2017-6971271': nil,
       '2017-6945930': nil,
       '2017-6847971': 'v. Poltergeist',
       '2017-6881422': 'Malificarum',
@@ -128,7 +128,7 @@ class SongOverrides
       '2017-6795228': 'Burn',
       '2017-6887568': 'Mounted On The Wall',
       '2017-6902933': 'Webcam Mix3',
-      '2017-6944935': nil,
+      '2017-6970494': 'Stop Your Tears',
       '2017-6867435': nil,
       '2017-6903211': nil,
       '2017-6351680': 'LP1 Master V5 04',
@@ -206,5 +206,11 @@ class SongOverrides
       '2017-6728111': 'Breeze',
       '2017-6877767': 'Libertad Cultura Fe',
       '2017-6959961': nil,
+
+      # new proces 1/12
+      '2017-7019416': 'Mexican Chef',
+      '2017-6985185':	'Gayatri Mantra (Feat Lisbeth Scott)',
+      '2017-7001477':	'Irene',
+      '2017-7004381':	'Restless',
   }.freeze
 end

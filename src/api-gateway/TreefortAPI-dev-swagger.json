@@ -733,7 +733,7 @@
         },
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
-          "uri": "arn:aws:apigateway:us-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-2:025660771593:function:playlistsAPI/invocations",
+          "uri": "arn:aws:apigateway:us-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-2:025660771593:function:${stageVariables.playlists_api_func}/invocations",
           "passthroughBehavior": "when_no_match",
           "httpMethod": "POST",
           "responses": {
@@ -811,7 +811,7 @@
         },
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
-          "uri": "arn:aws:apigateway:us-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-2:025660771593:function:playlistsAPI/invocations",
+          "uri": "arn:aws:apigateway:us-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-2:025660771593:function:${stageVariables.playlists_api_func}/invocations",
           "passthroughBehavior": "when_no_match",
           "httpMethod": "POST",
           "responses": {

@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const _ = require('lodash');
+const dynamoPromiseFactory = require('../../lib/dynamo-promise');
 
 const createDynamoCallback = (resolve, reject) => (error, response) => {
   if (error) {
@@ -11,26 +12,8 @@ const createDynamoCallback = (resolve, reject) => (error, response) => {
   }
 };
 
-const joinSongWithPerformer = songs => (performer) => {
-  const noAssociatedSongForPerformer = (typeof songs[performer.id] === 'undefined');
-  const song = noAssociatedSongForPerformer
-    ? null
-    : songs[performer.id];
-
-  if (noAssociatedSongForPerformer) {
-    console.log(`No associated song for performer: ${performer.id}`);
-  }
-
-  return _.extend({}, performer, { song });
-};
-
 class PerformerController {
   constructor(dynamo, dbStage, currentWave) {
-    this.dynamo = dynamo;
-        // The API Gateway stage variable forces it to be a string cast to Number.
-    this.currentWave = Number(currentWave);
-    this.dbStage = dbStage;
-
     console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
 
     if (!dbStage) {
@@ -38,8 +21,14 @@ class PerformerController {
       throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
     }
 
+    // TODO: (bdietz) deprecate this now that dynamo promise is a viable option.
     this.PERFORMER_TABLE_NAME = `${dbStage}-performer`;
-    this.SONG_TABLE_NAME = `${dbStage}-song`;
+    this.dbStage = dbStage;
+    this.dynamo = dynamo;
+    this.dynamoPromise = dynamoPromiseFactory(dynamo);
+    this.performerTable = this.dynamoPromise.table(`${dbStage}-performer`);
+    // The API Gateway stage variable forces it to be a string cast to Number.
+    this.currentWave = Number(currentWave);
   }
 
   // create() {
@@ -57,56 +46,33 @@ class PerformerController {
   // TODO: (bdietz) is there support for default parameters in node 4.23?
   get(performerId) {
     console.log(`PerformersController#get: ${performerId}`);
+    let promise;
+    if (performerId) {
+      promise = this.performerTable
+          .get(performerId)
+          .then((performer) => {
+            if (performer.wave > this.currentWave) {
+              throw new Error('UNAUTHORIZED: You may not access performers that have not been released yet.');
+            }
 
-    return new Promise((resolve, reject) => {
-      console.log(`PerformersController#get in promise: ${performerId}`);
-      const dynamoCallback = createDynamoCallback(resolve, reject);
+            return performer;
+          });
+    } else {
+      const scanParams = {
+        FilterExpression: '#wv <= :currentWave',
+        ExpressionAttributeNames: {
+          '#wv': 'wave',
+        },
+        ExpressionAttributeValues: {
+          ':currentWave': this.currentWave,
+        },
+      };
 
-      if (performerId) {
-        this.dynamo
-          .get({ TableName: this.PERFORMER_TABLE_NAME, Key: { id: performerId } },
-            (performerError, performerResponse) => {
-              if (!performerError && (performerResponse.Item.wave > this.currentWave)) {
-                reject(new Error('UNAUTHORIZED: You may not access performers that have not been released yet.'));
-              } else {
-                this.dynamo
-                .get({ TableName: this.SONG_TABLE_NAME, Key: { id: performerId } }, (songError, songResponse) => {
-                  const songs = _.keyBy([songResponse.Item], 'id');
-                  const finalResponse = joinSongWithPerformer(songs)(performerResponse.Item);
-                  dynamoCallback(songError, { Item: finalResponse });
-                });
-              }
-            });
-      } else {
-        const dynamoParams = {
-          TableName: this.PERFORMER_TABLE_NAME,
-          FilterExpression: '#wv <= :currentWave',
-          ExpressionAttributeNames: {
-            '#wv': 'wave',
-          },
-          ExpressionAttributeValues: {
-            ':currentWave': this.currentWave,
-          },
-        };
+      promise = this.performerTable
+          .scan(scanParams);
+    }
 
-        const songParams = {
-          TableName: this.SONG_TABLE_NAME,
-        };
-
-        this.dynamo.scan(dynamoParams, (performerError, performerResponse) => {
-          if (performerError) {
-            dynamoCallback(performerError);
-          } else {
-            this.dynamo.scan(songParams, (songError, songResponse) => {
-              const songsByKey = _.keyBy(songResponse.Items, 'id');
-              const performersWithSongs = _.map(performerResponse.Items, joinSongWithPerformer(songsByKey));
-
-              dynamoCallback(songError, { Items: performersWithSongs });
-            });
-          }
-        });
-      }
-    });
+    return promise;
   }
 
   update(performerId, performerInfo) {

@@ -13,6 +13,7 @@ class Performer
   attr_accessor :code
   attr_accessor :bio
   attr_accessor :forts
+  attr_accessor :tags
   attr_accessor :home_town
   attr_accessor :name
   attr_accessor :wave
@@ -43,6 +44,7 @@ class Performer
 
   def initialize
     @forts = []
+    @tags = []
     @genres = []
   end
 
@@ -53,6 +55,7 @@ class Performer
       id: code, # junger wanted this too, same as code
       bio: bio,
       forts: forts,
+      tags: tags,
       home_town: home_town,
       genres: genres,
       wave: wave,
@@ -86,8 +89,8 @@ class ParseSubmittable
   IMAGE_BUCKET_URL = "https://s3-us-west-2.amazonaws.com/#{IMAGE_BUCKET_NAME}/".freeze
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
 
-  IMAGE_FORM_IDS = [784411,685181, 748881, 693367].freeze      # different forms in Treefort/Hacfort/Comedyfort. Grrr
-  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157].freeze # different forms in Treefort/Hacfort/Comedyfort. Grrr
+  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838].freeze      # different forms in Treefort/Hacfort/Comedyfort. Grrr
+  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161].freeze # different forms in Treefort/Hacfort/Comedyfort. Grrr
 
   ENVIRONMENTS = %w(etl dev).freeze
 
@@ -235,6 +238,12 @@ class ParseSubmittable
         p.forts << 'Performanceart' if labels.include?("performanceart#{YEAR}")
         p.forts << 'Storyfort'      if labels.include?("storyfort#{YEAR}")
         p.forts << 'Yogafort'       if labels.include?("yogafort#{YEAR}")
+        p.forts << 'YogafortArtist' if labels.include?("yogafort #{YEAR} artist")
+        p.forts << 'YogafortInstructor' if labels.include?("yogafort #{YEAR} instructor")
+
+        if labels.include?('canada')
+          p.tags << 'Canada'
+        end
 
         if labels.include?("1st announce (#{YEAR})")
           p.wave = 1
@@ -269,6 +278,11 @@ class ParseSubmittable
           # Hackfort
           p.bio                  = submission_form_field(submission, 'Please provide a brief description or bio of yourself. This can include previous projects, skills or accomplishments related to your field. ')
         end
+        if p.bio.nil?
+          # Yogafort
+          p.bio                  = submission_form_field(submission, 'Instructor Biography ')
+        end
+
         p.genres                 = submission_form_field(submission, 'Genre')
         p.genres = p.genres.split(',') unless p.genres.nil?
         p.music_url              = submission_form_field(submission, 'Music')

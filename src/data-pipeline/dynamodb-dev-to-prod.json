@@ -1,0 +1,288 @@
+{
+  "objects": [
+    {
+      "directoryPath": "#{mySourceTablePerformerS3Folder}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}",
+      "name": "S3PerformerSourceLocation",
+      "id": "S3PerformerSourceLocation",
+      "type": "S3DataNode"
+    },
+    {
+      "directoryPath": "#{myTargetTablePerformerS3Folder}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}",
+      "name": "S3PerformerTargetLocation",
+      "id": "S3PerformerTargetLocation",
+      "type": "S3DataNode"
+    },
+    {
+      "directoryPath": "#{mySourceTablePlaylistS3Folder}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}",
+      "name": "S3PlaylistSourceLocation",
+      "id": "S3PlaylistSourceLocation",
+      "type": "S3DataNode"
+    },
+    {
+      "output": {
+        "ref": "S3PlaylistSourceLocation"
+      },
+      "input": {
+        "ref": "DDBSourcePlaylistTable"
+      },
+      "name": "TablePlaylistSourceBackupActivity",
+      "step": "s3://dynamodb-emr-#{myDDBRegion}/emr-ddb-storage-handler/2.1.0/emr-ddb-2.1.0.jar,org.apache.hadoop.dynamodb.tools.DynamoDbExport,#{output.directoryPath},#{input.tableName},#{input.readThroughputPercent}",
+      "id": "TablePlaylistSourceBackupActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "EmrActivity",
+      "resizeClusterBeforeRunning": "true"
+    },
+    {
+      "output": {
+        "ref": "S3PerformerTargetLocation"
+      },
+      "input": {
+        "ref": "DDBTargetPerformerTable"
+      },
+      "maximumRetries": "2",
+      "name": "TablePerformerTargetBackupActivity",
+      "step": "s3://dynamodb-emr-#{myDDBRegion}/emr-ddb-storage-handler/2.1.0/emr-ddb-2.1.0.jar,org.apache.hadoop.dynamodb.tools.DynamoDbExport,#{output.directoryPath},#{input.tableName},#{input.readThroughputPercent}",
+      "id": "TablePerformerTargetBackupActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "EmrActivity",
+      "resizeClusterBeforeRunning": "true"
+    },
+    {
+      "output": {
+        "ref": "S3PerformerSourceLocation"
+      },
+      "input": {
+        "ref": "DDBSourcePerformerTable"
+      },
+      "maximumRetries": "2",
+      "name": "TablePerformerSourceBackupActivity",
+      "step": "s3://dynamodb-emr-#{myDDBRegion}/emr-ddb-storage-handler/2.1.0/emr-ddb-2.1.0.jar,org.apache.hadoop.dynamodb.tools.DynamoDbExport,#{output.directoryPath},#{input.tableName},#{input.readThroughputPercent}",
+      "id": "TablePerformerSourceBackupActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "EmrActivity",
+      "resizeClusterBeforeRunning": "true"
+    },
+    {
+      "directoryPath": "#{myTargetTablePlaylistS3Folder}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}",
+      "name": "S3PlaylistTargetLocation",
+      "id": "S3PlaylistTargetLocation",
+      "type": "S3DataNode"
+    },
+    {
+      "input": {
+        "ref": "S3PlaylistSourceLocation"
+      },
+      "dependsOn": {
+        "ref": "TablePlaylistTargetLoadActivity"
+      },
+      "name": "S3CleanupPlaylistSourceActivity",
+      "id": "S3CleanupPlaylistSourceActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "ShellCommandActivity",
+      "command": "(sudo yum -y update aws-cli) && (aws s3 rm #{input.directoryPath} --recursive)"
+    },
+    {
+      "output": {
+        "ref": "DDBTargetPerformerTable"
+      },
+      "input": {
+        "ref": "S3PerformerSourceLocation"
+      },
+      "dependsOn": {
+        "ref": "TablePerformerTargetBackupActivity"
+      },
+      "maximumRetries": "2",
+      "name": "TablePerformerTargetLoadActivity",
+      "step": "s3://dynamodb-emr-#{myDDBRegion}/emr-ddb-storage-handler/2.1.0/emr-ddb-2.1.0.jar,org.apache.hadoop.dynamodb.tools.DynamoDbImport,#{input.directoryPath},#{output.tableName},#{output.writeThroughputPercent}",
+      "id": "TablePerformerTargetLoadActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "EmrActivity",
+      "resizeClusterBeforeRunning": "true"
+    },
+    {
+      "readThroughputPercent": "#{myDDBReadThroughputRatio}",
+      "name": "DDBSourcePlaylistTable",
+      "id": "DDBSourcePlaylistTable",
+      "type": "DynamoDBDataNode",
+      "tableName": "#{myDDBSourcePlaylistTableName}"
+    },
+    {
+      "output": {
+        "ref": "S3PlaylistTargetLocation"
+      },
+      "input": {
+        "ref": "DDBTargetPlaylistTable"
+      },
+      "name": "TablePlaylistTargetBackupActivity",
+      "step": "s3://dynamodb-emr-#{myDDBRegion}/emr-ddb-storage-handler/2.1.0/emr-ddb-2.1.0.jar,org.apache.hadoop.dynamodb.tools.DynamoDbExport,#{output.directoryPath},#{input.tableName},#{input.readThroughputPercent}",
+      "id": "TablePlaylistTargetBackupActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "EmrActivity"
+    },
+    {
+      "output": {
+        "ref": "DDBTargetPlaylistTable"
+      },
+      "input": {
+        "ref": "S3PlaylistSourceLocation"
+      },
+      "dependsOn": {
+        "ref": "TablePlaylistTargetBackupActivity"
+      },
+      "maximumRetries": "2",
+      "name": "TablePlaylistTargetLoadActivity",
+      "step": "s3://dynamodb-emr-#{myDDBRegion}/emr-ddb-storage-handler/2.1.0/emr-ddb-2.1.0.jar,org.apache.hadoop.dynamodb.tools.DynamoDbImport,#{input.directoryPath},#{output.tableName},#{output.writeThroughputPercent}",
+      "id": "TablePlaylistTargetLoadActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "EmrActivity",
+      "resizeClusterBeforeRunning": "true"
+    },
+    {
+      "writeThroughputPercent": "#{myDDBWriteThroughputRatio}",
+      "readThroughputPercent": "#{myDDBReadThroughputRatio}",
+      "name": "DDBTargetPerformerTable",
+      "id": "DDBTargetPerformerTable",
+      "type": "DynamoDBDataNode",
+      "tableName": "#{myDDBTargetPerformerTableName}"
+    },
+    {
+      "failureAndRerunMode": "CASCADE",
+      "resourceRole": "DataPipelineDefaultResourceRole",
+      "pipelineLogUri": "#{myS3LogsPath}",
+      "role": "DataPipelineDefaultRole",
+      "scheduleType": "ONDEMAND",
+      "name": "Default",
+      "id": "Default"
+    },
+    {
+      "name": "EmrClusterForBackup",
+      "coreInstanceType": "m1.medium",
+      "coreInstanceCount": "1",
+      "masterInstanceType": "m1.medium",
+      "amiVersion": "3.8.0",
+      "id": "EmrClusterForBackup",
+      "region": "#{myDDBRegion}",
+      "type": "EmrCluster",
+      "terminateAfter": "30 Minutes"
+    },
+    {
+      "readThroughputPercent": "#{myDDBReadThroughputRatio}",
+      "name": "DDBSourcePerformerTable",
+      "id": "DDBSourcePerformerTable",
+      "type": "DynamoDBDataNode",
+      "tableName": "#{myDDBSourcePerformerTableName}"
+    },
+    {
+      "input": {
+        "ref": "S3PerformerSourceLocation"
+      },
+      "dependsOn": {
+        "ref": "TablePerformerTargetLoadActivity"
+      },
+      "name": "S3CleanupPerformerSourceActivity",
+      "id": "S3CleanupPerformerSourceActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "ShellCommandActivity",
+      "command": "(sudo yum -y update aws-cli) && (aws s3 rm #{input.directoryPath} --recursive)"
+    },
+    {
+      "writeThroughputPercent": "#{myDDBWriteThroughputRatio}",
+      "readThroughputPercent": "#{myDDBReadThroughputRatio}",
+      "name": "DDBTargetPlaylistTable",
+      "id": "DDBTargetPlaylistTable",
+      "type": "DynamoDBDataNode",
+      "tableName": "#{myDDBTargetPlaylistTableName}"
+    }
+  ],
+  "parameters": [
+    {
+      "description": "S3 folder for backing up performer table",
+      "id": "mySourceTablePerformerS3Folder",
+      "myComment": "Temporary S3 path to store the dynamodb backup csv files, backup files will be deleted after the copy completes",
+      "type": "AWS::S3::ObjectKey"
+    },
+    {
+      "description": "Source DynamoDB performer table name",
+      "id": "myDDBSourcePerformerTableName",
+      "type": "String"
+    },
+    {
+      "description": "Target DynamoDB table name",
+      "id": "myDDBTargetPerformerTableName",
+      "type": "String"
+    },
+    {
+      "description": "S3 folder for backing up playlist table",
+      "id": "mySourceTablePlaylistS3Folder",
+      "myComment": "Temporary S3 path to store the dynamodb backup csv files, backup files will be deleted after the copy completes",
+      "type": "AWS::S3::ObjectKey"
+    },
+    {
+      "description": "Target DynamoDB table name",
+      "id": "myDDBTargetPlaylistTableName",
+      "type": "String"
+    },
+    {
+      "default": "0.25",
+      "watermark": "Enter value between 0.1-1.0",
+      "description": "DynamoDB read throughput ratio",
+      "id": "myDDBReadThroughputRatio",
+      "type": "Double"
+    },
+    {
+      "default": "0.25",
+      "watermark": "Enter value between 0.1-1.0",
+      "description": "DynamoDB write throughput ratio",
+      "id": "myDDBWriteThroughputRatio",
+      "type": "Double"
+    },
+    {
+      "description": "S3 path for pipeline logs.",
+      "id": "myS3LogsPath",
+      "myComment": "This Parameter specifies the S3 logging path for the pipeline.  It is used by the 'Default' object to set the 'pipelineLogUri' value.",
+      "type": "AWS::S3::ObjectKey"
+    },
+    {
+      "default": "us-west-2",
+      "watermark": "us-west-2",
+      "description": "Region of the DynamoDB table",
+      "id": "myDDBRegion",
+      "type": "String"
+    },
+    {
+      "description": "Source DynamoDB playlist table name",
+      "id": "myDDBSourcePlaylistTableName",
+      "type": "String"
+    }
+  ],
+  "values": {
+    "mySourceTablePerformerS3Folder": "s3://treefort-dynamo-backups/dev/performer/temp/",
+    "myDDBSourcePerformerTableName": "dev-performer",
+    "mySourceTablePlaylistS3Folder": "s3://treefort-dynamo-backups/dev/playlist/temp/",
+    "myDDBRegion": "us-west-2",
+    "myDDBTargetPerformerTableName": "prod-performer",
+    "myS3LogsPath": "s3://treefort-dynamo-backups/etl/logs/dev-to-prod/",
+    "myTargetTablePlaylistS3Folder": "s3://treefort-dynamo-backups/prod/playlist/",
+    "myTargetTablePerformerS3Folder": "s3://treefort-dynamo-backups/dev/prod/performer/",
+    "myDDBWriteThroughputRatio": "0.25",
+    "myDDBReadThroughputRatio": "0.25",
+    "myDDBTargetPlaylistTableName": "prod-playlist",
+    "myDDBSourcePlaylistTableName": "dev-playlist"
+  }
+}

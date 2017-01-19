@@ -14,7 +14,7 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 exports.handler = (event, context, callback) => {
   console.log('Received event:', JSON.stringify(event, null, 2));
 
-  const playlistController = new PlaylistController(dynamo);
+  const playlistController = new PlaylistController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);;
   const done = response(callback);
 
   let pathParameters = null;

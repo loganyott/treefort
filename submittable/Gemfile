@@ -1,3 +1,4 @@
+source 'https://rubygems.org'
 gem 'id3tag'
 gem 'mini_magick'
 gem 'google_drive'

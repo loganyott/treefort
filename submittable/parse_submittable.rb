@@ -8,7 +8,7 @@ require 'aws-sdk'
 require 'id3tag'
 require 'mini_magick'
 require_relative 'song_overrides'
-
+require 'cgi'
 class Performer
   attr_accessor :code
   attr_accessor :bio
@@ -20,6 +20,8 @@ class Performer
   attr_accessor :tier
   attr_accessor :sort_order_within_tier
   attr_accessor :genres
+  attr_accessor :class_title
+  attr_accessor :class_summary
 
   # URLs to our CDN in S3
   attr_accessor :image_url
@@ -68,6 +70,9 @@ class Performer
       song_url: song_url,
       orig_song_name: orig_song_name,
 
+      class_title: class_title,
+      class_summary: class_summary,
+
       music_url: music_url,
       video_url: video_url,
       website_url: website_url,
@@ -90,8 +95,8 @@ class ParseSubmittable
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
 
   # different forms in Treefort/Hackfort/Comedyfort. Grrr
-  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838, 862943, 884097].freeze
-  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114].freeze
+  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838, 862943, 884097, 912075, 912732, 794773, 685249].freeze
+  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156].freeze
 
   ENVIRONMENTS = %w(etl dev).freeze
 
@@ -117,8 +122,12 @@ class ParseSubmittable
       opt :overwrite, 'Write data to AWS DynamoDB and files to S3. Write files EVEN IF they already exist in S3'
       opt :performer, 'just do this named performer',
           type: :string
+      opt :start_page, 'start at this submittable page',
+          type: :integer, default: 1
 
+      conflicts :start_page, :performer
     end
+
     Trollop.die 'Invalid environment' unless ENVIRONMENTS.include?(@opts[:environment])
 
     puts "----- Starting: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}"
@@ -138,48 +147,53 @@ class ParseSubmittable
     year_categories = categories['items'].select { |cat| cat['name'].include?('2017') }
     year_filter = year_categories.collect { |cat| "&category_id=#{cat['category_id']}" }.join
 
-    result_page = 1
+    result_page = @opts[:start_page]
     page_size = @opts[:debug] ? 20 : 200
     ready_to_begin = @opts[:performer].nil?
 
-    # unless @opts[:performer]
-    #   puts 'Clearing DynamoDB table'
-    #
-    #   begin
-    #     @db.delete_table( {table_name: "#{@opts[:environment]}-performer"})
-    #   rescue Aws::DynamoDB::Errors::ResourceNotFoundException => error
-    #     puts 'Table does not exist to delete. Skipping'
-    #   end
-    #
-    #   begin
-    #     retries ||= 0
-    #     @db.create_table({table_name: "#{@opts[:environment]}-performer",
-    #                       attribute_definitions: [
-    #                           {
-    #                               attribute_name: 'id',
-    #                               attribute_type: 'S'
-    #                           }
-    #                       ],
-    #                       key_schema: [{
-    #                                        attribute_name: 'id',
-    #                                        key_type: 'HASH'
-    #                                    }],
-    #                       provisioned_throughput:
-    #                           {
-    #                               read_capacity_units: 5,
-    #                               write_capacity_units: 5
-    #                           }
-    #                      })
-    #   rescue Aws::DynamoDB::Errors::ServiceError
-    #     puts "Not deleted yet. Try #{retries + 1}"
-    #     sleep 2 # seconds
-    #     retry if (retries += 1) < 10
-    #   end
-    # end
+    unless @opts[:performer] || @opts[:start_page] > 1
+      puts 'Clearing DynamoDB table'
+
+      begin
+        @db.delete_table( {table_name: "#{@opts[:environment]}-performer"})
+      rescue Aws::DynamoDB::Errors::ResourceNotFoundException => error
+        puts 'Table does not exist to delete. Skipping'
+      end
+
+      begin
+        retries ||= 0
+        @db.create_table({table_name: "#{@opts[:environment]}-performer",
+                          attribute_definitions: [
+                              {
+                                  attribute_name: 'id',
+                                  attribute_type: 'S'
+                              }
+                          ],
+                          key_schema: [{
+                                           attribute_name: 'id',
+                                           key_type: 'HASH'
+                                       }],
+                          provisioned_throughput:
+                              {
+                                  read_capacity_units: 5,
+                                  write_capacity_units: 5
+                              }
+                         })
+      rescue Aws::DynamoDB::Errors::ServiceError
+        puts "Not deleted yet. Try #{retries + 1}"
+        sleep 2 # seconds
+        retry if (retries += 1) < 10
+      end
+    end
 
     puts 'Searching submittable for performers meeting your criteria'
     loop do
-      response = CurbFu.get(HOST + "/v1/submissions?count=#{page_size}&page=#{result_page}#{year_filter}")
+      if @opts[:performer]
+        esc_performer = CGI.escape(@opts[:performer])
+        response = CurbFu.get(HOST + "/v1/submissions?count=#{page_size}&search=#{esc_performer}#{year_filter}")
+      else
+        response = CurbFu.get(HOST + "/v1/submissions?count=#{page_size}&page=#{result_page}#{year_filter}")
+      end
       submissions = JSON.parse(response.body)
       page_count = submissions['total_pages']
       page_count = [2, page_count].min if @opts[:debug]
@@ -204,7 +218,8 @@ class ParseSubmittable
             labels.include?("alefort#{YEAR}") ||
             labels.include?("comedyfort#{YEAR}") ||
             labels.include?("filmfort#{YEAR}") ||
-            labels.include?("foodfort#{YEAR}") ||
+            labels.include?("foodforttastes#{YEAR}") ||
+            labels.include?("foodforttalks#{YEAR}") ||
             labels.include?("gallery#{YEAR}") ||
             labels.include?("hackfort#{YEAR}") ||
             labels.include?("kidfort#{YEAR}") ||
@@ -241,6 +256,11 @@ class ParseSubmittable
         p.forts << 'Performanceart' if labels.include?("performanceart#{YEAR}")
         p.forts << 'Storyfort'      if labels.include?("storyfort#{YEAR}")
         p.forts << 'Yogafort'       if labels.include?("yogafort#{YEAR}")
+
+        p.forts << 'Filmfortfeature' if labels.include?("featurefilm")
+        p.forts << 'Filmfortshort'  if labels.include?("shortfilm")
+        p.forts << 'Foodforttastes' if labels.include?("foodforttastes#{YEAR}")
+        p.forts << 'Foodforttalks'  if labels.include?("foodforttalks#{YEAR}")
         p.forts << 'YogafortArtist' if labels.include?("yogafort #{YEAR} artist")
         p.forts << 'YogafortInstructor' if labels.include?("yogafort #{YEAR} instructor")
 
@@ -289,6 +309,22 @@ class ParseSubmittable
           # Storyfort
           p.bio                  = submission_form_field(submission, 'Writer Bio')
         end
+        if p.bio.nil?
+          # Filmfort
+          p.bio                  = submission_form_field(submission, 'Synopsis')
+        end
+        if p.bio.nil?
+          # Foodfort
+          p.bio = submission_form_field(submission, 'CHEF NAME')
+          add = submission_form_field(submission, 'DISH 1 NAME AND DESCRIPTION')
+          p.bio = p.bio + "\n\n" + add unless add.nil?
+          add = submission_form_field(submission, 'DISH 2 NAME AND DESCRIPTION')
+          p.bio = p.bio + "\n" + add unless add.nil?
+          add = submission_form_field(submission, 'FEATURED FARM PRODUCER 1')
+          p.bio = p.bio + "\n\n" + add unless add.nil?
+          add = submission_form_field(submission, 'FEATURED FARM PRODUCER 2')
+          p.bio = p.bio + "\n" + add unless add.nil?
+        end
 
         p.genres                 = submission_form_field(submission, 'Genre')
         p.genres = p.genres.split(',') unless p.genres.nil?
@@ -305,6 +341,9 @@ class ParseSubmittable
         else
           p.sort_order_within_tier = p.sort_order_within_tier.to_i
         end
+
+        p.class_title   = submission_form_field(submission, 'Class Title')
+        p.class_summary = submission_form_field(submission, 'Short Class Summary')
 
         if submission['files']
           images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }
@@ -359,7 +398,11 @@ class ParseSubmittable
   def submission_form_field(submission, field_name)
     ret = nil
     if submission['form']['items']
-      item = submission['form']['items'].find { |item| item['label'] == field_name }
+      item = submission['form']['items'].find { |item|
+        unless item['label'].nil?
+          item['label'].strip.downcase == field_name.strip.downcase
+        end
+      }
       ret = item['data'] unless item.nil?
       ret = (ret == '') ? nil : ret
     end

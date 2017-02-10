@@ -99,6 +99,9 @@ class ParseSubmittable
   IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156].freeze
 
   ENVIRONMENTS = %w(etl dev).freeze
+  LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
+  # change this to your path to check in images to app-fort too
+  # LOCAL_IMAGE_SRC_PATH = '/tmp/'.freeze
 
   def run
     @opts = Trollop.options do
@@ -449,18 +452,18 @@ class ParseSubmittable
           response = CurbFu.get(p.orig_image_url)
           if response.status == 200
 
-            File.open("/tmp/#{bucket_key}", 'wb') do |f|
+            File.open("#{LOCAL_IMAGE_SRC_PATH}#{bucket_key}", 'wb') do |f|
               f.binmode
               f.write response.body
               f.close
             end
 
             # resize it
-            image = MiniMagick::Image.new("/tmp/#{bucket_key}")
+            image = MiniMagick::Image.new("#{LOCAL_IMAGE_SRC_PATH}#{bucket_key}")
             image.resize '400' # 400 wide, as much height as needed to preserve aspect ratio
 
             puts "Writing medium image to S3 for performer #{p.name}: #{bucket_key}"
-            image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
+            image_bucket.object(bucket_key).upload_file("#{LOCAL_IMAGE_SRC_PATH}#{bucket_key}")
           end
         end
       rescue => error

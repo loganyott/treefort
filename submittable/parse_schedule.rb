@@ -7,7 +7,7 @@ require 'curb-fu'
 require 'aws-sdk'
 # require 'id3tag'
 # require 'mini_magick'
-require_relative 'venue.rb'
+# require_relative 'venue.rb'
 
 # see Trollop description
 class ParseSchedule
@@ -16,17 +16,19 @@ class ParseSchedule
   ENVIRONMENTS = %w(etl dev prod).freeze
   PROD_ENVIRONMENT = 'prod'.freeze
 
-  HEADER_ROW = 2
+  SCHEDULE_HEADER_ROW = 2
   FESTIVAL_START = Time.new(2017,03,22,0,0,0,'-07:00')
-  VENUE_IMAGE_BUCKET_URL = "https://s3-us-west-2.amazonaws.com/treefort-venue-images/".freeze
+  # VENUE_IMAGE_BUCKET_URL = "https://s3-us-west-2.amazonaws.com/treefort-venue-images/".freeze
 
-  COLS =
+  SCHEDULE_COLS =
       ['Primary Performer', '2nd Performer', '3rd Performer', '4th Performer', '5th Performer',
        'Primary Fort', '2nd Fort', 'Event Identifier',
        'Event Name', 'Date', 'Start Time', 'End Time', 'Venue', 'Description',
        'Kidfort Approved', 'Cancelled', 'All Ages',
        'Event ID',
        'Primary Performer ID', '2nd Performer ID', '3rd Performer ID', '4th Performer ID', '5th Performer ID']
+
+  VENUE_COLS = ['Name', 'Street', 'City', 'State', 'Zip', 'Extra Info'].freeze
 
   DEV_SHEETS = ['Example']
   PROD_SHEETS =['Treefort', 'Alefort', 'Comedyfort', 'Filmfort', 'Foodfort', 'Hackfort', 'Kidfort',
@@ -60,6 +62,8 @@ class ParseSchedule
     # See this document to learn how to create config.json:
     # https://github.com/gimite/google-drive-ruby/blob/master/doc/authorization.md
     session = GoogleDrive::Session.from_service_account_key('Treefort Events 2017-d9872630951c.json')
+    ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title('Venues')
+    venues = sheet_to_json(ws, VENUE_COLS)
 
     # Using a "Treefort" AWS profile on my machine as described on
     # http://docs.aws.amazon.com/sdkforruby/api/index.html#Configuration
@@ -74,15 +78,10 @@ class ParseSchedule
       ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title(title)
 
       event_ids = Set.new
-      # check to make sure the worksheet is in the expected format
-      (1..COLS.size).each do |col|
-        unless ws[HEADER_ROW, col].start_with?(COLS[col - 1])
-          abort "Unexpected column #{col} in google xls: #{ws[HEADER_ROW, col]}. Expected: #{COLS[col - 1]}"
-        end
-      end
+      check_cols(ws, SCHEDULE_COLS, SCHEDULE_HEADER_ROW)
 
       # good spreadsheet, let's do this
-      (HEADER_ROW + 1..ws.max_rows).each do |row|
+      (SCHEDULE_HEADER_ROW + 1..ws.max_rows).each do |row|
         # don't do blank rows, but allow them just in case someone skips a row
         next if ws[row, 1] == ''
 
@@ -117,12 +116,12 @@ class ParseSchedule
         e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time').iso8601
         e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time').iso8601
         venue                 = get_required_string(ws, row, 'Venue')
-        e[:venue]             = VENUES.find{ |value|
-            value[:Name] == venue
+        e[:venue]             = venues.find{ |value|
+            value['name'] == venue
         }
         puts "Unknown venue: '#{venue}'" if e[:venue].nil?
 
-        e[:venue][:image_url] = VENUE_IMAGE_BUCKET_URL + e[:venue][:Name] + '.jpg'
+        # e[:venue][:image_url] = VENUE_IMAGE_BUCKET_URL + e[:venue][:Name] + '.jpg'
         e[:description]       = get_optional_string(ws, row, 'Description')
         e[:kidfort_approved]  = get_boolean(ws, row, 'Kidfort Approved')
         e[:cancelled]         = get_boolean(ws, row, 'Cancelled')
@@ -138,6 +137,34 @@ class ParseSchedule
         end
       end
     end
+  end
+
+  # check to make sure the worksheet is in the expected format
+  def check_cols(ws, cols, header_row)
+    (1..cols.size).each do |col|
+      unless ws[header_row, col].start_with?(cols[col - 1])
+        abort "Unexpected column #{col} in google xls: #{ws[header_row, col]}. Expected: #{cols[col - 1]}"
+      end
+    end
+  end
+
+  def sheet_to_json(ws, expected_cols)
+    check_cols(ws, expected_cols, 1)
+
+    result = []
+    (2..ws.max_rows).each do |row|
+      # don't do blank rows, but allow them just in case someone skips a row
+      next if ws[row, 1] == ''
+
+      r = {}
+      (1..expected_cols.count).each do |col|
+        key_name = expected_cols[col - 1].downcase.gsub(' ', '_')
+        r[key_name] = ws[row,col]
+        r[key_name] = nil if r[key_name] == ''
+      end
+      result << r
+    end
+    result
   end
 
   def get_relative_time(ws, row, col_name, day_offset)
@@ -202,7 +229,7 @@ class ParseSchedule
   end
 
   def get_col(col_name)
-    COLS.find_index(col_name) + 1
+    SCHEDULE_COLS.find_index(col_name) + 1
   end
 
 end

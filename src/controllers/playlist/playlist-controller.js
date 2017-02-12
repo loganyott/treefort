@@ -24,14 +24,14 @@ class PlaylistController {
 
     if (playlistId) {
       promise = this.playlistTable
-        .get(playlistId)
-        .then(getResponse => _.sortBy(getResponse, 'order'));
+        .get(playlistId);
     } else {
       promise = this.playlistTable
       .scan();
     }
 
-    return promise;
+    return promise
+      .then(getResponse => _.sortBy(getResponse, 'order'));
   }
 }
 

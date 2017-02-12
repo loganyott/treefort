@@ -1,6 +1,10 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+// AWS.config.update({
+//   region: 'us-west-2',
+//   endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
+// });
 const Promise = require('bluebird');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 const dynamoPromise = require('./lib/dynamo-promise')(dynamo);

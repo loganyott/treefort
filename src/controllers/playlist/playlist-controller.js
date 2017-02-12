@@ -1,6 +1,7 @@
 'use strict';
 
 const dynamoPromiseFactory = require('../../lib/dynamo-promise');
+const _ = require('lodash');
 
 class PlaylistController {
   /**
@@ -23,7 +24,8 @@ class PlaylistController {
 
     if (playlistId) {
       promise = this.playlistTable
-        .get(playlistId);
+        .get(playlistId)
+        .then(getResponse => _.sortBy(getResponse, 'order'));
     } else {
       promise = this.playlistTable
       .scan();

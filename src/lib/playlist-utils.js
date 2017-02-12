@@ -57,15 +57,16 @@ const joinPerformerSongsToPlaylistsWithIds = (playlistWithIdsForSongs, performer
 };
 
 const createAllPerformerPlaylist = (performersWithSongs) => {
-  const songs = performersWithSongs
+  const songs = _.sortBy(performersWithSongs, 'tier', 'sort_order_within_tier')
      // guarantee performers have songs
     .filter(performer => Boolean(performer.song))
     .map(performer => performer.song);
 
+
   const playlistConfig = {
     songs: songs,
     name: 'All Artists',
-    id: "4",
+    id: '4',
     order: 0,
   };
 
@@ -82,7 +83,7 @@ const createPerRoundPlaylists = (performersWithSongs) => {
   const playlists = Object.keys(performersGroupedByWave)
     .map((waveNumber) => {
       const playlistConfig = {
-        songs: performersGroupedByWave[waveNumber].map(performer => performer.song),
+        songs: _.sortBy(performersGroupedByWave[waveNumber], 'tier', 'sort_order_within_tier').map(performer => performer.song),
         name: `Round ${numberToWord(waveNumber)}`,
         id: waveNumber,
         order: waveNumber,

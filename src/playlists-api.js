@@ -6,7 +6,6 @@ console.log('Loading function');
 const AWS = require('aws-sdk');
 const response = require('./lib/response');
 const PlaylistController = require('./controllers/playlist/playlist-controller').PlaylistController;
-const _ = require('lodash');
 
 console.log('Requires completed');
 
@@ -28,7 +27,6 @@ exports.handler = (event, context, callback) => {
 
       playlistController
         .get(pathParameters)
-        .then(getResponse => _.sortBy(getResponse, 'order'))
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 

@@ -1,12 +1,16 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+// AWS.config.update({
+//   region: 'us-west-2',
+//   endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
+// });
 const Promise = require('bluebird');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 const dynamoPromise = require('./lib/dynamo-promise')(dynamo);
 const transformPerformer = require('./lib/transform-performer').transform;
 const transformSong = require('./lib/transform-song').transform;
-const transformPlaylist = require('./lib/transform-playlist').transform;
+const playlistUtils = require('./lib/playlist-utils');
 
 console.log('Completed requires');
 
@@ -27,7 +31,6 @@ exports.handler = (event, context, callback) => {
       /**
        * TODO: (bdietz) this could be simplified with full es6 support.
        * Looks like array destructuring isn't supported in 4.3.
-       * TODO: (bdietz) streaming alternative would be kind of cool :P
        */
       const allETLSongs = scanResponses[0];
       const allETLPerformers = scanResponses[1];
@@ -35,18 +38,19 @@ exports.handler = (event, context, callback) => {
 
       const transformedSongs = transformSong(allETLPerformers, allETLSongs);
       const performersWithSongs = transformPerformer(allETLPerformers, transformedSongs);
-      const playlistsWithArtists = transformPlaylist(allETLPlaylists, performersWithSongs);
+      const allPlaylists = playlistUtils.createPerRoundPlaylists(performersWithSongs);
+      allPlaylists.push(playlistUtils.createAllPerformerPlaylist(performersWithSongs));
 
       return Promise.all([
         devPerformer.batchPut(performersWithSongs),
-        devPlaylist.batchPut(playlistsWithArtists),
+        devPlaylist.batchPut(allPlaylists),
       ]);
     })
     .then(() => {
       callback(null, 'SUCCESS');
     })
     .catch((error) => {
-      console.error(`ERROR: An error occured while transforming etl-song to dev-song. ${JSON.stringify(error)}`);
+      console.error(`ERROR: An error occurred. ${JSON.stringify(error)}`);
       callback(error);
     });
 };

@@ -8,17 +8,20 @@ require 'aws-sdk'
 require 'id3tag'
 require 'mini_magick'
 require_relative 'song_overrides'
-
+require 'cgi'
 class Performer
   attr_accessor :code
   attr_accessor :bio
   attr_accessor :forts
+  attr_accessor :tags
   attr_accessor :home_town
   attr_accessor :name
   attr_accessor :wave
   attr_accessor :tier
   attr_accessor :sort_order_within_tier
   attr_accessor :genres
+  attr_accessor :class_title
+  attr_accessor :class_summary
 
   # URLs to our CDN in S3
   attr_accessor :image_url
@@ -43,6 +46,7 @@ class Performer
 
   def initialize
     @forts = []
+    @tags = []
     @genres = []
   end
 
@@ -53,6 +57,7 @@ class Performer
       id: code, # junger wanted this too, same as code
       bio: bio,
       forts: forts,
+      tags: tags,
       home_town: home_town,
       genres: genres,
       wave: wave,
@@ -64,6 +69,9 @@ class Performer
       image_app_url: image_app_url,
       song_url: song_url,
       orig_song_name: orig_song_name,
+
+      class_title: class_title,
+      class_summary: class_summary,
 
       music_url: music_url,
       video_url: video_url,
@@ -86,10 +94,14 @@ class ParseSubmittable
   IMAGE_BUCKET_URL = "https://s3-us-west-2.amazonaws.com/#{IMAGE_BUCKET_NAME}/".freeze
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
 
-  IMAGE_FORM_IDS = [784411,685181, 748881, 693367].freeze      # different forms in Treefort/Hacfort/Comedyfort. Grrr
-  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157].freeze # different forms in Treefort/Hacfort/Comedyfort. Grrr
+  # different forms in Treefort/Hackfort/Comedyfort. Grrr
+  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838, 862943, 884097, 912075, 912732, 794773, 685249].freeze
+  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156].freeze
 
   ENVIRONMENTS = %w(etl dev).freeze
+  LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
+  # change this to your path to check in images to app-fort too
+  # LOCAL_IMAGE_SRC_PATH = '/tmp/'.freeze
 
   def run
     @opts = Trollop.options do
@@ -113,8 +125,12 @@ class ParseSubmittable
       opt :overwrite, 'Write data to AWS DynamoDB and files to S3. Write files EVEN IF they already exist in S3'
       opt :performer, 'just do this named performer',
           type: :string
+      opt :start_page, 'start at this submittable page',
+          type: :integer, default: 1
 
+      conflicts :start_page, :performer
     end
+
     Trollop.die 'Invalid environment' unless ENVIRONMENTS.include?(@opts[:environment])
 
     puts "----- Starting: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}"
@@ -134,11 +150,11 @@ class ParseSubmittable
     year_categories = categories['items'].select { |cat| cat['name'].include?('2017') }
     year_filter = year_categories.collect { |cat| "&category_id=#{cat['category_id']}" }.join
 
-    result_page = 1
+    result_page = @opts[:start_page]
     page_size = @opts[:debug] ? 20 : 200
     ready_to_begin = @opts[:performer].nil?
 
-    unless @opts[:performer]
+    unless @opts[:performer] || @opts[:start_page] > 1
       puts 'Clearing DynamoDB table'
 
       begin
@@ -175,19 +191,26 @@ class ParseSubmittable
 
     puts 'Searching submittable for performers meeting your criteria'
     loop do
-      response = CurbFu.get(HOST + "/v1/submissions?count=#{page_size}&page=#{result_page}#{year_filter}")
+      if @opts[:performer]
+        esc_performer = CGI.escape(@opts[:performer])
+        response = CurbFu.get(HOST + "/v1/submissions?count=#{page_size}&search=#{esc_performer}#{year_filter}")
+      else
+        response = CurbFu.get(HOST + "/v1/submissions?count=#{page_size}&page=#{result_page}#{year_filter}")
+      end
       submissions = JSON.parse(response.body)
       page_count = submissions['total_pages']
       page_count = [2, page_count].min if @opts[:debug]
+      puts "Page #{result_page} of #{page_count} from submittable"
 
       submissions['items'].each do |submission|
         # filter by label
-        if submission['labels'].nil?
-          labels = []
-        else
+        labels = []
+        if !submission['labels'].nil?
           label_items = submission['labels']['items']
-          labels = label_items.collect { |label| "#{label['label_text']}" }
-          labels = labels.map(&:downcase) # so we can call "include" in a case-insensitive way
+          if !label_items.nil?
+            labels = label_items.collect { |label| "#{label['label_text']}" }
+            labels = labels.map(&:downcase) # so we can call "include" in a case-insensitive way
+          end
         end
 
         # if not debugging, pick the "real" artists
@@ -198,7 +221,8 @@ class ParseSubmittable
             labels.include?("alefort#{YEAR}") ||
             labels.include?("comedyfort#{YEAR}") ||
             labels.include?("filmfort#{YEAR}") ||
-            labels.include?("foodfort#{YEAR}") ||
+            labels.include?("foodforttastes#{YEAR}") ||
+            labels.include?("foodforttalks#{YEAR}") ||
             labels.include?("gallery#{YEAR}") ||
             labels.include?("hackfort#{YEAR}") ||
             labels.include?("kidfort#{YEAR}") ||
@@ -236,6 +260,17 @@ class ParseSubmittable
         p.forts << 'Storyfort'      if labels.include?("storyfort#{YEAR}")
         p.forts << 'Yogafort'       if labels.include?("yogafort#{YEAR}")
 
+        p.forts << 'Filmfortfeature' if labels.include?("featurefilm")
+        p.forts << 'Filmfortshort'  if labels.include?("shortfilm")
+        p.forts << 'Foodforttastes' if labels.include?("foodforttastes#{YEAR}")
+        p.forts << 'Foodforttalks'  if labels.include?("foodforttalks#{YEAR}")
+        p.forts << 'YogafortArtist' if labels.include?("yogafort #{YEAR} artist")
+        p.forts << 'YogafortInstructor' if labels.include?("yogafort #{YEAR} instructor")
+
+        if labels.include?('canada')
+          p.tags << 'Canada'
+        end
+
         if labels.include?("1st announce (#{YEAR})")
           p.wave = 1
         elsif labels.include?("2nd announce (#{YEAR})")
@@ -269,6 +304,31 @@ class ParseSubmittable
           # Hackfort
           p.bio                  = submission_form_field(submission, 'Please provide a brief description or bio of yourself. This can include previous projects, skills or accomplishments related to your field. ')
         end
+        if p.bio.nil?
+          # Yogafort
+          p.bio                  = submission_form_field(submission, 'Instructor Biography ')
+        end
+        if p.bio.nil?
+          # Storyfort
+          p.bio                  = submission_form_field(submission, 'Writer Bio')
+        end
+        if p.bio.nil?
+          # Filmfort
+          p.bio                  = submission_form_field(submission, 'Synopsis')
+        end
+        if p.bio.nil?
+          # Foodfort
+          p.bio = submission_form_field(submission, 'CHEF NAME')
+          add = submission_form_field(submission, 'DISH 1 NAME AND DESCRIPTION')
+          p.bio = p.bio + "\n\n" + add unless add.nil?
+          add = submission_form_field(submission, 'DISH 2 NAME AND DESCRIPTION')
+          p.bio = p.bio + "\n" + add unless add.nil?
+          add = submission_form_field(submission, 'FEATURED FARM PRODUCER 1')
+          p.bio = p.bio + "\n\n" + add unless add.nil?
+          add = submission_form_field(submission, 'FEATURED FARM PRODUCER 2')
+          p.bio = p.bio + "\n" + add unless add.nil?
+        end
+
         p.genres                 = submission_form_field(submission, 'Genre')
         p.genres = p.genres.split(',') unless p.genres.nil?
         p.music_url              = submission_form_field(submission, 'Music')
@@ -285,11 +345,15 @@ class ParseSubmittable
           p.sort_order_within_tier = p.sort_order_within_tier.to_i
         end
 
+        p.class_title   = submission_form_field(submission, 'Class Title')
+        p.class_summary = submission_form_field(submission, 'Short Class Summary')
+
         if submission['files']
           images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }
           images_app = submission['files'].select { |file| IMAGE_APP_FORM_IDS.include?(file['form_field_id']) }
-          songs  = submission['files'].select     { |file| file['mime_type'].start_with?('audio/mp3') ||
-                                                           file['mime_type'].start_with?('audio/mpeg')}
+          songs  = submission['files'].select     { |file| file['mime_type'] && (
+                                                           file['mime_type'].start_with?('audio/mp3') ||
+                                                           file['mime_type'].start_with?('audio/mpeg'))}
 
           puts "Warning: #{images.count} images for #{p.name}. Using first one." if images.count > 1
           puts "Warning: No images for #{p.name}." if images.count == 0
@@ -336,9 +400,15 @@ class ParseSubmittable
 
   def submission_form_field(submission, field_name)
     ret = nil
-    item = submission['form']['items'].find { |item| item['label'] == field_name }
-    ret = item['data'] unless item.nil?
-    ret = (ret == '') ? nil : ret
+    if submission['form']['items']
+      item = submission['form']['items'].find { |item|
+        unless item['label'].nil?
+          item['label'].strip.downcase == field_name.strip.downcase
+        end
+      }
+      ret = item['data'] unless item.nil?
+      ret = (ret == '') ? nil : ret
+    end
     ret
   end
 
@@ -367,7 +437,7 @@ class ParseSubmittable
             puts "Couldn't download image for performer #{p.name}: #{p.orig_image_url}"
           end
         end
-      rescue Aws::S3::Errors::ServiceError => error
+      rescue => error
         puts 'Unable to add image'
         puts "#{error.message}"
       end
@@ -382,21 +452,21 @@ class ParseSubmittable
           response = CurbFu.get(p.orig_image_url)
           if response.status == 200
 
-            File.open("/tmp/#{bucket_key}", 'wb') do |f|
+            File.open("#{LOCAL_IMAGE_SRC_PATH}#{bucket_key}", 'wb') do |f|
               f.binmode
               f.write response.body
               f.close
             end
 
             # resize it
-            image = MiniMagick::Image.new("/tmp/#{bucket_key}")
+            image = MiniMagick::Image.new("#{LOCAL_IMAGE_SRC_PATH}#{bucket_key}")
             image.resize '400' # 400 wide, as much height as needed to preserve aspect ratio
 
             puts "Writing medium image to S3 for performer #{p.name}: #{bucket_key}"
-            image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
+            image_bucket.object(bucket_key).upload_file("#{LOCAL_IMAGE_SRC_PATH}#{bucket_key}")
           end
         end
-      rescue Aws::S3::Errors::ServiceError => error
+      rescue => error
         puts 'Unable to add image'
         puts "#{error.message}"
       end
@@ -420,7 +490,7 @@ class ParseSubmittable
             puts "Writing app image to S3 for performer #{p.name}: #{bucket_key}"
             image_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
           end
-        rescue Aws::S3::Errors::ServiceError => error
+        rescue => error
           puts 'Unable to add image'
           puts "#{error.message}"
         end
@@ -447,6 +517,9 @@ class ParseSubmittable
             song_bucket.object(bucket_key).upload_file("/tmp/#{bucket_key}")
           rescue Aws::S3::Errors::ServiceError => error
             puts 'Unable to add song'
+            puts "#{error.message}"
+          rescue => error
+            puts 'Unable to add song; Other error'
             puts "#{error.message}"
           end
 
@@ -480,7 +553,7 @@ class ParseSubmittable
 
             image_filename = "#{p.code}-albumart.jpg"
             song[:album_art] = IMAGE_BUCKET_URL + image_filename
-            image_full_path = "/tmp/albumart/#{image_filename}"
+            image_full_path = "/tmp/#{image_filename}"
             File.open(image_full_path, 'wb') do |f|
               f.binmode
               f.write content

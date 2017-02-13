@@ -1,6 +1,7 @@
 'use strict';
 
 const dynamoPromiseFactory = require('../../lib/dynamo-promise');
+const _ = require('lodash');
 
 class PlaylistController {
   /**
@@ -29,7 +30,8 @@ class PlaylistController {
       .scan();
     }
 
-    return promise;
+    return promise
+      .then(getResponse => _.sortBy(getResponse, 'order'));
   }
 }
 

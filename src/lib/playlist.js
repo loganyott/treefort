@@ -2,9 +2,10 @@
 
 class Playlist {
   constructor(config) {
-    this.id = config.id || null;
+    this.id = config.id;
     this.name = config.name;
     this.songs = config.songs || [];
+    this.order = config.order;
   }
 }
 

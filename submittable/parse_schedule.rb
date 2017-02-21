@@ -22,11 +22,14 @@ class ParseSchedule
 
   SCHEDULE_COLS =
       ['Primary Performer', '2nd Performer', '3rd Performer', '4th Performer', '5th Performer',
+       '6th Performer', '7th Performer', '8th Performer',
        'Primary Fort', '2nd Fort', 'Event Identifier',
        'Event Name', 'Date', 'Start Time', 'End Time', 'Venue', 'Description',
        'Kidfort Approved', 'Cancelled', 'All Ages',
        'Event ID',
-       'Primary Performer ID', '2nd Performer ID', '3rd Performer ID', '4th Performer ID', '5th Performer ID']
+       'Primary Performer ID', '2nd Performer ID', '3rd Performer ID', '4th Performer ID', '5th Performer ID',
+       '6th Performer ID', '7th Performer ID', '8th Performer ID',
+       ]
 
   VENUE_COLS = ['Name', 'Street', 'City', 'State', 'Zip', 'Extra Info'].freeze
 
@@ -45,8 +48,8 @@ class ParseSchedule
       opt :environment, "Where to write the data. Possible values: #{ENVIRONMENTS.join(', ')}",
           type: :string,
           default: ENVIRONMENTS.first
-      opt :performer, 'just do this named performer',
-          type: :string
+      opt :sheets, 'just do these named sheets',
+          type: :strings
 
     end
 
@@ -72,7 +75,16 @@ class ParseSchedule
 
     # title = 'Day Example'
     # day_offset = 0
-    sheets = (@opts[:environment] == PROD_ENVIRONMENT) ? PROD_SHEETS : DEV_SHEETS
+    event_count = 0
+    skipped_count = 0
+    dupe_event_count = 0
+
+    # sheets = (@opts[:environment] == PROD_ENVIRONMENT) ? PROD_SHEETS : DEV_SHEETS
+    sheets = PROD_SHEETS
+    if @opts[:sheets]
+      sheets &= @opts[:sheets]
+    end
+
     sheets.each do |title|
       puts "Processing sheet '#{title}'"
       ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title(title)
@@ -86,22 +98,31 @@ class ParseSchedule
         next if ws[row, 1] == ''
 
         e = {}
-        e[:id] = ws[row, get_col('Event ID')]
-
-        if event_ids.include?(e[:id])
-          puts "Warning: Duplicate event IDs: #{e[:id]} row #{row} - fill in the Event Identifier column"
-          next
-        else
-          event_ids.add(e[:id])
-        end
-
         e[:performers] = []
         e[:performers] << get_performer(ws, row, 'Primary ')
         e[:performers] << get_performer(ws, row, '2nd ')
         e[:performers] << get_performer(ws, row, '3rd ')
         e[:performers] << get_performer(ws, row, '4th ')
-        e[:performers] << get_performer(ws, row, '5th ')
+        e[:performers] << get_performer(ws, row, '6th ')
+        e[:performers] << get_performer(ws, row, '7th ')
+        e[:performers] << get_performer(ws, row, '8th ')
         e[:performers] = e[:performers].compact
+
+        if e[:performers].count == 0
+          puts "Skipping unknown primary performer '#{ws[row, get_col('Primary Performer')]}'"
+          skipped_count += 1
+          next
+        end
+
+        e[:id] = ws[row, get_col('Event ID')]
+
+        if event_ids.include?(e[:id])
+          puts "Warning: Duplicate event IDs row #{row} ID: #{e[:id]} - fill in the Event Identifier column"
+          dupe_event_count += 1
+          next
+        else
+          event_ids.add(e[:id])
+        end
 
         e[:forts] = []
         e[:forts] << get_fort(ws, row, 'Primary ')
@@ -109,12 +130,13 @@ class ParseSchedule
         e[:forts] = e[:forts].compact
 
         e[:name] = ws[row, get_col('Event Name')]
-        e[:name] = e[:performers][0][:name] if e[:name] == ''
+        e[:name] = e[:performers][0][:name]
 
         # Recommended here to store DynamoDb datetime values in ISO 8601 string format
         # http://stackoverflow.com/questions/40905056/what-is-the-best-way-to-store-time-in-dynamodb-when-accuracy-is-important
-        e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time').iso8601
-        e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time').iso8601
+        # but foster wants them without time zones so formatting as he requested
+        e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time').strftime("%Y-%m-%eT%H:%M")
+        e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time').strftime("%Y-%m-%eT%H:%M")
         venue                 = get_required_string(ws, row, 'Venue')
         e[:venue]             = venues.find{ |value|
             value['name'] == venue
@@ -131,12 +153,14 @@ class ParseSchedule
         begin
           puts "Writing event: #{e[:name]}"
           @db.put_item({ table_name: "#{@opts[:environment]}-event", item: e})
+          event_count += 1
         rescue  Aws::DynamoDB::Errors::ServiceError => error
           puts 'Unable to add item'
           puts "#{error.message}"
         end
       end
     end
+    puts "- #{event_count} events added, #{dupe_event_count} dupe events, #{skipped_count} unknown performers skipped."
   end
 
   # check to make sure the worksheet is in the expected format
@@ -181,10 +205,13 @@ class ParseSchedule
     time_string = ws[row, get_col(time_col)]
 
     full_string = "#{date_string} #{time_string} -0700"
-    Time.strptime(full_string, "%m/%e/%Y %H:%M %z")
-    # Time.strptime(full_string, '%e/%m/%Y %H:%M')
+    event_time = Time.strptime(full_string, "%m/%e/%Y %H:%M %z")
 
-    # after_midnight = (event_time.hour < 6)
+    # hack if before 6 am assume next day after midnight
+    if event_time.hour < 6
+      event_time = event_time + (24*60*60)
+    end
+    event_time
 
   end
 

@@ -125,6 +125,7 @@ class ParseSubmittable
       opt :overwrite, 'Write data to AWS DynamoDB and files to S3. Write files EVEN IF they already exist in S3'
       opt :performer, 'just do this named performer',
           type: :string
+      opt :delete_all_first, 'clear out before starting', short: 'x'
       opt :start_page, 'start at this submittable page',
           type: :integer, default: 1
 
@@ -154,7 +155,7 @@ class ParseSubmittable
     page_size = @opts[:debug] ? 20 : 200
     ready_to_begin = @opts[:performer].nil?
 
-    unless @opts[:performer] || @opts[:start_page] > 1
+    if @opts[:delete_all_first]
       puts 'Clearing DynamoDB table'
 
       begin

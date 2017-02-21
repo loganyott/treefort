@@ -1,12 +1,13 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const Promise = require('bluebird');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 const dynamoPromise = require('./lib/dynamo-promise')(dynamo);
+const _ = require('lodash');
+const Promise = require('bluebird');
+const transformPlaylist = require('./lib/transform-playlist').transform;
 const transformPerformer = require('./lib/transform-performer').transform;
 const transformSong = require('./lib/transform-song').transform;
-const transformPlaylist = require('./lib/transform-playlist').transform;
 
 console.log('Completed requires');
 
@@ -22,6 +23,7 @@ exports.handler = (event, context, callback) => {
     etlSongTable.scan(),
     etlPerformerTable.scan(),
     etlPlaylist.scan(),
+    devPerformer.scan(),
   ])
     .then((scanResponses) => {
       /**
@@ -32,6 +34,10 @@ exports.handler = (event, context, callback) => {
       const allETLSongs = scanResponses[0];
       const allETLPerformers = scanResponses[1];
       const allETLPlaylists = scanResponses[2];
+      const allDevPerformers = scanResponses[3];
+
+      const devSoftDeletedPerformers = _.differenceBy(allDevPerformers, allETLPerformers, 'id')
+        .map(performer => Object.assign({}, performer, { wave: 99999 }));
 
       const transformedSongs = transformSong(allETLPerformers, allETLSongs);
       const performersWithSongs = transformPerformer(allETLPerformers, transformedSongs);
@@ -40,6 +46,7 @@ exports.handler = (event, context, callback) => {
       return Promise.all([
         devPerformer.batchPut(performersWithSongs),
         devPlaylist.batchPut(playlistsWithArtists),
+        devPerformer.batchPut(devSoftDeletedPerformers),
       ]);
     })
     .then(() => {

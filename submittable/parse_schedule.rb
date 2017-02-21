@@ -64,7 +64,8 @@ class ParseSchedule
 
     # See this document to learn how to create config.json:
     # https://github.com/gimite/google-drive-ruby/blob/master/doc/authorization.md
-    session = GoogleDrive::Session.from_service_account_key('Treefort Events 2017-d9872630951c.json')
+    keyfile = File.dirname(__FILE__) + '/Treefort Events 2017-d9872630951c.json'
+    session = GoogleDrive::Session.from_service_account_key(keyfile)
     ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title('Venues')
     venues = sheet_to_json(ws, VENUE_COLS)
 
@@ -135,8 +136,8 @@ class ParseSchedule
         # Recommended here to store DynamoDb datetime values in ISO 8601 string format
         # http://stackoverflow.com/questions/40905056/what-is-the-best-way-to-store-time-in-dynamodb-when-accuracy-is-important
         # but foster wants them without time zones so formatting as he requested
-        e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time').strftime("%Y-%m-%eT%H:%M")
-        e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time').strftime("%Y-%m-%eT%H:%M")
+        e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time')
+        e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time')
         venue                 = get_required_string(ws, row, 'Venue')
         e[:venue]             = venues.find{ |value|
             value['name'] == venue
@@ -205,13 +206,18 @@ class ParseSchedule
     time_string = ws[row, get_col(time_col)]
 
     full_string = "#{date_string} #{time_string} -0700"
-    event_time = Time.strptime(full_string, "%m/%e/%Y %H:%M %z")
+    begin
+      event_time = Time.strptime(full_string, "%m/%e/%Y %H:%M %z")
+    rescue Exception => e
+      puts "Invalid time format row: #{row}\t#{date_string}\t#{time_string}"
+      return nil
+    end
 
     # hack if before 6 am assume next day after midnight
     if event_time.hour < 6
       event_time = event_time + (24*60*60)
     end
-    event_time
+    event_time.strftime("%Y-%m-%eT%H:%M")
 
   end
 

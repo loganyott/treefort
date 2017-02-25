@@ -3,6 +3,39 @@
 const dynamoPromiseFactory = require('../../lib/dynamo-promise');
 const _ = require('lodash');
 
+const restrictedKeys = [
+  'id',
+  'updated',
+];
+
+const convertPropertyToDynamo = propertyString => `:${propertyString}`;
+const createSetStatement = propertyString => `${propertyString} = ${convertPropertyToDynamo(propertyString)}`;
+
+const createDynamoPatchQuery = (primaryKeys, propertiesToUpdate) => {
+  const keysToUpdate = _.keys(propertiesToUpdate)
+    .filter((keyName) => {
+      return !_.includes(restrictedKeys, keyName);
+    });
+
+  const expressionAttributeValues = _.reduce(keysToUpdate, (result, objectKey) => {
+    result[convertPropertyToDynamo(objectKey)] = propertiesToUpdate[objectKey];
+    return result;
+  }, {});
+
+  const updateExpressionSetStatements = keysToUpdate.map(key => createSetStatement(key));
+  const updateExpression = `set ${updateExpressionSetStatements.join(', ')}`;
+
+  const dynamoUpdateQuery = {
+    Key: primaryKeys,
+    UpdateExpression: updateExpression,
+    ExpressionAttributeValues: expressionAttributeValues,
+  };
+
+  return dynamoUpdateQuery;
+};
+
+// console.log(createDynamoPatchQuery({id: 420}, { lineTag: 'foo'}));
+
 class LineController {
   /**
    * @param dynamo A connection to dynamo db.
@@ -19,18 +52,25 @@ class LineController {
     this.LineTable = dynamoPromise.table(`${dbStage}-line`);
   }
 
-  get(LineId) {
+  update(id, newProperties) {
+    const query = createDynamoPatchQuery({ 'id': id }, newProperties);
+    const promise = this.LineTable.patch(query);
+
+    return promise;
+  }
+
+  get(lineId) {
     let promise;
 
-    if (LineId) {
+    if (lineId) {
       promise = this.LineTable
-        .get(LineId);
+        .get(lineId);
     } else {
       promise = this.LineTable
         .scan();
     }
 
-    return promise.then(getResponse => _.sortBy(getResponse, 'order'));
+    return promise;
   }
 }
 

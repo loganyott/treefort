@@ -13,11 +13,9 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = (event, context, callback) => {
   console.log('Received line:', JSON.stringify(event, null, 2));
-  const lineController = new LineController(
-    dynamo,
-    event.stageVariables.db_stage,
-    event.stageVariables.current_wave
-  );
+
+  // eslint-disable-next-line
+  const lineController = new LineController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
   const done = response(callback);
 
   let pathParameters = null;
@@ -34,6 +32,19 @@ exports.handler = (event, context, callback) => {
         .catch(error => done(error));
 
       break;
+    case 'PATCH': {
+      if (event.pathParameters && event.pathParameters.lineId) {
+        pathParameters = event.pathParameters.lineId;
+      }
+      const body = JSON.parse(event.body);
+
+      lineController
+        .update(event.pathParameters.lineId, body)
+        .then(getResponse => done(null, getResponse))
+        .catch(error => done(error));
+
+      break;
+    }
     default:
       done(new Error(`Unsupported method "${event.httpMethod}"`));
       break;

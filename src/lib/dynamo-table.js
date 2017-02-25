@@ -8,6 +8,21 @@ class DynamoTable {
     this.tableName = tableName;
   }
 
+  patch(query) {
+    const params = Object.assign({ }, { TableName: this.tableName, ReturnValues: "UPDATED_NEW" }, query);
+
+    return new Promise((resolve, reject) => {
+      this.dynamo
+        .update(params,(patchError, patchResponse) => {
+          if (patchError) {
+            reject(patchError);
+          } else {
+            resolve(patchResponse.Item);
+          }
+        });
+    });
+  }
+
   batchPut(items) {
     const batchPutPromises = items.map(item => this.put(item));
 

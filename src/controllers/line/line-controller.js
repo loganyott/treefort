@@ -16,7 +16,7 @@ class LineController {
       throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
     }
 
-    this.LineTable = dynamoPromise.table(`${dbStage}-Line`);
+    this.LineTable = dynamoPromise.table(`${dbStage}-line`);
   }
 
   get(LineId) {

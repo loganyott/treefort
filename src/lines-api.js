@@ -12,7 +12,7 @@ console.log('Requires completed');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = (event, context, callback) => {
-  console.log('Received line:', JSON.stringify(line, null, 2));
+  console.log('Received line:', JSON.stringify(event, null, 2));
   const lineController = new LineController(
     dynamo,
     event.stageVariables.db_stage,

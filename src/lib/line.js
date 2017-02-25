@@ -7,7 +7,7 @@
 class Line {
   constructor(config) {
     this.id = config.id;
-    this.venuId = config.venueId;
+    this.venueId = config.venueId;
     this.lineTag = config.lineTag;
     this.updated = config.updated;
   }

@@ -21,7 +21,12 @@
     var startApp = function startTreefortApp()
     {
       var artistUrl = window.location.hash.substring(1);
+
+      // build a URL like this "treefort:/2017-6561513" to launch the app
+      // NOTE: this currently only supports artist links
       document.location = 'treefort:/' + artistUrl;
+
+      // If previous link didn't work then just go to the TF website in 3s
       setTimeout(function()
       {
         // build a URL like this 'https://www.treefortmusicfest.com/lineup/#2017-6561513
@@ -30,7 +35,7 @@
       }, 3000);
     };
     // wire these both
-    // window.onload = startApp;
+    window.onload = startApp;
     window.onclick = startApp;
   </script>
 </head>

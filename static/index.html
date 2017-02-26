@@ -20,18 +20,18 @@
 
     var startApp = function startTreefortApp()
     {
+      // for 2017 it is something like '2017-6561513'
       var artistUrl = window.location.hash.substring(1);
 
-      // build a URL like this "treefort:/2017-6561513" to launch the app
-      // NOTE: this currently only supports artist links
-      document.location = 'treefort:/' + artistUrl;
+      // build a URL like this 'treefort://2017-6561513' to launch the app
+      // NOTE: the app currently only supports artist links
+      document.location = 'treefort://' + artistUrl;
 
-      // If previous link didn't work then just go to the TF website in 3s
+      // default user to TF website in 3s (hopefully they are back in the app by now)
       setTimeout(function()
       {
         // build a URL like this 'https://www.treefortmusicfest.com/lineup/#2017-6561513
-        document.location = 'https://www.treefortmusicfest.com/lineup/#' +
-          artistUrl.replace('artist', 'lineup');
+        document.location = 'https://www.treefortmusicfest.com/lineup/#' + artistUrl;
       }, 3000);
     };
     // wire these both

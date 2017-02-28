@@ -50,6 +50,7 @@ class ParseSchedule
           default: ENVIRONMENTS.first
       opt :sheets, 'just do these named sheets',
           type: :strings
+      opt :delete_all_first, 'clear out before starting', short: 'x'
 
     end
 
@@ -74,11 +75,47 @@ class ParseSchedule
     Aws.config.update({region: 'us-west-2', profile:'Treefort'})
     @db = Aws::DynamoDB::Client.new
 
+    if @opts[:delete_all_first]
+      puts 'Clearing DynamoDB table'
+
+      begin
+        @db.delete_table( {table_name: "#{@opts[:environment]}-event"})
+      rescue Aws::DynamoDB::Errors::ResourceNotFoundException => error
+        puts 'Table does not exist to delete. Skipping'
+      end
+
+      begin
+        retries ||= 0
+        @db.create_table({table_name: "#{@opts[:environment]}-event",
+                          attribute_definitions: [
+                              {
+                                  attribute_name: 'id',
+                                  attribute_type: 'S'
+                              }
+                          ],
+                          key_schema: [{
+                                           attribute_name: 'id',
+                                           key_type: 'HASH'
+                                       }],
+                          provisioned_throughput:
+                              {
+                                  read_capacity_units: 100,
+                                  write_capacity_units: 25
+                              }
+                         })
+      rescue Aws::DynamoDB::Errors::ServiceError
+        puts "Not deleted yet. Try #{retries + 1}"
+        sleep 2 # seconds
+        retry if (retries += 1) < 10
+      end
+    end
+
     # title = 'Day Example'
     # day_offset = 0
     event_count = 0
     skipped_count = 0
     dupe_event_count = 0
+    bad_venues = []
 
     # sheets = (@opts[:environment] == PROD_ENVIRONMENT) ? PROD_SHEETS : DEV_SHEETS
     sheets = PROD_SHEETS
@@ -104,6 +141,7 @@ class ParseSchedule
         e[:performers] << get_performer(ws, row, '2nd ')
         e[:performers] << get_performer(ws, row, '3rd ')
         e[:performers] << get_performer(ws, row, '4th ')
+        e[:performers] << get_performer(ws, row, '5th ')
         e[:performers] << get_performer(ws, row, '6th ')
         e[:performers] << get_performer(ws, row, '7th ')
         e[:performers] << get_performer(ws, row, '8th ')
@@ -130,8 +168,8 @@ class ParseSchedule
         e[:forts] << get_fort(ws, row, '2nd ')
         e[:forts] = e[:forts].compact
 
-        e[:name] = ws[row, get_col('Event Name')]
-        e[:name] = e[:performers][0][:name]
+        e[:name] = get_optional_string(ws, row, 'Event Name')
+        e[:name] = e[:performers][0][:name] if e[:name].nil?
 
         # Recommended here to store DynamoDb datetime values in ISO 8601 string format
         # http://stackoverflow.com/questions/40905056/what-is-the-best-way-to-store-time-in-dynamodb-when-accuracy-is-important
@@ -142,7 +180,10 @@ class ParseSchedule
         e[:venue]             = venues.find{ |value|
             value['name'] == venue
         }
-        puts "Unknown venue: '#{venue}'" if e[:venue].nil?
+        if e[:venue].nil?
+          puts "Unknown venue: '#{venue}'"
+          bad_venues << "#{e[:forts][0]}: #{e[:name]}: #{venue}"
+        end
 
         # e[:venue][:image_url] = VENUE_IMAGE_BUCKET_URL + e[:venue][:Name] + '.jpg'
         e[:description]       = get_optional_string(ws, row, 'Description')
@@ -161,7 +202,10 @@ class ParseSchedule
         end
       end
     end
-    puts "- #{event_count} events added, #{dupe_event_count} dupe events, #{skipped_count} unknown performers skipped."
+    puts "- #{event_count} events added, #{dupe_event_count} dupe events, #{skipped_count} unknown performers skipped, #{bad_venues.count} bad venues."
+
+    puts "\nBad Venues:"
+    puts bad_venues
   end
 
   # check to make sure the worksheet is in the expected format

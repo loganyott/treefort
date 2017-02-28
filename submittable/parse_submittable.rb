@@ -146,6 +146,8 @@ class ParseSubmittable
     @s3 = Aws::S3::Resource.new
     @db = Aws::DynamoDB::Client.new
 
+    write_count = 0
+
     response = CurbFu.get(HOST + '/v1/categories')
     categories = JSON.parse(response.body)
     year_categories = categories['items'].select { |cat| cat['name'].include?('2017') }
@@ -387,6 +389,7 @@ class ParseSubmittable
 
         write_files(p)
         write_performer(p)
+        write_count += 1
 
         # stop doing stuff if only 1 performer
         unless @opts[:performer].nil?
@@ -397,6 +400,7 @@ class ParseSubmittable
       break if result_page > page_count
 
     end
+    puts "\n- #{write_count} performers written."
   end
 
   def submission_form_field(submission, field_name)

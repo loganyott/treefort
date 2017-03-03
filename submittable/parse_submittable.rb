@@ -95,8 +95,8 @@ class ParseSubmittable
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
 
   # different forms in Treefort/Hackfort/Comedyfort. Grrr
-  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838, 862943, 884097, 912075, 912732, 794773, 685249].freeze
-  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156].freeze
+  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838, 862943, 884097, 912075, 912732, 794773, 685249, 692837].freeze
+  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156, 842159].freeze
 
   ENVIRONMENTS = %w(etl dev).freeze
   LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
@@ -242,7 +242,7 @@ class ParseSubmittable
         p = Performer.new
         p.name = submission['title']
         p.code = "#{YEAR}-#{submission['submission_id']}"
-        puts "- #{p.code}   #{p.name}"
+        puts "\t#{p.code}\t#{p.name}"
 
         category = submission['category']['name'].strip # some have trailing spaces
         p.forts =
@@ -299,6 +299,10 @@ class ParseSubmittable
 
         p.home_town              = submission_form_field(submission, 'City, State')
         p.bio                    = submission_form_field(submission, 'Description')
+        if p.name == 'Fortcraft'
+          # submittable is returning old data!
+          p.bio = "New in 2017, Fortcraft is an open interactive building experience for kids and parents and anyone in between. Like a real world Minecraft you can use cardboard, tape, markers and chalk to build the fort of your dreams, add on to other forts, decorate existing structures or make something else entirely.\n\nThroughout the event, structures will be made, taken down and remade again into something new. There is no wrong way to Fortcraft.\n\nUnder the direction of Travis Olson, challenges will be suggested. Kids can choose to participate in them or ignore them completely. Examples: Connect Four Forts Challenge, Tall Fort Challenge, Robot Costume Challenge, Dinosaur Challenge."
+        end
         if p.bio.nil?
           # Comedyfort
           p.bio                  = submission_form_field(submission, 'Artist Bio')

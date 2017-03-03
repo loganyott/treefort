@@ -35,7 +35,7 @@ class ParseSchedule
 
   DEV_SHEETS = ['Example']
   PROD_SHEETS =['Treefort', 'Alefort', 'Comedyfort', 'Filmfort', 'Foodfort', 'Hackfort', 'Kidfort',
-                'Performance Art', 'Skatefort', 'Yogafort']
+                'Performance Art', 'Skatefort', 'Storyfort', 'Yogafort']
 
   def run
     @opts = Trollop.options do

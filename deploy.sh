@@ -18,30 +18,35 @@ cd src;
 zip -r ../etl.zip ./etl.js ./lib ../node_modules > /dev/null;
 cd ..;
 aws lambda update-function-code --function-name etl --zip-file fileb://etl.zip;
+aws lambda update-function-configuration --function-name etl --timeout 60 --memory-size 512
 
 echo "Deploying events-api lambda function";
 cd src;
 zip -r ../events-api.zip ./events-api.js ./lib ./controllers ../node_modules > /dev/null;
 cd ..;
 aws lambda update-function-code --function-name ${AWS_STAGE}-events-api --zip-file fileb://events-api.zip;
+aws lambda update-function-configuration --function-name ${AWS_STAGE}-events-api --timeout 3 --memory-size 512
 
 echo "Deploying lines-api lambda function";
 cd src
 zip -r ../lines-api.zip ./lines-api.js ./lib ./controllers ../node_modules > /dev/null
 cd ..
 aws lambda update-function-code --function-name ${AWS_STAGE}-lines-api --zip-file fileb://lines-api.zip;
+aws lambda update-function-configuration --function-name ${AWS_STAGE}-lines-api --timeout 3 --memory-size 512
 
 echo "Deploying performers-api lambda function";
 cd src;
 zip -r ../performers-api.zip ./performers-api.js ./lib ./controllers ../node_modules > /dev/null;
 cd ..;
 aws lambda update-function-code --function-name ${AWS_STAGE}-performers-api --zip-file fileb://performers-api.zip;
+aws lambda update-function-configuration --function-name ${AWS_STAGE}-performers-api --timeout 3 --memory-size 512
 
 echo "Deploying playlists-api lambda function";
 cd src
 zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../node_modules > /dev/null
 cd ..
 aws lambda update-function-code --function-name ${AWS_STAGE}-playlists-api --zip-file fileb://playlists-api.zip;
+aws lambda update-function-configuration --function-name ${AWS_STAGE}-playlists-api --timeout 3 --memory-size 512
 
 echo "Uploading apigateway definition";
 aws --region us-west-2 apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'

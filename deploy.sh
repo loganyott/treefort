@@ -47,6 +47,8 @@ echo "Uploading apigateway definition";
 aws --region us-west-2 apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'
 
 # create our actual API Gateway deployment
-
 echo "Deploying apigateway definition to stage: ${AWS_STAGE}";
 aws --region us-west-2 apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name ${AWS_STAGE} --description "${CIRCLE_SHA1}"
+
+echo "Deploying open.treefortlines.com static S3 website"
+aws --region us-west-2 s3 sync static s3://open.treefortlines.com

@@ -45,6 +45,16 @@ exports.handler = (event, context, callback) => {
 
       break;
     }
+    case 'POST': {
+      const body = JSON.parse(event.body);
+
+      lineController
+        .create(body)
+        .then(getResponse => done(null, getResponse))
+        .catch(error => done(error));
+
+      break;
+    }
     default:
       done(new Error(`Unsupported method "${event.httpMethod}"`));
       break;

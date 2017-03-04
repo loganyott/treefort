@@ -6,10 +6,10 @@
 
 class Line {
   constructor(config) {
-    this.id = config.id;
-    this.venueId = config.venueId;
-    this.lineTag = config.lineTag;
-    this.updated = config.updated;
+    this.id = config.id || '';
+    this.venueId = config.venueId || '';
+    this.lineTag = config.lineTag || '';
+    this.updated = config.updated || '';
   }
 }
 

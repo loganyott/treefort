@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# NOTE: we use a naming convention to determine which lambda function to use, see ${AWS_STAGE}
+
 # override these settings if you want to tweak the build
 CIRCLE_PROJECT_REPONAME=${CIRCLE_PROJECT_REPONAME:-'api-fort'}
 CIRCLE_BRANCH=${CIRCLE_BRANCH:-`git branch | grep \* | cut -d ' ' -f2`}
@@ -23,21 +25,24 @@ zip -r ../events-api.zip ./events-api.js ./lib ./controllers ../node_modules > /
 cd ..;
 aws lambda update-function-code --function-name ${AWS_STAGE}-events-api --zip-file fileb://events-api.zip;
 
-# deploy the performers lambda function to the desired stage
-# NOTE: we use a naming convention to determine which lambda function to use, see ${AWS_STAGE}
+echo "Deploying lines-api lambda function";
+cd src
+zip -r ../lines-api.zip ./lines-api.js ./lib ./controllers ../node_modules > /dev/null
+cd ..
+aws lambda update-function-code --function-name ${AWS_STAGE}-lines-api --zip-file fileb://lines-api.zip;
+
 echo "Deploying performers-api lambda function";
 cd src;
 zip -r ../performers-api.zip ./performers-api.js ./lib ./controllers ../node_modules > /dev/null;
 cd ..;
 aws lambda update-function-code --function-name ${AWS_STAGE}-performers-api --zip-file fileb://performers-api.zip;
 
-# deploy the playlists lambda function to the desired stage, see ${AWS_STAGE}
+echo "Deploying playlists-api lambda function";
 cd src
 zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../node_modules > /dev/null
 cd ..
 aws lambda update-function-code --function-name ${AWS_STAGE}-playlists-api --zip-file fileb://playlists-api.zip;
 
-# deploy our API Gateway definition
 echo "Uploading apigateway definition";
 aws --region us-west-2 apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'
 

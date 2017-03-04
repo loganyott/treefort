@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# bail and fail on any error from these commands
+set -e
+
 # NOTE: we use a naming convention to determine which lambda function to use, see ${AWS_STAGE}
 
 # override these settings if you want to tweak the build

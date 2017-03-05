@@ -258,9 +258,9 @@ class ParseSchedule
     end
 
     # hack if before 6 am assume next day after midnight
-    if event_time.hour < 6
-      event_time = event_time + (24*60*60)
-    end
+#     if event_time.hour < 6
+#       event_time = event_time + (24*60*60)
+#     end
     event_time.strftime("%Y-%m-%eT%H:%M")
 
   end

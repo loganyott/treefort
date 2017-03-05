@@ -10,7 +10,7 @@ const convertPropertyToDynamo = propertyString => `:${propertyString}`;
 const createSetStatement = propertyString => `${propertyString} = ${convertPropertyToDynamo(propertyString)}`;
 
 const createDynamoPatchQuery = (primaryKeys, _propertiesToUpdate) => {
-  const propertiesToUpdate = Object.assign({}, _propertiesToUpdate, { updated: moment.utc().format() });
+  const propertiesToUpdate = Object.assign({}, _propertiesToUpdate, { updated: moment.utc().format('YYYY-MM-DDThh:mm') });
 
   const keysToUpdate = _.keys(propertiesToUpdate)
     .filter((keyName) => {

@@ -23,7 +23,7 @@ class LineController {
   }
 
   create(lineObject) {
-    const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment.utc().format() });
+    const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment.utc().format('YYYY-MM-DDThh:mm') });
     const promise = this.lineTable.put(newLine);
 
     return promise;

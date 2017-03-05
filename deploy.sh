@@ -51,6 +51,13 @@ cd ..
 aws lambda update-function-code --function-name ${AWS_STAGE}-playlists-api --zip-file fileb://playlists-api.zip;
 aws lambda update-function-configuration --function-name ${AWS_STAGE}-playlists-api --timeout 3 --memory-size 512
 
+echo "Deploying ${AWS_STAGE}-schedules-api lambda function";
+cd src
+zip -r ../schedules-api.zip ./schedules-api.js ./lib ./controllers ../node_modules > /dev/null
+cd ..
+aws lambda update-function-code --function-name ${AWS_STAGE}-schedules-api --zip-file fileb://schedules-api.zip;
+aws lambda update-function-configuration --function-name ${AWS_STAGE}-schedules-api --timeout 3 --memory-size 512
+
 echo "Uploading apigateway definition";
 aws --region us-west-2 apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'
 

@@ -31,6 +31,32 @@ exports.handler = (event, context, callback) => {
         .catch(error => done(error));
 
       break;
+    case 'PATCH': {
+      if (event.pathParameters && event.pathParameters.playlistId) {
+        pathParameters = event.pathParameters.playlistId;
+      }
+      const body = JSON.parse(event.body);
+
+      playlistController
+        .update(event.pathParameters.playlistId, body)
+        .then(getResponse => done(null, getResponse))
+        .catch(error => done(error));
+
+      break;
+    }
+    case 'POST': {
+      const body = JSON.parse(event.body);
+
+      playlistController
+        .create(body)
+        .then((postResponse) => {
+          console.log(postResponse);
+          done(null, postResponse);
+        })
+        .catch(error => done(error));
+
+      break;
+    }
     default:
       done(new Error(`Unsupported method "${event.httpMethod}"`));
       break;

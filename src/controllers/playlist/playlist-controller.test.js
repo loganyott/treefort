@@ -40,4 +40,21 @@ describe('PlaylistController', function testPlaylistController() {
         });
     });
   });
+
+  describe('#post', function testGetWithId() {
+    it('Creates an object', function getPlaylistWithKey1(done) {
+      const playlistController = new PlaylistController(dynamo, dbStage, currentWave);
+      const newPlaylist = {
+        order: 9,
+        name: 'foobar',
+      };
+
+      playlistController.create(newPlaylist)
+        .then((result) => {
+          console.log(result);
+          done();
+        });
+    });
+  });
+
 });

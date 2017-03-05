@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 
 class DynamoTable {
+
   constructor(dynamoConnection, tableName) {
     this.dynamo = dynamoConnection;
     this.tableName = tableName;

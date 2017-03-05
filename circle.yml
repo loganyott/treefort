@@ -12,6 +12,6 @@ deployment:
     commands:
       - AWS_STAGE=prod ./deploy.sh
   staging:
-    branch: [develop, lineometer]
+    branch: develop
     commands:
       - AWS_STAGE=dev ./deploy.sh

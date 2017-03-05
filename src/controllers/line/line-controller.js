@@ -57,13 +57,10 @@ class LineController {
   }
 
   create(lineObject) {
-    console.log('in create before newLine');
     const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment.utc().format() });
-    console.log('in create ', newLine);
 
     const promise = this.LineTable.put(newLine);
 
-    console.log(promise);
 
     return promise;
   }

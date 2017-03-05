@@ -1,44 +1,10 @@
 'use strict';
 
-const dynamoPromiseFactory = require('../../lib/dynamo-promise');
-const _ = require('lodash');
 const uuidV1 = require('uuid/v1');
-const Line = require('../../lib/line');
 const moment = require('moment');
-
-const restrictedKeys = [
-  'id',
-];
-
-const convertPropertyToDynamo = propertyString => `:${propertyString}`;
-const createSetStatement = propertyString => `${propertyString} = ${convertPropertyToDynamo(propertyString)}`;
-
-const createDynamoPatchQuery = (primaryKeys, _propertiesToUpdate) => {
-  const propertiesToUpdate = Object.assign({}, _propertiesToUpdate, { updated: moment.utc().format() });
-
-  const keysToUpdate = _.keys(propertiesToUpdate)
-    .filter((keyName) => {
-      return !_.includes(restrictedKeys, keyName);
-    });
-
-  const expressionAttributeValues = _.reduce(keysToUpdate, (result, objectKey) => {
-    result[convertPropertyToDynamo(objectKey)] = propertiesToUpdate[objectKey];
-    return result;
-  }, {});
-
-  const updateExpressionSetStatements = keysToUpdate.map(key => createSetStatement(key));
-  const updateExpression = `set ${updateExpressionSetStatements.join(', ')}`;
-
-  const dynamoUpdateQuery = {
-    Key: primaryKeys,
-    UpdateExpression: updateExpression,
-    ExpressionAttributeValues: expressionAttributeValues,
-  };
-
-  return dynamoUpdateQuery;
-};
-
-// console.log(createDynamoPatchQuery({id: 420}, { lineTag: 'foo'}));
+const Line = require('../../lib/line');
+const createDynamoPatchQuery = require('../../lib/dynamo-query').createDynamoPatchQuery;
+const dynamoPromiseFactory = require('../../lib/dynamo-promise');
 
 class LineController {
   /**
@@ -53,21 +19,12 @@ class LineController {
       throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
     }
 
-    this.LineTable = dynamoPromise.table(`${dbStage}-line`);
+    this.lineTable = dynamoPromise.table(`${dbStage}-line`);
   }
 
   create(lineObject) {
     const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment.utc().format() });
-
-    const promise = this.LineTable.put(newLine);
-
-
-    return promise;
-  }
-
-  update(id, newProperties) {
-    const query = createDynamoPatchQuery({ id: id }, newProperties);
-    const promise = this.LineTable.patch(query);
+    const promise = this.lineTable.put(newLine);
 
     return promise;
   }
@@ -76,12 +33,19 @@ class LineController {
     let promise;
 
     if (lineId) {
-      promise = this.LineTable
+      promise = this.lineTable
         .get(lineId);
     } else {
-      promise = this.LineTable
+      promise = this.lineTable
         .scan();
     }
+
+    return promise;
+  }
+
+  update(id, newProperties) {
+    const query = createDynamoPatchQuery({ id: id }, newProperties);
+    const promise = this.lineTable.patch(query);
 
     return promise;
   }

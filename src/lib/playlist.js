@@ -5,7 +5,7 @@ class Playlist {
     this.id = config.id;
     this.name = config.name;
     this.songs = config.songs || [];
-    this.order = config.order;
+    this.order = config.order || 9;
   }
 }
 

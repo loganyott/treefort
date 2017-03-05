@@ -25,7 +25,7 @@ class PlaylistController {
   }
 
   create(playlistObject) {
-    const newPlaylist = Object.assign({ }, new Playlist(playlistObject), { id: uuidV1(), updated: moment.utc().format() });
+    const newPlaylist = Object.assign({ }, new Playlist(playlistObject), { id: uuidV1(), updated: moment.utc().format('YYYY-MM-DDThh:mm') });
     const promise = this.playlistTable.put(newPlaylist);
 
     return promise;

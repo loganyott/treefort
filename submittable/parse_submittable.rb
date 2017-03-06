@@ -242,7 +242,6 @@ class ParseSubmittable
         p = Performer.new
         p.name = submission['title']
         p.code = "#{YEAR}-#{submission['submission_id']}"
-        puts "\t#{p.code}\t#{p.name}"
 
         category = submission['category']['name'].strip # some have trailing spaces
         p.forts =
@@ -354,6 +353,8 @@ class ParseSubmittable
 
         p.class_title   = submission_form_field(submission, 'Class Title')
         p.class_summary = submission_form_field(submission, 'Short Class Summary')
+
+        puts "\t#{p.name}\t#{p.code}\t#{p.forts}\t#{p.home_town}"
 
         if submission['files']
           images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }

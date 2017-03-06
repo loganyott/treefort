@@ -303,7 +303,7 @@ class ParseSchedule
   def get_performer(ws, row, performers, prefix)
     p = {}
     p[:id]  = ws[row, get_col("#{prefix}Performer ID")]
-    p = nil if p[:id] == '#N/A'
+    p = nil if (p[:id] == '#N/A') || (p[:id] == '')
 
     unless p.nil?
       lookup = performers.find { |x| x['id'] == p[:id]}

@@ -32,6 +32,7 @@ class ParseSchedule
        ]
 
   VENUE_COLS = ['Name', 'Street', 'City', 'State', 'Zip', 'Extra Info'].freeze
+  PERFORMER_COLS = %w(name id forts home_town).freeze
 
   DEV_SHEETS = ['Example']
   PROD_SHEETS =['Treefort', 'Alefort', 'Comedyfort', 'Filmfort', 'Foodfort', 'Hackfort', 'Kidfort',
@@ -67,8 +68,16 @@ class ParseSchedule
     # https://github.com/gimite/google-drive-ruby/blob/master/doc/authorization.md
     keyfile = File.dirname(__FILE__) + '/Treefort Events 2017-d9872630951c.json'
     session = GoogleDrive::Session.from_service_account_key(keyfile)
+
     ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title('Venues')
     venues = sheet_to_json(ws, VENUE_COLS)
+
+    ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title('Performers')
+    performers = sheet_to_json(ws, PERFORMER_COLS)
+    performers.map! { |p|
+      p['forts'] = p['forts'].split(',') unless p['forts'].nil?
+      p
+    }
 
     # Using a "Treefort" AWS profile on my machine as described on
     # http://docs.aws.amazon.com/sdkforruby/api/index.html#Configuration
@@ -99,8 +108,8 @@ class ParseSchedule
                                        }],
                           provisioned_throughput:
                               {
-                                  read_capacity_units: 100,
-                                  write_capacity_units: 25
+                                  read_capacity_units: 50,
+                                  write_capacity_units: 15
                               }
                          })
       rescue Aws::DynamoDB::Errors::ServiceError
@@ -137,14 +146,14 @@ class ParseSchedule
 
         e = {}
         e[:performers] = []
-        e[:performers] << get_performer(ws, row, 'Primary ')
-        e[:performers] << get_performer(ws, row, '2nd ')
-        e[:performers] << get_performer(ws, row, '3rd ')
-        e[:performers] << get_performer(ws, row, '4th ')
-        e[:performers] << get_performer(ws, row, '5th ')
-        e[:performers] << get_performer(ws, row, '6th ')
-        e[:performers] << get_performer(ws, row, '7th ')
-        e[:performers] << get_performer(ws, row, '8th ')
+        e[:performers] << get_performer(ws, row, performers, 'Primary ')
+        e[:performers] << get_performer(ws, row, performers, '2nd ')
+        e[:performers] << get_performer(ws, row, performers, '3rd ')
+        e[:performers] << get_performer(ws, row, performers, '4th ')
+        e[:performers] << get_performer(ws, row, performers, '5th ')
+        e[:performers] << get_performer(ws, row, performers, '6th ')
+        e[:performers] << get_performer(ws, row, performers, '7th ')
+        e[:performers] << get_performer(ws, row, performers, '8th ')
         e[:performers] = e[:performers].compact
 
         if e[:performers].count == 0
@@ -257,10 +266,10 @@ class ParseSchedule
       return nil
     end
 
-    # hack if before 6 am assume next day after midnight
-#     if event_time.hour < 6
-#       event_time = event_time + (24*60*60)
-#     end
+    # # hack if before 6 am assume next day after midnight
+    # if event_time.hour < 6
+    #   event_time = event_time + (24*60*60)
+    # end
     event_time.strftime("%Y-%m-%eT%H:%M")
 
   end
@@ -291,11 +300,17 @@ class ParseSchedule
     end
   end
 
-  def get_performer(ws, row, prefix)
+  def get_performer(ws, row, performers, prefix)
     p = {}
     p[:id]  = ws[row, get_col("#{prefix}Performer ID")]
-    p[:name] = ws[row, get_col("#{prefix}Performer")]
     p = nil if p[:id] == '#N/A'
+
+    unless p.nil?
+      lookup = performers.find { |x| x['id'] == p[:id]}
+      p[:name] = lookup['name']
+      p[:home_town] = lookup['home_town']
+      p[:forts] = lookup['forts']
+    end
     p
   end
 

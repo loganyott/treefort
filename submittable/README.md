@@ -55,4 +55,4 @@ Steps from: https://www.phusionpassenger.com/library/walkthroughs/deploy/ruby/aw
     0 * * * * /home/ec2-user/submittable/parse_schedule.rb -e prod >> /var/log/ruby-etl/parse_schedule.log
 
     # run this command at 4 and 10, am and pm
-    0 4,10,16,22 * * * /home/submittable/parse_submittable.rb -a OTgwODRlMDMzZWM1NDEwNGExMTY1YTUwYzc5OWRhODU6 >> /var/log/ruby-etl/parse_submittable.log
+    0 4,10,16,22 * * * /home/ec2-user/submittable/parse_submittable.rb -a OTgwODRlMDMzZWM1NDEwNGExMTY1YTUwYzc5OWRhODU6 >> /var/log/ruby-etl/parse_submittable.log

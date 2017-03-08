@@ -1,17 +1,15 @@
 'use strict';
 
-const _ = require('lodash');
 const uuidV1 = require('uuid/v1');
 const moment = require('moment');
-const Playlist = require('../../lib/playlist');
+const Line = require('../../lib/line');
 const createDynamoPatchQuery = require('../../lib/dynamo-query').createDynamoPatchQuery;
 const dynamoPromiseFactory = require('../../lib/dynamo-promise');
 
-
-class PlaylistController {
+class LineController {
   /**
-  * @param dynamo A connection to dynamo db.
-  */
+   * @param dynamo A connection to dynamo db.
+   */
   constructor(dynamo, dbStage, currentWave) {
     const dynamoPromise = dynamoPromiseFactory(dynamo);
     console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
@@ -21,39 +19,38 @@ class PlaylistController {
       throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
     }
 
-    this.playlistTable = dynamoPromise.table(`${dbStage}-playlist`);
+    this.lineTable = dynamoPromise.table(`${dbStage}-line`);
   }
 
-  create(playlistObject) {
-    const newPlaylist = Object.assign({ }, new Playlist(playlistObject), { id: uuidV1(), updated: moment.utc().format('YYYY-MM-DDThh:mm') });
-    const promise = this.playlistTable.put(newPlaylist);
+  create(lineObject) {
+    const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment.utc().format('YYYY-MM-DDThh:mm') });
+    const promise = this.lineTable.put(newLine);
 
     return promise;
   }
 
-  get(playlistId) {
+  get(lineId) {
     let promise;
 
-    if (playlistId) {
-      promise = this.playlistTable
-        .get(playlistId);
+    if (lineId) {
+      promise = this.lineTable
+        .get(lineId);
     } else {
-      promise = this.playlistTable
-      .scan();
+      promise = this.lineTable
+        .scan();
     }
 
-    return promise
-      .then(getResponse => _.sortBy(getResponse, 'order'));
+    return promise;
   }
 
   update(id, newProperties) {
     const query = createDynamoPatchQuery({ id: id }, newProperties);
-    const promise = this.playlistTable.patch(query);
+    const promise = this.lineTable.patch(query);
 
     return promise;
   }
 }
 
 module.exports = {
-  PlaylistController,
+  LineController,
 };

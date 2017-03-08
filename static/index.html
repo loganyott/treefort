@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>open.treefortlines.com</title>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="css/main.css">
+  <script type="text/javascript">
+    // change to window.onload when we want this to be automatic
+
+    var startApp = function startTreefortApp() {
+      var path = window.location.hash.substring(1).replace('/share/', 'share/');
+
+      // build a URL to launch the app:
+      // 'treefort://2017-6561513'
+      // 'treefort://share/artist/2017-6561513'
+      // 'treefort://share/schedule/b85cfc60-043c-11e7-8d0e-9b0c11895cb5'
+      //
+      // NOTE: the app currently only supports artist/schedule links
+
+      document.location = 'treefort://' + path;
+
+      // default user to TF website in 3s (hopefully they are back in the app by now)
+      setTimeout(function()
+      {
+        // build a URL like this 'https://www.treefortmusicfest.com/lineup/#2017-6561513
+        // the second condition is to support the old way of sharing artists
+        // TODO: stop supporting old way after treefort 2017
+        if (path.includes('share/artist/') || !path.includes('share')) {
+          var artistId = path.replace('share/artist/', '');
+          document.location = 'https://www.treefortmusicfest.com/lineup/#' + artistId;
+        }
+
+        // handle schedule link
+        // TODO: support shared schedules on web
+        else if (path.includes('share/schedule/')) {
+          var scheduleId = path.replace('share/schedule/', '');
+          document.location = 'https://www.treefortmusicfest.com/schedule/';
+        }
+      }, 3000);
+    };
+    // wire these both
+    window.onload = startApp;
+    window.onclick = startApp;
+  </script>
+</head>
+<body>
+</body>
+</html>

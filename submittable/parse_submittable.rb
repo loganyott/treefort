@@ -95,8 +95,8 @@ class ParseSubmittable
   SONG_BUCKET_URL  = "https://s3-us-west-2.amazonaws.com/#{SONG_BUCKET_NAME}/".freeze
 
   # different forms in Treefort/Hackfort/Comedyfort. Grrr
-  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838, 862943, 884097, 912075, 912732, 794773, 685249].freeze
-  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156].freeze
+  IMAGE_FORM_IDS = [784411,685181, 748881, 693367, 740786, 740838, 862943, 884097, 912075, 912732, 794773, 685249, 692837].freeze
+  IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156, 842159].freeze
 
   ENVIRONMENTS = %w(etl dev).freeze
   LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
@@ -125,6 +125,7 @@ class ParseSubmittable
       opt :overwrite, 'Write data to AWS DynamoDB and files to S3. Write files EVEN IF they already exist in S3'
       opt :performer, 'just do this named performer',
           type: :string
+      opt :delete_all_first, 'clear out before starting', short: 'x'
       opt :start_page, 'start at this submittable page',
           type: :integer, default: 1
 
@@ -145,6 +146,8 @@ class ParseSubmittable
     @s3 = Aws::S3::Resource.new
     @db = Aws::DynamoDB::Client.new
 
+    write_count = 0
+
     response = CurbFu.get(HOST + '/v1/categories')
     categories = JSON.parse(response.body)
     year_categories = categories['items'].select { |cat| cat['name'].include?('2017') }
@@ -154,7 +157,7 @@ class ParseSubmittable
     page_size = @opts[:debug] ? 20 : 200
     ready_to_begin = @opts[:performer].nil?
 
-    unless @opts[:performer] || @opts[:start_page] > 1
+    if @opts[:delete_all_first]
       puts 'Clearing DynamoDB table'
 
       begin
@@ -239,7 +242,6 @@ class ParseSubmittable
         p = Performer.new
         p.name = submission['title']
         p.code = "#{YEAR}-#{submission['submission_id']}"
-        puts "- #{p.code}   #{p.name}"
 
         category = submission['category']['name'].strip # some have trailing spaces
         p.forts =
@@ -262,6 +264,7 @@ class ParseSubmittable
 
         p.forts << 'Filmfortfeature' if labels.include?("featurefilm")
         p.forts << 'Filmfortshort'  if labels.include?("shortfilm")
+        p.forts << 'Filmfortspecial' if labels.include?("special events")
         p.forts << 'Foodforttastes' if labels.include?("foodforttastes#{YEAR}")
         p.forts << 'Foodforttalks'  if labels.include?("foodforttalks#{YEAR}")
         p.forts << 'YogafortArtist' if labels.include?("yogafort #{YEAR} artist")
@@ -296,6 +299,12 @@ class ParseSubmittable
 
         p.home_town              = submission_form_field(submission, 'City, State')
         p.bio                    = submission_form_field(submission, 'Description')
+        if p.name == 'Fortcraft'
+          # submittable is returning old data!
+          p.bio = "New in 2017, Fortcraft is an open interactive building experience for kids and parents and anyone in between. Like a real world Minecraft you can use cardboard, tape, markers and chalk to build the fort of your dreams, add on to other forts, decorate existing structures or make something else entirely.\n\nThroughout the event, structures will be made, taken down and remade again into something new. There is no wrong way to Fortcraft.\n\nUnder the direction of Travis Olson, challenges will be suggested. Kids can choose to participate in them or ignore them completely. Examples: Connect Four Forts Challenge, Tall Fort Challenge, Robot Costume Challenge, Dinosaur Challenge."
+        elsif p.name == 'Michael Robinson'
+          p.bio = "For \"Rules Of The Game\", choreographer Jonah Bokaer, esteemed set designer Daniel Arsham, and the Grammy- winning musician Pharrell Williams join forces with producers and directors Ben Paluba and Michael Robinson . The result is a groundbreaking performance piece. \n\n“Skin In The Game” is a project that explores the process behind resetting, refining and presenting a dance performance and seeks to promote new avenues for audiences to be transported by the art of choreography and movement. Using new methods and technologies, including panoramic 360º video capture of the dancers in rehearsal, we are able to give viewers a never before seen position and perspective inside the dance, literally amongst the dancers, as they prepare work for the stage. \n\nThe inspiration for “Skin in the Game” was a shared vision of Virtual Reality as a truly collaborative intersection between choreographer, dancers, director, visual artist and technologist. The VR environment has great power to expand the creative potential for movement production, presentation, and duplication, as well as fostering interdisciplinary dialogue with artists and creators across the media landscape.\n\n__________________________________________\n\nSkin in the Game will show in the JUMP Pioneer Room lobby  from 11:30 am-12:45 pm on Friday, 11:00 am-12:30 pm Saturday, and 11:30am-1:00pm Sunday."
+        end
         if p.bio.nil?
           # Comedyfort
           p.bio                  = submission_form_field(submission, 'Artist Bio')
@@ -348,6 +357,8 @@ class ParseSubmittable
         p.class_title   = submission_form_field(submission, 'Class Title')
         p.class_summary = submission_form_field(submission, 'Short Class Summary')
 
+        puts "\t#{p.name}\t#{p.code}\t#{p.forts.join(',')}\t#{p.home_town}"
+
         if submission['files']
           images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }
           images_app = submission['files'].select { |file| IMAGE_APP_FORM_IDS.include?(file['form_field_id']) }
@@ -386,6 +397,7 @@ class ParseSubmittable
 
         write_files(p)
         write_performer(p)
+        write_count += 1
 
         # stop doing stuff if only 1 performer
         unless @opts[:performer].nil?
@@ -396,6 +408,9 @@ class ParseSubmittable
       break if result_page > page_count
 
     end
+    puts "\n- #{write_count} performers written."
+    puts "----- Ending: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}\n\n"
+
   end
 
   def submission_form_field(submission, field_name)

@@ -11,7 +11,10 @@ deployment:
     branch: master
     commands:
       - AWS_STAGE=prod ./deploy.sh
+      - scp submittable/* ec2-user@ec2-52-42-146-88.us-west-2.compute.amazonaws.com:~/submittable/
+      
   staging:
     branch: develop
     commands:
       - AWS_STAGE=dev ./deploy.sh
+      - scp submittable/* ec2-user@ec2-52-42-146-88.us-west-2.compute.amazonaws.com:~/submittable/

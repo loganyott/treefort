@@ -3,9 +3,26 @@
 const Promise = require('bluebird');
 
 class DynamoTable {
+
   constructor(dynamoConnection, tableName) {
     this.dynamo = dynamoConnection;
     this.tableName = tableName;
+  }
+
+  patch(query) {
+    const params = Object.assign({ }, { TableName: this.tableName, ReturnValues: 'ALL_NEW' }, query);
+
+    return new Promise((resolve, reject) => {
+      this.dynamo
+        .update(params, (patchError, patchResponse) => {
+          if (patchError) {
+            reject(patchError);
+          } else {
+            console.log('patchResponse ', JSON.stringify(patchResponse, null, 2));
+            resolve(patchResponse.Attributes);
+          }
+        });
+    });
   }
 
   batchPut(items) {
@@ -26,7 +43,9 @@ class DynamoTable {
           if (putError) {
             reject(putError);
           } else {
-            resolve(putResponse.Item);
+            // Since dynamodb doesn't support ReturnValues: 'ALL_NEW' return the newly created properties to the client
+            // manually
+            resolve(item);
           }
         });
     });

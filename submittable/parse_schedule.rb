@@ -22,17 +22,21 @@ class ParseSchedule
 
   SCHEDULE_COLS =
       ['Primary Performer', '2nd Performer', '3rd Performer', '4th Performer', '5th Performer',
+       '6th Performer', '7th Performer', '8th Performer',
        'Primary Fort', '2nd Fort', 'Event Identifier',
        'Event Name', 'Date', 'Start Time', 'End Time', 'Venue', 'Description',
        'Kidfort Approved', 'Cancelled', 'All Ages',
        'Event ID',
-       'Primary Performer ID', '2nd Performer ID', '3rd Performer ID', '4th Performer ID', '5th Performer ID']
+       'Primary Performer ID', '2nd Performer ID', '3rd Performer ID', '4th Performer ID', '5th Performer ID',
+       '6th Performer ID', '7th Performer ID', '8th Performer ID',
+       ]
 
   VENUE_COLS = ['Name', 'Street', 'City', 'State', 'Zip', 'Extra Info'].freeze
+  PERFORMER_COLS = %w(name id forts home_town).freeze
 
   DEV_SHEETS = ['Example']
   PROD_SHEETS =['Treefort', 'Alefort', 'Comedyfort', 'Filmfort', 'Foodfort', 'Hackfort', 'Kidfort',
-                'Performance Art', 'Skatefort', 'Yogafort']
+                'Performance Art', 'Skatefort', 'Storyfort', 'Yogafort']
 
   def run
     @opts = Trollop.options do
@@ -45,8 +49,9 @@ class ParseSchedule
       opt :environment, "Where to write the data. Possible values: #{ENVIRONMENTS.join(', ')}",
           type: :string,
           default: ENVIRONMENTS.first
-      opt :performer, 'just do this named performer',
-          type: :string
+      opt :sheets, 'just do these named sheets',
+          type: :strings
+      opt :delete_all_first, 'clear out before starting', short: 'x'
 
     end
 
@@ -61,18 +66,72 @@ class ParseSchedule
 
     # See this document to learn how to create config.json:
     # https://github.com/gimite/google-drive-ruby/blob/master/doc/authorization.md
-    session = GoogleDrive::Session.from_service_account_key('Treefort Events 2017-d9872630951c.json')
+    keyfile = File.dirname(__FILE__) + '/Treefort Events 2017-d9872630951c.json'
+    session = GoogleDrive::Session.from_service_account_key(keyfile)
+
     ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title('Venues')
     venues = sheet_to_json(ws, VENUE_COLS)
+
+    ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title('Performers')
+    performers = sheet_to_json(ws, PERFORMER_COLS)
+    performers.map! { |p|
+      p['forts'] = p['forts'].split(',') unless p['forts'].nil?
+      p
+    }
 
     # Using a "Treefort" AWS profile on my machine as described on
     # http://docs.aws.amazon.com/sdkforruby/api/index.html#Configuration
     Aws.config.update({region: 'us-west-2', profile:'Treefort'})
     @db = Aws::DynamoDB::Client.new
 
+    if @opts[:delete_all_first]
+      puts 'Clearing DynamoDB table'
+
+      begin
+        @db.delete_table( {table_name: "#{@opts[:environment]}-event"})
+      rescue Aws::DynamoDB::Errors::ResourceNotFoundException => error
+        puts 'Table does not exist to delete. Skipping'
+      end
+
+      begin
+        retries ||= 0
+        @db.create_table({table_name: "#{@opts[:environment]}-event",
+                          attribute_definitions: [
+                              {
+                                  attribute_name: 'id',
+                                  attribute_type: 'S'
+                              }
+                          ],
+                          key_schema: [{
+                                           attribute_name: 'id',
+                                           key_type: 'HASH'
+                                       }],
+                          provisioned_throughput:
+                              {
+                                  read_capacity_units: 50,
+                                  write_capacity_units: 15
+                              }
+                         })
+      rescue Aws::DynamoDB::Errors::ServiceError
+        puts "Not deleted yet. Try #{retries + 1}"
+        sleep 2 # seconds
+        retry if (retries += 1) < 10
+      end
+    end
+
     # title = 'Day Example'
     # day_offset = 0
-    sheets = (@opts[:environment] == PROD_ENVIRONMENT) ? PROD_SHEETS : DEV_SHEETS
+    event_count = 0
+    skipped_count = 0
+    dupe_event_count = 0
+    bad_venues = []
+
+    # sheets = (@opts[:environment] == PROD_ENVIRONMENT) ? PROD_SHEETS : DEV_SHEETS
+    sheets = PROD_SHEETS
+    if @opts[:sheets]
+      sheets &= @opts[:sheets]
+    end
+
     sheets.each do |title|
       puts "Processing sheet '#{title}'"
       ws = session.spreadsheet_by_key('1KcErm07C4Hf_wBk-rxSOa9b8-4mUChcDyBhjmPyCSGU').worksheet_by_title(title)
@@ -86,40 +145,54 @@ class ParseSchedule
         next if ws[row, 1] == ''
 
         e = {}
+        e[:performers] = []
+        e[:performers] << get_performer(ws, row, performers, 'Primary ')
+        e[:performers] << get_performer(ws, row, performers, '2nd ')
+        e[:performers] << get_performer(ws, row, performers, '3rd ')
+        e[:performers] << get_performer(ws, row, performers, '4th ')
+        e[:performers] << get_performer(ws, row, performers, '5th ')
+        e[:performers] << get_performer(ws, row, performers, '6th ')
+        e[:performers] << get_performer(ws, row, performers, '7th ')
+        e[:performers] << get_performer(ws, row, performers, '8th ')
+        e[:performers] = e[:performers].compact
+
+        if e[:performers].count == 0
+          puts "Skipping unknown primary performer '#{ws[row, get_col('Primary Performer')]}'"
+          skipped_count += 1
+          next
+        end
+
         e[:id] = ws[row, get_col('Event ID')]
 
         if event_ids.include?(e[:id])
-          puts "Warning: Duplicate event IDs: #{e[:id]} row #{row} - fill in the Event Identifier column"
+          puts "Warning: Duplicate event IDs row #{row} ID: #{e[:id]} - fill in the Event Identifier column"
+          dupe_event_count += 1
           next
         else
           event_ids.add(e[:id])
         end
-
-        e[:performers] = []
-        e[:performers] << get_performer(ws, row, 'Primary ')
-        e[:performers] << get_performer(ws, row, '2nd ')
-        e[:performers] << get_performer(ws, row, '3rd ')
-        e[:performers] << get_performer(ws, row, '4th ')
-        e[:performers] << get_performer(ws, row, '5th ')
-        e[:performers] = e[:performers].compact
 
         e[:forts] = []
         e[:forts] << get_fort(ws, row, 'Primary ')
         e[:forts] << get_fort(ws, row, '2nd ')
         e[:forts] = e[:forts].compact
 
-        e[:name] = ws[row, get_col('Event Name')]
-        e[:name] = e[:performers][0][:name] if e[:name] == ''
+        e[:name] = get_optional_string(ws, row, 'Event Name')
+        e[:name] = e[:performers][0][:name] if e[:name].nil?
 
         # Recommended here to store DynamoDb datetime values in ISO 8601 string format
         # http://stackoverflow.com/questions/40905056/what-is-the-best-way-to-store-time-in-dynamodb-when-accuracy-is-important
-        e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time').iso8601
-        e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time').iso8601
+        # but foster wants them without time zones so formatting as he requested
+        e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time')
+        e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time')
         venue                 = get_required_string(ws, row, 'Venue')
         e[:venue]             = venues.find{ |value|
             value['name'] == venue
         }
-        puts "Unknown venue: '#{venue}'" if e[:venue].nil?
+        if e[:venue].nil?
+          puts "Unknown venue: '#{venue}'"
+          bad_venues << "#{e[:forts][0]}: #{e[:name]}: #{venue}"
+        end
 
         # e[:venue][:image_url] = VENUE_IMAGE_BUCKET_URL + e[:venue][:Name] + '.jpg'
         e[:description]       = get_optional_string(ws, row, 'Description')
@@ -131,12 +204,19 @@ class ParseSchedule
         begin
           puts "Writing event: #{e[:name]}"
           @db.put_item({ table_name: "#{@opts[:environment]}-event", item: e})
+          event_count += 1
         rescue  Aws::DynamoDB::Errors::ServiceError => error
           puts 'Unable to add item'
           puts "#{error.message}"
         end
       end
     end
+    puts "- #{event_count} events added, #{dupe_event_count} dupe events, #{skipped_count} unknown performers skipped, #{bad_venues.count} bad venues."
+
+    puts "\nBad Venues:"
+    puts bad_venues
+    puts "----- Ending: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}\n\n"
+
   end
 
   # check to make sure the worksheet is in the expected format
@@ -181,10 +261,18 @@ class ParseSchedule
     time_string = ws[row, get_col(time_col)]
 
     full_string = "#{date_string} #{time_string} -0700"
-    Time.strptime(full_string, "%m/%e/%Y %H:%M %z")
-    # Time.strptime(full_string, '%e/%m/%Y %H:%M')
+    begin
+      event_time = Time.strptime(full_string, "%m/%e/%Y %H:%M %z")
+    rescue Exception => e
+      puts "Invalid time format row: #{row}\t#{date_string}\t#{time_string}"
+      return nil
+    end
 
-    # after_midnight = (event_time.hour < 6)
+    # # hack if before 6 am assume next day after midnight
+    # if event_time.hour < 6
+    #   event_time = event_time + (24*60*60)
+    # end
+    event_time.strftime("%Y-%m-%eT%H:%M")
 
   end
 
@@ -214,11 +302,17 @@ class ParseSchedule
     end
   end
 
-  def get_performer(ws, row, prefix)
+  def get_performer(ws, row, performers, prefix)
     p = {}
     p[:id]  = ws[row, get_col("#{prefix}Performer ID")]
-    p[:name] = ws[row, get_col("#{prefix}Performer")]
-    p = nil if p[:id] == '#N/A'
+    p = nil if (p[:id] == '#N/A') || (p[:id] == '')
+
+    unless p.nil?
+      lookup = performers.find { |x| x['id'] == p[:id]}
+      p[:name] = lookup['name']
+      p[:home_town] = lookup['home_town']
+      p[:forts] = lookup['forts']
+    end
     p
   end
 

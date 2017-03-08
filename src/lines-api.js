@@ -5,40 +5,41 @@ console.log('Loading function');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const AWS = require('aws-sdk');
 const response = require('./lib/response');
-const PlaylistController = require('./controllers/playlist/playlist-controller').PlaylistController;
+const LineController = require('./controllers/line/line-controller').LineController;
 
 console.log('Requires completed');
 
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = (event, context, callback) => {
-  console.log('Received event:', JSON.stringify(event, null, 2));
+  console.log('Received line:', JSON.stringify(event, null, 2));
 
-  const playlistController = new PlaylistController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
+  // eslint-disable-next-line
+  const lineController = new LineController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
   const done = response(callback);
 
   let pathParameters = null;
 
   switch (event.httpMethod) {
     case 'GET':
-      if (event.pathParameters && event.pathParameters.playlistId) {
-        pathParameters = event.pathParameters.playlistId;
+      if (event.pathParameters && event.pathParameters.lineId) {
+        pathParameters = event.pathParameters.lineId;
       }
 
-      playlistController
+      lineController
         .get(pathParameters)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 
       break;
     case 'PATCH': {
-      if (event.pathParameters && event.pathParameters.playlistId) {
-        pathParameters = event.pathParameters.playlistId;
+      if (event.pathParameters && event.pathParameters.lineId) {
+        pathParameters = event.pathParameters.lineId;
       }
       const body = JSON.parse(event.body);
 
-      playlistController
-        .update(event.pathParameters.playlistId, body)
+      lineController
+        .update(event.pathParameters.lineId, body)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 
@@ -47,12 +48,9 @@ exports.handler = (event, context, callback) => {
     case 'POST': {
       const body = JSON.parse(event.body);
 
-      playlistController
+      lineController
         .create(body)
-        .then((postResponse) => {
-          console.log(postResponse);
-          done(null, postResponse);
-        })
+        .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 
       break;

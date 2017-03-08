@@ -42,7 +42,7 @@
         // build a URL like this 'https://www.treefortmusicfest.com/lineup/#2017-6561513
         // TODO: remove legacyArtistId after treefort 2017
         if (legacyArtistId || url.includes('share/artist/')) {
-          var artistId = legacyArtistId || url.split('share/artist/')[1];
+          var artistId = legacyArtistId || url.replace('share/artist/', '');
           document.location = 'https://www.treefortmusicfest.com/lineup/#' + artistId;
         }
 

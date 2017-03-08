@@ -21,17 +21,35 @@
     var startApp = function startTreefortApp()
     {
       // for 2017 it is something like '2017-6561513'
-      var artistUrl = window.location.hash.substring(1);
+      // keeping here so we don't break old shared artist links
+      // TODO: remove legacyArtistId after treefort 2017
+      var legacyArtistId = window.location.hash.substring(1);
 
-      // build a URL like this 'treefort://2017-6561513' to launch the app
-      // NOTE: the app currently only supports artist links
-      document.location = 'treefort://' + artistUrl;
+      // the url to pass to app
+      var url = window.location.pathname.substring(1);
+
+      // build a URL to launch the app:
+      // 'treefort://2017-6561513'
+      // 'treefort://share/artist/2017-6561513'
+      // 'treefort://share/schedule/b85cfc60-043c-11e7-8d0e-9b0c11895cb5'
+      //
+      // NOTE: the app currently only supports artist/schedule links
+      document.location = 'treefort://' + (legacyArtistId || url);
 
       // default user to TF website in 3s (hopefully they are back in the app by now)
       setTimeout(function()
       {
         // build a URL like this 'https://www.treefortmusicfest.com/lineup/#2017-6561513
-        document.location = 'https://www.treefortmusicfest.com/lineup/#' + artistUrl;
+        // TODO: remove legacyArtistId after treefort 2017
+        if (legacyArtistId || url.includes('share/artist/')) {
+          var artistId = legacyArtistId || url.split('share/artist/')[1];
+          document.location = 'https://www.treefortmusicfest.com/lineup/#' + artistId;
+        }
+
+        // TODO: support shared schedules on web
+        else if (url.includes('share/schedule/')) {
+          document.location = 'https://www.treefortmusicfest.com/schedule/';
+        }
       }, 3000);
     };
     // wire these both

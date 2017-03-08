@@ -18,15 +18,8 @@
   <script type="text/javascript">
     // change to window.onload when we want this to be automatic
 
-    var startApp = function startTreefortApp()
-    {
-      // for 2017 it is something like '2017-6561513'
-      // keeping here so we don't break old shared artist links
-      // TODO: remove legacyArtistId after treefort 2017
-      var legacyArtistId = window.location.hash.substring(1);
-
-      // the url to pass to app
-      var url = window.location.pathname.substring(1);
+    var startApp = function startTreefortApp() {
+      var path = window.location.hash.substring(1).replace('/share/', 'share/');
 
       // build a URL to launch the app:
       // 'treefort://2017-6561513'
@@ -34,20 +27,24 @@
       // 'treefort://share/schedule/b85cfc60-043c-11e7-8d0e-9b0c11895cb5'
       //
       // NOTE: the app currently only supports artist/schedule links
-      document.location = 'treefort://' + (legacyArtistId || url);
+
+      document.location = 'treefort://' + path;
 
       // default user to TF website in 3s (hopefully they are back in the app by now)
       setTimeout(function()
       {
         // build a URL like this 'https://www.treefortmusicfest.com/lineup/#2017-6561513
-        // TODO: remove legacyArtistId after treefort 2017
-        if (legacyArtistId || url.includes('share/artist/')) {
-          var artistId = legacyArtistId || url.replace('share/artist/', '');
+        // the second condition is to support the old way of sharing artists
+        // TODO: stop supporting old way after treefort 2017
+        if (path.includes('share/artist/') || !path.includes('share')) {
+          var artistId = path.replace('share/artist/', '');
           document.location = 'https://www.treefortmusicfest.com/lineup/#' + artistId;
         }
 
+        // handle schedule link
         // TODO: support shared schedules on web
-        else if (url.includes('share/schedule/')) {
+        else if (path.includes('share/schedule/')) {
+          var scheduleId = path.replace('share/schedule/', '');
           document.location = 'https://www.treefortmusicfest.com/schedule/';
         }
       }, 3000);

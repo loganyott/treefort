@@ -215,6 +215,8 @@ class ParseSchedule
 
     puts "\nBad Venues:"
     puts bad_venues
+    puts "----- Ending: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}\n\n"
+
   end
 
   # check to make sure the worksheet is in the expected format

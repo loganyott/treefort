@@ -357,7 +357,7 @@ class ParseSubmittable
         p.class_title   = submission_form_field(submission, 'Class Title')
         p.class_summary = submission_form_field(submission, 'Short Class Summary')
 
-        puts "\t#{p.name}\t#{p.code}\t#{p.forts}\t#{p.home_town}"
+        puts "\t#{p.name}\t#{p.code}\t#{p.forts.join(',')}\t#{p.home_town}"
 
         if submission['files']
           images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }
@@ -409,6 +409,8 @@ class ParseSubmittable
 
     end
     puts "\n- #{write_count} performers written."
+    puts "----- Ending: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}\n\n"
+
   end
 
   def submission_form_field(submission, field_name)

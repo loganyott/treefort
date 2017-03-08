@@ -264,6 +264,7 @@ class ParseSubmittable
 
         p.forts << 'Filmfortfeature' if labels.include?("featurefilm")
         p.forts << 'Filmfortshort'  if labels.include?("shortfilm")
+        p.forts << 'Filmfortspecial' if labels.include?("special events")
         p.forts << 'Foodforttastes' if labels.include?("foodforttastes#{YEAR}")
         p.forts << 'Foodforttalks'  if labels.include?("foodforttalks#{YEAR}")
         p.forts << 'YogafortArtist' if labels.include?("yogafort #{YEAR} artist")
@@ -301,6 +302,8 @@ class ParseSubmittable
         if p.name == 'Fortcraft'
           # submittable is returning old data!
           p.bio = "New in 2017, Fortcraft is an open interactive building experience for kids and parents and anyone in between. Like a real world Minecraft you can use cardboard, tape, markers and chalk to build the fort of your dreams, add on to other forts, decorate existing structures or make something else entirely.\n\nThroughout the event, structures will be made, taken down and remade again into something new. There is no wrong way to Fortcraft.\n\nUnder the direction of Travis Olson, challenges will be suggested. Kids can choose to participate in them or ignore them completely. Examples: Connect Four Forts Challenge, Tall Fort Challenge, Robot Costume Challenge, Dinosaur Challenge."
+        elsif p.name == 'Michael Robinson'
+          p.bio = "For \"Rules Of The Game\", choreographer Jonah Bokaer, esteemed set designer Daniel Arsham, and the Grammy- winning musician Pharrell Williams join forces with producers and directors Ben Paluba and Michael Robinson . The result is a groundbreaking performance piece. \n\n“Skin In The Game” is a project that explores the process behind resetting, refining and presenting a dance performance and seeks to promote new avenues for audiences to be transported by the art of choreography and movement. Using new methods and technologies, including panoramic 360º video capture of the dancers in rehearsal, we are able to give viewers a never before seen position and perspective inside the dance, literally amongst the dancers, as they prepare work for the stage. \n\nThe inspiration for “Skin in the Game” was a shared vision of Virtual Reality as a truly collaborative intersection between choreographer, dancers, director, visual artist and technologist. The VR environment has great power to expand the creative potential for movement production, presentation, and duplication, as well as fostering interdisciplinary dialogue with artists and creators across the media landscape.\n\n__________________________________________\n\nSkin in the Game will show in the JUMP Pioneer Room lobby  from 11:30 am-12:45 pm on Friday, 11:00 am-12:30 pm Saturday, and 11:30am-1:00pm Sunday."
         end
         if p.bio.nil?
           # Comedyfort

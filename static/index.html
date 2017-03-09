@@ -42,10 +42,9 @@
         }
 
         // handle schedule link
-        // TODO: support shared schedules on web
         else if (path.includes('share/schedule/')) {
           var scheduleId = path.replace('share/schedule/', '');
-          document.location = 'https://www.treefortmusicfest.com/schedule/';
+          document.location = 'https://www.treefortmusicfest.com/schedule/#schedule=' + scheduleId;
         }
       }, 3000);
     };

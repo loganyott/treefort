@@ -233,6 +233,8 @@ class ParseSubmittable
             labels.include?("storyfort#{YEAR}") ||
             labels.include?("yogafort#{YEAR}")
 
+        next if submission['is_archived']
+
         # just do a single one
         unless @opts[:performer].nil?
           ready_to_begin = ready_to_begin || (submission['title'].downcase == @opts[:performer].downcase)
@@ -399,10 +401,6 @@ class ParseSubmittable
         write_performer(p)
         write_count += 1
 
-        # stop doing stuff if only 1 performer
-        unless @opts[:performer].nil?
-          exit
-        end
       end
       result_page += 1
       break if result_page > page_count

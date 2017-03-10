@@ -99,9 +99,9 @@ class ParseSubmittable
   IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156, 842159].freeze
 
   ENVIRONMENTS = %w(etl dev).freeze
-  LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
   # change this to your path to check in images to app-fort too
-  # LOCAL_IMAGE_SRC_PATH = '/tmp/'.freeze
+  # LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
+  LOCAL_IMAGE_SRC_PATH = '/tmp/'.freeze
 
   def run
     @opts = Trollop.options do

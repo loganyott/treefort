@@ -237,7 +237,7 @@ class ParseSubmittable
         p.code = "#{YEAR}-#{submission['submission_id']}"
 
         if submission['is_archived']
-          puts "Attempting delete: #{p.name}\t#{p.code}"
+          puts "\t#{p.name}\t#{p.code}\tDeleted"
           delete_item_from_table(p.code, "#{@opts[:environment]}-performer")
         else
           category = submission['category']['name'].strip # some have trailing spaces

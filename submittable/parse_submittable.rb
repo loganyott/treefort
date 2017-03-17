@@ -99,9 +99,9 @@ class ParseSubmittable
   IMAGE_APP_FORM_IDS = [826341, 828739, 842155, 842157, 842161, 862950, 884114, 912744, 912745, 842156, 842159].freeze
 
   ENVIRONMENTS = %w(etl dev).freeze
-  LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
   # change this to your path to check in images to app-fort too
-  # LOCAL_IMAGE_SRC_PATH = '/tmp/'.freeze
+  # LOCAL_IMAGE_SRC_PATH = '/Users/gregb/dev/treefort/app-fort/www/img/performers/'.freeze
+  LOCAL_IMAGE_SRC_PATH = '/tmp/'.freeze
 
   def run
     @opts = Trollop.options do
@@ -155,7 +155,6 @@ class ParseSubmittable
 
     result_page = @opts[:start_page]
     page_size = @opts[:debug] ? 20 : 200
-    ready_to_begin = @opts[:performer].nil?
 
     if @opts[:delete_all_first]
       puts 'Clearing DynamoDB table'
@@ -233,175 +232,169 @@ class ParseSubmittable
             labels.include?("storyfort#{YEAR}") ||
             labels.include?("yogafort#{YEAR}")
 
-        # just do a single one
-        unless @opts[:performer].nil?
-          ready_to_begin = ready_to_begin || (submission['title'].downcase == @opts[:performer].downcase)
-        end
-        next unless ready_to_begin
-
         p = Performer.new
         p.name = submission['title']
         p.code = "#{YEAR}-#{submission['submission_id']}"
 
-        category = submission['category']['name'].strip # some have trailing spaces
-        p.forts =
-            case category
-              when 'MUSIC SUBMISSIONS 2017'               then ['Treefort']
-              when 'CONFIRMED ARTIST ASSETS 2017'         then ['Treefort']
-              else
-                []
+        if submission['is_archived']
+          puts "\t#{p.name}\t#{p.code}\tDeleted"
+          delete_item_from_table(p.code, "#{@opts[:environment]}-performer")
+        else
+          category = submission['category']['name'].strip # some have trailing spaces
+          p.forts =
+              case category
+                when 'MUSIC SUBMISSIONS 2017'               then ['Treefort']
+                when 'CONFIRMED ARTIST ASSETS 2017'         then ['Treefort']
+                else
+                  []
+              end
+          p.forts << 'Alefort'        if labels.include?("alefort#{YEAR}")
+          p.forts << 'Comedyfort'     if labels.include?("comedyfort#{YEAR}")
+          p.forts << 'Filmfort'       if labels.include?("filmfort#{YEAR}")
+          p.forts << 'Foodfort'       if labels.include?("foodfort#{YEAR}")
+          p.forts << 'Galleryfort'    if labels.include?("gallery#{YEAR}")
+          p.forts << 'Hackfort'       if labels.include?("hackfort#{YEAR}")
+          p.forts << 'Kidfort'        if labels.include?("kidfort#{YEAR}")
+          p.forts << 'Performanceart' if labels.include?("performanceart#{YEAR}")
+          p.forts << 'Storyfort'      if labels.include?("storyfort#{YEAR}")
+          p.forts << 'Yogafort'       if labels.include?("yogafort#{YEAR}")
+
+          p.forts << 'Filmfortfeature' if labels.include?("featurefilm")
+          p.forts << 'Filmfortshort'  if labels.include?("shortfilm")
+          p.forts << 'Filmfortspecial' if labels.include?("special events")
+          p.forts << 'Foodforttastes' if labels.include?("foodforttastes#{YEAR}")
+          p.forts << 'Foodforttalks'  if labels.include?("foodforttalks#{YEAR}")
+          p.forts << 'YogafortArtist' if labels.include?("yogafort #{YEAR} artist")
+          p.forts << 'YogafortInstructor' if labels.include?("yogafort #{YEAR} instructor")
+
+          if labels.include?('canada')
+            p.tags << 'Canada'
+          end
+
+          if labels.include?("1st announce (#{YEAR})")
+            p.wave = 1
+          elsif labels.include?("2nd announce (#{YEAR})")
+            p.wave = 2
+          elsif labels.include?("3rd announce (#{YEAR})")
+            p.wave = 3
+          else
+            p.wave = 0
+          end
+
+          if labels.include?('tier 1')
+            p.tier = 1
+          elsif labels.include?('tier 2')
+            p.tier = 2
+          elsif labels.include?('tier 3')
+            p.tier = 3
+          elsif labels.include?('tier 4')
+            p.tier = 4
+          else
+            puts "Warning, no tier specified for #{p.name}" if p.forts.include? 'Treefort'
+            p.tier = 5
+          end
+
+          p.home_town              = submission_form_field(submission, 'City, State')
+          p.bio                    = submission_form_field(submission, 'Description')
+          if p.name == 'Fortcraft'
+            # submittable is returning old data!
+            p.bio = "New in 2017, Fortcraft is an open interactive building experience for kids and parents and anyone in between. Like a real world Minecraft you can use cardboard, tape, markers and chalk to build the fort of your dreams, add on to other forts, decorate existing structures or make something else entirely.\n\nThroughout the event, structures will be made, taken down and remade again into something new. There is no wrong way to Fortcraft.\n\nUnder the direction of Travis Olson, challenges will be suggested. Kids can choose to participate in them or ignore them completely. Examples: Connect Four Forts Challenge, Tall Fort Challenge, Robot Costume Challenge, Dinosaur Challenge."
+          elsif p.name == 'Michael Robinson'
+            p.bio = "For \"Rules Of The Game\", choreographer Jonah Bokaer, esteemed set designer Daniel Arsham, and the Grammy- winning musician Pharrell Williams join forces with producers and directors Ben Paluba and Michael Robinson . The result is a groundbreaking performance piece. \n\n“Skin In The Game” is a project that explores the process behind resetting, refining and presenting a dance performance and seeks to promote new avenues for audiences to be transported by the art of choreography and movement. Using new methods and technologies, including panoramic 360º video capture of the dancers in rehearsal, we are able to give viewers a never before seen position and perspective inside the dance, literally amongst the dancers, as they prepare work for the stage. \n\nThe inspiration for “Skin in the Game” was a shared vision of Virtual Reality as a truly collaborative intersection between choreographer, dancers, director, visual artist and technologist. The VR environment has great power to expand the creative potential for movement production, presentation, and duplication, as well as fostering interdisciplinary dialogue with artists and creators across the media landscape.\n\n__________________________________________\n\nSkin in the Game will show in the JUMP Pioneer Room lobby  from 11:30 am-12:45 pm on Friday, 11:00 am-12:30 pm Saturday, and 11:30am-1:00pm Sunday."
+          end
+          if p.bio.nil?
+            # Comedyfort
+            p.bio                  = submission_form_field(submission, 'Artist Bio')
+          end
+          if p.bio.nil?
+            # Hackfort
+            p.bio                  = submission_form_field(submission, 'Please provide a brief description or bio of yourself. This can include previous projects, skills or accomplishments related to your field. ')
+          end
+          if p.bio.nil?
+            # Yogafort
+            p.bio                  = submission_form_field(submission, 'Instructor Biography ')
+          end
+          if p.bio.nil?
+            # Storyfort
+            p.bio                  = submission_form_field(submission, 'Writer Bio')
+          end
+          if p.bio.nil?
+            # Filmfort
+            p.bio                  = submission_form_field(submission, 'Synopsis')
+          end
+          if p.bio.nil?
+            # Foodfort
+            p.bio = submission_form_field(submission, 'CHEF NAME')
+            add = submission_form_field(submission, 'DISH 1 NAME AND DESCRIPTION')
+            p.bio = p.bio + "\n\n" + add unless add.nil?
+            add = submission_form_field(submission, 'DISH 2 NAME AND DESCRIPTION')
+            p.bio = p.bio + "\n" + add unless add.nil?
+            add = submission_form_field(submission, 'FEATURED FARM PRODUCER 1')
+            p.bio = p.bio + "\n\n" + add unless add.nil?
+            add = submission_form_field(submission, 'FEATURED FARM PRODUCER 2')
+            p.bio = p.bio + "\n" + add unless add.nil?
+          end
+
+          p.genres                 = submission_form_field(submission, 'Genre')
+          p.genres = p.genres.split(',') unless p.genres.nil?
+          p.music_url              = submission_form_field(submission, 'Music')
+          p.video_url              = submission_form_field(submission, 'Video 1')
+          p.website_url            = submission_form_field(submission, 'Website')
+          p.facebook_url           = submission_form_field(submission, 'Facebook')
+          p.twitter_url            = submission_form_field(submission, 'Twitter')
+          p.instagram_url          = submission_form_field(submission, 'Instagram')
+          p.sort_order_within_tier = submission_form_field(submission, 'Venue ID')
+
+          if p.sort_order_within_tier.nil?  # make un-set values last
+            p.sort_order_within_tier = 999999
+          else
+            p.sort_order_within_tier = p.sort_order_within_tier.to_i
+          end
+
+          p.class_title   = submission_form_field(submission, 'Class Title')
+          p.class_summary = submission_form_field(submission, 'Short Class Summary')
+
+          puts "\t#{p.name}\t#{p.code}\t#{p.forts.join(',')}\t#{p.home_town}"
+
+          if submission['files']
+            images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }
+            images_app = submission['files'].select { |file| IMAGE_APP_FORM_IDS.include?(file['form_field_id']) }
+            songs  = submission['files'].select     { |file| file['mime_type'] && (
+                                                             file['mime_type'].start_with?('audio/mp3') ||
+                                                             file['mime_type'].start_with?('audio/mpeg'))}
+
+            puts "Warning: #{images.count} images for #{p.name}. Using first one." if images.count > 1
+            puts "Warning: No images for #{p.name}." if images.count == 0
+
+            puts "Warning: #{images_app.count} app images for #{p.name}. Using first one." if images_app.count > 1
+            puts "Warning: No app images for #{p.name}." if images_app.count == 0
+
+            puts "Warning: #{songs.count} songs for #{p.name}. Using first one." if songs.count > 1
+            puts "Warning: No songs for #{p.name}." if songs.count == 0 && p.forts.include?('Treefort')
+
+            if images.count >= 1
+              p.orig_image_url = HOST + images.first['url']
+              p.image_url = "#{IMAGE_BUCKET_URL}#{p.code}.jpg"
+              p.image_url_med = "#{IMAGE_BUCKET_URL}#{p.code}-med.jpg"
             end
-        p.forts << 'Alefort'        if labels.include?("alefort#{YEAR}")
-        p.forts << 'Comedyfort'     if labels.include?("comedyfort#{YEAR}")
-        p.forts << 'Filmfort'       if labels.include?("filmfort#{YEAR}")
-        p.forts << 'Foodfort'       if labels.include?("foodfort#{YEAR}")
-        p.forts << 'Galleryfort'    if labels.include?("gallery#{YEAR}")
-        p.forts << 'Hackfort'       if labels.include?("hackfort#{YEAR}")
-        p.forts << 'Kidfort'        if labels.include?("kidfort#{YEAR}")
-        p.forts << 'Performanceart' if labels.include?("performanceart#{YEAR}")
-        p.forts << 'Storyfort'      if labels.include?("storyfort#{YEAR}")
-        p.forts << 'Yogafort'       if labels.include?("yogafort#{YEAR}")
-
-        p.forts << 'Filmfortfeature' if labels.include?("featurefilm")
-        p.forts << 'Filmfortshort'  if labels.include?("shortfilm")
-        p.forts << 'Filmfortspecial' if labels.include?("special events")
-        p.forts << 'Foodforttastes' if labels.include?("foodforttastes#{YEAR}")
-        p.forts << 'Foodforttalks'  if labels.include?("foodforttalks#{YEAR}")
-        p.forts << 'YogafortArtist' if labels.include?("yogafort #{YEAR} artist")
-        p.forts << 'YogafortInstructor' if labels.include?("yogafort #{YEAR} instructor")
-
-        if labels.include?('canada')
-          p.tags << 'Canada'
-        end
-
-        if labels.include?("1st announce (#{YEAR})")
-          p.wave = 1
-        elsif labels.include?("2nd announce (#{YEAR})")
-          p.wave = 2
-        elsif labels.include?("3rd announce (#{YEAR})")
-          p.wave = 3
-        else
-          p.wave = 0
-        end
-
-        if labels.include?('tier 1')
-          p.tier = 1
-        elsif labels.include?('tier 2')
-          p.tier = 2
-        elsif labels.include?('tier 3')
-          p.tier = 3
-        elsif labels.include?('tier 4')
-          p.tier = 4
-        else
-          puts "Warning, no tier specified for #{p.name}" if p.forts.include? 'Treefort'
-          p.tier = 5
-        end
-
-        p.home_town              = submission_form_field(submission, 'City, State')
-        p.bio                    = submission_form_field(submission, 'Description')
-        if p.name == 'Fortcraft'
-          # submittable is returning old data!
-          p.bio = "New in 2017, Fortcraft is an open interactive building experience for kids and parents and anyone in between. Like a real world Minecraft you can use cardboard, tape, markers and chalk to build the fort of your dreams, add on to other forts, decorate existing structures or make something else entirely.\n\nThroughout the event, structures will be made, taken down and remade again into something new. There is no wrong way to Fortcraft.\n\nUnder the direction of Travis Olson, challenges will be suggested. Kids can choose to participate in them or ignore them completely. Examples: Connect Four Forts Challenge, Tall Fort Challenge, Robot Costume Challenge, Dinosaur Challenge."
-        elsif p.name == 'Michael Robinson'
-          p.bio = "For \"Rules Of The Game\", choreographer Jonah Bokaer, esteemed set designer Daniel Arsham, and the Grammy- winning musician Pharrell Williams join forces with producers and directors Ben Paluba and Michael Robinson . The result is a groundbreaking performance piece. \n\n“Skin In The Game” is a project that explores the process behind resetting, refining and presenting a dance performance and seeks to promote new avenues for audiences to be transported by the art of choreography and movement. Using new methods and technologies, including panoramic 360º video capture of the dancers in rehearsal, we are able to give viewers a never before seen position and perspective inside the dance, literally amongst the dancers, as they prepare work for the stage. \n\nThe inspiration for “Skin in the Game” was a shared vision of Virtual Reality as a truly collaborative intersection between choreographer, dancers, director, visual artist and technologist. The VR environment has great power to expand the creative potential for movement production, presentation, and duplication, as well as fostering interdisciplinary dialogue with artists and creators across the media landscape.\n\n__________________________________________\n\nSkin in the Game will show in the JUMP Pioneer Room lobby  from 11:30 am-12:45 pm on Friday, 11:00 am-12:30 pm Saturday, and 11:30am-1:00pm Sunday."
-        end
-        if p.bio.nil?
-          # Comedyfort
-          p.bio                  = submission_form_field(submission, 'Artist Bio')
-        end
-        if p.bio.nil?
-          # Hackfort
-          p.bio                  = submission_form_field(submission, 'Please provide a brief description or bio of yourself. This can include previous projects, skills or accomplishments related to your field. ')
-        end
-        if p.bio.nil?
-          # Yogafort
-          p.bio                  = submission_form_field(submission, 'Instructor Biography ')
-        end
-        if p.bio.nil?
-          # Storyfort
-          p.bio                  = submission_form_field(submission, 'Writer Bio')
-        end
-        if p.bio.nil?
-          # Filmfort
-          p.bio                  = submission_form_field(submission, 'Synopsis')
-        end
-        if p.bio.nil?
-          # Foodfort
-          p.bio = submission_form_field(submission, 'CHEF NAME')
-          add = submission_form_field(submission, 'DISH 1 NAME AND DESCRIPTION')
-          p.bio = p.bio + "\n\n" + add unless add.nil?
-          add = submission_form_field(submission, 'DISH 2 NAME AND DESCRIPTION')
-          p.bio = p.bio + "\n" + add unless add.nil?
-          add = submission_form_field(submission, 'FEATURED FARM PRODUCER 1')
-          p.bio = p.bio + "\n\n" + add unless add.nil?
-          add = submission_form_field(submission, 'FEATURED FARM PRODUCER 2')
-          p.bio = p.bio + "\n" + add unless add.nil?
-        end
-
-        p.genres                 = submission_form_field(submission, 'Genre')
-        p.genres = p.genres.split(',') unless p.genres.nil?
-        p.music_url              = submission_form_field(submission, 'Music')
-        p.video_url              = submission_form_field(submission, 'Video 1')
-        p.website_url            = submission_form_field(submission, 'Website')
-        p.facebook_url           = submission_form_field(submission, 'Facebook')
-        p.twitter_url            = submission_form_field(submission, 'Twitter')
-        p.instagram_url          = submission_form_field(submission, 'Instagram')
-        p.sort_order_within_tier = submission_form_field(submission, 'Venue ID')
-
-        if p.sort_order_within_tier.nil?  # make un-set values last
-          p.sort_order_within_tier = 999999
-        else
-          p.sort_order_within_tier = p.sort_order_within_tier.to_i
-        end
-
-        p.class_title   = submission_form_field(submission, 'Class Title')
-        p.class_summary = submission_form_field(submission, 'Short Class Summary')
-
-        puts "\t#{p.name}\t#{p.code}\t#{p.forts.join(',')}\t#{p.home_town}"
-
-        if submission['files']
-          images = submission['files'].select     { |file| IMAGE_FORM_IDS.include?(file['form_field_id']) }
-          images_app = submission['files'].select { |file| IMAGE_APP_FORM_IDS.include?(file['form_field_id']) }
-          songs  = submission['files'].select     { |file| file['mime_type'] && (
-                                                           file['mime_type'].start_with?('audio/mp3') ||
-                                                           file['mime_type'].start_with?('audio/mpeg'))}
-
-          puts "Warning: #{images.count} images for #{p.name}. Using first one." if images.count > 1
-          puts "Warning: No images for #{p.name}." if images.count == 0
-
-          puts "Warning: #{images_app.count} app images for #{p.name}. Using first one." if images_app.count > 1
-          puts "Warning: No app images for #{p.name}." if images_app.count == 0
-
-          puts "Warning: #{songs.count} songs for #{p.name}. Using first one." if songs.count > 1
-          puts "Warning: No songs for #{p.name}." if songs.count == 0 && p.forts.include?('Treefort')
-
-          if images.count >= 1
-            p.orig_image_url = HOST + images.first['url']
-            p.image_url = "#{IMAGE_BUCKET_URL}#{p.code}.jpg"
-            p.image_url_med = "#{IMAGE_BUCKET_URL}#{p.code}-med.jpg"
+            if images_app.count >= 1
+              p.orig_image_app_url = HOST + images_app.first['url']
+              p.image_app_url = "#{IMAGE_BUCKET_URL}#{p.code}-app.jpg"
+            end
+            if songs.count >= 1
+              p.orig_song_url = HOST + songs.first['url']
+              p.orig_song_name = songs.first['file_name']
+              p.song_url = "#{SONG_BUCKET_URL}#{p.code}.mp3"
+            end
+          else
+            puts "Warning: No songs or images for #{p.name}."
           end
-          if images_app.count >= 1
-            p.orig_image_app_url = HOST + images_app.first['url']
-            p.image_app_url = "#{IMAGE_BUCKET_URL}#{p.code}-app.jpg"
-          end
-          if songs.count >= 1
-            p.orig_song_url = HOST + songs.first['url']
-            p.orig_song_name = songs.first['file_name']
-            p.song_url = "#{SONG_BUCKET_URL}#{p.code}.mp3"
-          end
-        else
-          puts "Warning: No songs or images for #{p.name}."
-        end
 
-        # puts "Performer: #{p.name}"
+          # puts "Performer: #{p.name}"
 
-        write_files(p)
-        write_performer(p)
-        write_count += 1
-
-        # stop doing stuff if only 1 performer
-        unless @opts[:performer].nil?
-          exit
+          write_files(p)
+          write_performer(p)
+          write_count += 1
         end
       end
       result_page += 1
@@ -597,6 +590,15 @@ class ParseSubmittable
       @db.put_item({ table_name: table_name, item: item})
     rescue  Aws::DynamoDB::Errors::ServiceError => error
       puts 'Unable to add item'
+      puts "#{error.message}"
+    end
+
+  end
+  def delete_item_from_table(key, table_name)
+    begin
+      @db.delete_item({key: {id: key}, table_name: table_name})
+    rescue  Aws::DynamoDB::Errors::ServiceError => error
+      puts 'Unable to delete item'
       puts "#{error.message}"
     end
 

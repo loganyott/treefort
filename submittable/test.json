@@ -1,0 +1,25 @@
+{
+  baseline: {
+    numerator: 834.5,
+    denominator: 194,
+    rate: 4.3
+  },
+  plan: {
+    numerator: 416.0,
+    denominator: 126,
+    rate: 3.3
+  },
+  calculation: {
+    outcomeLogic: NumeratorEffect,
+    affectsLives: true,
+    affectsDollars: true,
+    isSampled: false,
+    dollarsCalculation: DollarsPerOutcome,
+    evidenceValue: 12515
+  }
+}
+
+{
+  lives: 126,
+  dollars: 278712
+}

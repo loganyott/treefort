@@ -125,6 +125,7 @@ class ParseSchedule
     skipped_count = 0
     dupe_event_count = 0
     bad_venues = []
+    bad_performers = []
 
     # sheets = (@opts[:environment] == PROD_ENVIRONMENT) ? PROD_SHEETS : DEV_SHEETS
     sheets = PROD_SHEETS
@@ -156,9 +157,15 @@ class ParseSchedule
         e[:performers] << get_performer(ws, row, performers, '8th ')
         e[:performers] = e[:performers].compact
 
+        e[:cancelled]  = get_boolean(ws, row, 'Cancelled')
+
         if e[:performers].count == 0
-          puts "Skipping unknown primary performer '#{ws[row, get_col('Primary Performer')]}'"
-          skipped_count += 1
+          unless e[:cancelled]
+            bad_name = ws[row, get_col('Primary Performer')]
+            puts "Skipping unknown primary performer '#{bad_name}'"
+            bad_performers << bad_name
+            skipped_count += 1
+          end
           next
         end
 
@@ -197,7 +204,6 @@ class ParseSchedule
         # e[:venue][:image_url] = VENUE_IMAGE_BUCKET_URL + e[:venue][:Name] + '.jpg'
         e[:description]       = get_optional_string(ws, row, 'Description')
         e[:kidfort_approved]  = get_boolean(ws, row, 'Kidfort Approved')
-        e[:cancelled]         = get_boolean(ws, row, 'Cancelled')
         e[:all_ages]          = get_boolean(ws, row, 'All Ages')
         # e[:festival_day]      = day_offset
 
@@ -215,7 +221,9 @@ class ParseSchedule
 
     puts "\nBad Venues:"
     puts bad_venues
-    puts "----- Ending: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}\n\n"
+    puts "\nBad Performers:"
+    puts bad_performers
+    puts "\n----- Ending: #{Time.now.strftime('%Y/%m/%d %H:%M')}. Writing to #{@opts[:environment]}\n\n"
 
   end
 

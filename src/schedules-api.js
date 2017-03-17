@@ -33,9 +33,6 @@ exports.handler = (event, context, callback) => {
 
       break;
     case 'PATCH': {
-      if (event.pathParameters && event.pathParameters.scheduleId) {
-        pathParameters = event.pathParameters.scheduleId;
-      }
       const body = JSON.parse(event.body);
 
       scheduleController

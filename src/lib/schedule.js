@@ -9,6 +9,7 @@ class Schedule {
     this.id = config.id || '';
     this.updated = config.updated || '';
     this.events = config.events || [];
+    this.in_sync = config.in_sync || true;
   }
 }
 

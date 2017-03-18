@@ -192,6 +192,12 @@ class ParseSchedule
         # but foster wants them without time zones so formatting as he requested
         e[:start_time]        = get_event_time(ws, row, 'Date', 'Start Time')
         e[:end_time]          = get_event_time(ws, row, 'Date', 'End Time')
+        if e[:start_time] > e[:end_time]
+          e[:end_time] = e[:end_time] + (24*60*60)
+        end
+        e[:start_time] = e[:start_time].strftime("%Y-%m-%eT%H:%M")
+        e[:end_time] = e[:end_time].strftime("%Y-%m-%eT%H:%M")
+
         venue                 = get_required_string(ws, row, 'Venue')
         e[:venue]             = venues.find{ |value|
             value['name'] == venue
@@ -275,13 +281,7 @@ class ParseSchedule
       puts "Invalid time format row: #{row}\t#{date_string}\t#{time_string}"
       return nil
     end
-
-    # # hack if before 6 am assume next day after midnight
-    # if event_time.hour < 6
-    #   event_time = event_time + (24*60*60)
-    # end
-    event_time.strftime("%Y-%m-%eT%H:%M")
-
+    event_time
   end
 
   def get_required_string(ws, row, col_name)

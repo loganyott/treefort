@@ -5,7 +5,7 @@
     "title": "TreefortAPI"
   },
   "host": "7n74ikdn58.execute-api.us-west-2.amazonaws.com",
-  "basePath": "/dev",
+  "basePath": "/prod",
   "schemes": [
     "https"
   ],

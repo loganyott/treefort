@@ -5,7 +5,7 @@
     "title": "TreefortAPI"
   },
   "host": "7n74ikdn58.execute-api.us-west-2.amazonaws.com",
-  "basePath": "/dev",
+  "basePath": "/prod",
   "schemes": [
     "https"
   ],
@@ -20,11 +20,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -38,11 +33,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -93,11 +83,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -119,11 +104,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -145,11 +125,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -364,11 +339,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -382,11 +352,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -437,11 +402,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -463,11 +423,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -489,11 +444,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -536,11 +486,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -554,11 +499,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -609,11 +549,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -662,11 +597,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -682,11 +612,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -700,11 +625,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -755,11 +675,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }
@@ -808,11 +723,6 @@
             "description": "200 response",
             "schema": {
               "$ref": "#/definitions/Empty"
-            },
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "type": "string"
-              }
             }
           }
         }

@@ -59,7 +59,7 @@ class DayPlaylist
 
       sort_order = 4 # because 0-3 are taken
       day_playlists.each do |name, songs|
-        playlist_db = { 'id' => name, 'name' => "Fest Day: #{name}", 'order' => "A#{sort_order}", 'songs' => songs}
+        playlist_db = { 'id' => name, 'name' => "Fest Day: #{name}", 'order' => "#{sort_order}", 'songs' => songs}
         puts "Writing #{songs.count} songs to #{name}"
         puts songs.map{ |s| s['artist_name']}.join("\n")
 

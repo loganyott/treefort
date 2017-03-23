@@ -1,7 +1,7 @@
 'use strict';
 
 const uuidV1 = require('uuid/v1');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const Line = require('../../lib/line');
 const createDynamoPatchQuery = require('../../lib/dynamo-query').createDynamoPatchQuery;
 const dynamoPromiseFactory = require('../../lib/dynamo-promise');
@@ -23,7 +23,7 @@ class LineController {
   }
 
   create(lineObject) {
-    const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment.utc().format('YYYY-MM-DDThh:mm') });
+    const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment().tz('America/Boise').format('YYYY-MM-DDThh:mm') });
     const promise = this.lineTable.put(newLine);
 
     return promise;

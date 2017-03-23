@@ -1,5 +1,5 @@
 'use strict';
-const moment = require('moment');
+const moment = require('moment-timezone');
 const _ = require('lodash');
 
 const restrictedKeys = [
@@ -10,7 +10,9 @@ const convertPropertyToDynamo = propertyString => `:${propertyString}`;
 const createSetStatement = propertyString => `${propertyString} = ${convertPropertyToDynamo(propertyString)}`;
 
 const createDynamoPatchQuery = (primaryKeys, _propertiesToUpdate) => {
-  const propertiesToUpdate = Object.assign({}, _propertiesToUpdate, { updated: moment.utc().format('YYYY-MM-DDThh:mm') });
+  // It's kind of weird ahving this in there with the modified timestamp being specific to Boise, but some of the client
+  // team wanted it this way... I think that we should change how we do this in the future
+  const propertiesToUpdate = Object.assign({}, _propertiesToUpdate, { updated: moment().tz('America/Boise').format('YYYY-MM-DDThh:mm') });
 
   const keysToUpdate = _.keys(propertiesToUpdate)
     .filter((keyName) => {

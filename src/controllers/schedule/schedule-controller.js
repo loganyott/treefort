@@ -5,6 +5,7 @@ const dynamoPromiseFactory = require('../../lib/dynamo-promise');
 const createDynamoPatchQuery = require('../../lib/dynamo-query').createDynamoPatchQuery;
 const Schedule = require('../../lib/schedule');
 const moment = require('moment');
+const formatString = 'YYYY-MM-DDThh:mm';
 
 class ScheduleController {
   /**
@@ -23,7 +24,7 @@ class ScheduleController {
   }
 
   create(scheduleObject) {
-    const newSchedule = Object.assign({ }, new Schedule(scheduleObject), { id: uuidV1(), updated: moment.utc().format('YYYY-MM-DDThh:mm') });
+    const newSchedule = Object.assign({ }, new Schedule(scheduleObject), { id: uuidV1(), updated: moment.tz('America/Boise').format('YYYY-MM-DDThh:mm') });
     const promise = this.ScheduleTable.put(newSchedule);
 
     return promise;

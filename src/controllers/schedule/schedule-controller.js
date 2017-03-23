@@ -6,7 +6,7 @@ const createDynamoPatchQuery = require('../../lib/dynamo-query').createDynamoPat
 const Schedule = require('../../lib/schedule');
 const moment = require('moment-timezone');
 
-const formatString = 'YYYY-MM-DDThh:mm';
+const formatString = 'YYYY-MM-DDTHH:mm';
 
 class ScheduleController {
   /**
@@ -25,7 +25,7 @@ class ScheduleController {
   }
 
   create(scheduleObject) {
-    const newSchedule = Object.assign({ }, new Schedule(scheduleObject), { id: uuidV1(), updated: moment().tz('America/Boise').format('YYYY-MM-DDThh:mm') });
+    const newSchedule = Object.assign({ }, new Schedule(scheduleObject), { id: uuidV1(), updated: moment().tz('America/Boise').format('YYYY-MM-DDTHH:mm') });
     const promise = this.ScheduleTable.put(newSchedule);
 
     return promise;

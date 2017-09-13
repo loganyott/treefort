@@ -8,16 +8,36 @@ package:
 plugins:
   - serverless-webpack
 
+# Infrastructure provider confs
 provider:
   name: aws
+  stage: dev
   runtime: nodejs6.10
-  region: us-west-1
+  # Oregon
+  region: us-west-2
+  environment:
+    # TODO: (bdietz) - Need to figure out how to define stage if possible. Would still be nice
+    EVENT_TABLE: ${opt:stage, self:provider.stage}-event
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      # TODO: (bdietz) - figure out if this can just be a list, may want to just iterate over table names to make this less repetitive
+      # TODO: (bdietz) - depends upon how granular we want to make this, we could let every function have access to every table
+      # or set an iam role per function top level to have more fine grained access
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.EVENT_TABLE}"
 
+# Endpoint functions
 functions:
-  # This is for the events endpoint.
+  # This is for the endpoint of the name "events".
   events:
     handler: src/api/events/index.router
-    # This is a configuration and is not referring to festival events
+    # This is a generic configuration and is not referring to festival events
     events:
       - http:
           method: get

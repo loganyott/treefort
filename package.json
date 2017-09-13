@@ -22,9 +22,10 @@
     "webpack-node-externals": "^1.6.0"
   },
   "scripts": {
-    "lint": "eslint src",
     "build": "serverless webpack --out dist",
-    "deploy": "serverless deploy"
+    "deploy:all": "serverless deploy",
+    "lint": "eslint src",
+    "logs:events": "serverless logs -f events"
   },
   "repository": {
     "type": "git",

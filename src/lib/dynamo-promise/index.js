@@ -1,4 +1,4 @@
-import * as promise from './dynamo-promise';
+import promise from './dynamo-promise';
 import * as query from './dynamo-query';
 import * as table from './dynamo-table';
 

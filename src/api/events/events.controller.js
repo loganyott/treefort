@@ -1,12 +1,13 @@
-import { promise as dynamoPromiseFactory  } from '../../lib/dynamo-promise';
+import { promise as dynamoPromiseFactory } from '../../lib/dynamo-promise';
 
 class EventController {
   /**
    * @param dynamo A connection to dynamo db.
    */
-  constructor(dynamo, dbStage = null, currentWave = null) {
-    const dynamoPromise = dynamoPromiseFactory(dynamo);
+  // constructor(dynamo, dbStage = null, currentWave = null) {
+  constructor(dynamo, dbStage = 'dev', currentWave = 10) {
     console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
+    const dynamoPromise = dynamoPromiseFactory(dynamo);
 
     if (!dbStage) {
       console.error('stageVariables.db_stage');

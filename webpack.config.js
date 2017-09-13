@@ -17,10 +17,12 @@ module.exports = {
       test: /\.js$/,
       loaders: ['babel-loader'],
       include: __dirname,
+      // Don't process the node modules directory. Some of the source may not be processable by webpack anyway.
       exclude: /node_modules/,
     }]
   },
   output: {
+    // Target the usual node environment module.exports = ...
     libraryTarget: 'commonjs',
     path: path.join(__dirname, '.webpack'),
     filename: '[name].js'

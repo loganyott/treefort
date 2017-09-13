@@ -1,0 +1,25 @@
+service: treefort-api
+
+# Build specific configurations
+custom:
+ webpackIncludeModules: true
+package:
+  individually: true
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: us-west-1
+
+functions:
+  # This is for the events endpoint.
+  events:
+    handler: src/api/events/index.router
+    # This is a configuration and is not referring to festival events
+    events:
+      - http:
+          method: get
+          path: v1/events
+          integration: lambda

@@ -19,8 +19,8 @@ const router = (event, context, callback) => {
   // make sure that the other parameters that are being referenced have not changed location in the namespace.
   switch (event.method) {
     case 'GET':
-      if (event.pathParameters && event.pathParameters.eventId) {
-        pathParameters = event.pathParameters.eventId;
+      if (event.path && event.path.eventId) {
+        pathParameters = event.path.eventId;
       }
       eventController
         .get(pathParameters)
@@ -29,7 +29,7 @@ const router = (event, context, callback) => {
 
       break;
     default:
-      done(new Error(`Unsupported method "${event.httpMethod}"`));
+      done(new Error(`Unsupported method "${event.method}"`));
       break;
   }
 };

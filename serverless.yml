@@ -43,3 +43,7 @@ functions:
           method: get
           path: v1/events
           integration: lambda
+      - http:
+          method: get
+          path: v1/events/{eventId}
+          integration: lambda

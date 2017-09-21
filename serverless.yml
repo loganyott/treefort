@@ -18,6 +18,10 @@ provider:
   environment:
     # TODO: (bdietz) - Need to figure out how to define stage if possible. Would still be nice
     EVENT_TABLE: ${opt:stage, self:provider.stage}-event
+    LINE_TABLE: ${opt:stage, self:provider.stage}-line
+    PERFORMER_TABLE: ${opt:stage, self:provider.stage}-performer
+    PLAYLIST_TABLE: ${opt:stage, self:provider.stage}-playlist
+    SCHEDULE_TABLE: ${opt:stage, self:provider.stage}-schedule
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -27,10 +31,16 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      # TODO: (bdietz) - figure out if this can just be a list, may want to just iterate over table names to make this less repetitive
-      # TODO: (bdietz) - depends upon how granular we want to make this, we could let every function have access to every table
+      # TODO: (bdietz) - depends upon how granular we want to make this, we could let every function have access to
+      # every table, which doesn't feel _wonderful_. Seems like we would want to have a per function role that has
+      # access to specific tables.
       # or set an iam role per function top level to have more fine grained access
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.EVENT_TABLE}"
+      Resource:
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.EVENT_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.LINE_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.PERFORMER_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.PLAYLIST_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCHEDULE_TABLE}"
 
 # Endpoint functions
 functions:
@@ -46,4 +56,23 @@ functions:
       - http:
           method: get
           path: v1/events/{eventId}
+          integration: lambda
+  lines:
+    handler: src/api/lines/index.router
+    events:
+      - http:
+          method: get
+          path: v1/lines
+          integration: lambda
+      - http:
+          method: get
+          path: v1/lines/{lineId}
+          integration: lambda
+      - http:
+          method: patch
+          path: v1/lines/{lineId}
+          integration: lambda
+      - http:
+          method: post
+          path: v1/lines/{lineId}
           integration: lambda

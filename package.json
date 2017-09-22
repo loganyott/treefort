@@ -24,6 +24,11 @@
   "scripts": {
     "build": "serverless webpack --out dist",
     "deploy:all": "serverless deploy",
+    "deploy:events": "serverless deploy --function events",
+    "deploy:lines": "serverless deploy --function lines",
+    "deploy:performers": "serverless deploy --function performers",
+    "deploy:playlists": "serverless deploy --function playlists",
+    "deploy:schedules": "serverless deploy --function schedules",
     "lint": "eslint src",
     "logs:events": "serverless logs -f events"
   },

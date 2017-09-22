@@ -76,3 +76,23 @@ functions:
           method: post
           path: v1/lines/{lineId}
           integration: lambda
+  performers:
+    handler: src/api/performers/index.router
+    events:
+      - http:
+          method: get
+          path: v1/performers
+          integration: lambda
+      - http:
+          method: get
+          path: v1/performers/{performerId}
+          integration: lambda
+      # TODO: (bdietz) - Should probably fix this to be a patch to make it more uniform with the performers endpoint
+      - http:
+          method: put
+          path: v1/performers/{performerId}
+          integration: lambda
+      - http:
+          method: post
+          path: v1/performers/{performerId}
+          integration: lambda

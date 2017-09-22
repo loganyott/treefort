@@ -11,6 +11,7 @@ plugins:
 # Infrastructure provider confs
 provider:
   name: aws
+  # Default to the dev stage set options to define the stage
   stage: dev
   runtime: nodejs6.10
   # Oregon
@@ -61,6 +62,10 @@ functions:
     handler: src/api/lines/index.router
     events:
       - http:
+          method: post
+          path: v1/lines/{lineId}
+          integration: lambda
+      - http:
           method: get
           path: v1/lines
           integration: lambda
@@ -72,13 +77,13 @@ functions:
           method: patch
           path: v1/lines/{lineId}
           integration: lambda
-      - http:
-          method: post
-          path: v1/lines/{lineId}
-          integration: lambda
   performers:
     handler: src/api/performers/index.router
     events:
+      - http:
+          method: post
+          path: v1/performers/{performerId}
+          integration: lambda
       - http:
           method: get
           path: v1/performers
@@ -93,12 +98,16 @@ functions:
           path: v1/performers/{performerId}
           integration: lambda
       - http:
-          method: post
+          method: delete
           path: v1/performers/{performerId}
           integration: lambda
   playlists:
     handler: src/api/playlists/index.router
     events:
+      - http:
+          method: post
+          path: v1/playlists/{playlistId}
+          integration: lambda
       - http:
           method: get
           path: v1/playlists
@@ -107,12 +116,26 @@ functions:
           method: get
           path: v1/playlists/{playlistId}
           integration: lambda
-      # TODO: (bdietz) - Should probably fix this to be a patch to make it more uniform with the playlists endpoint
       - http:
-          method: put
+          method: patch
           path: v1/playlists/{playlistId}
           integration: lambda
+  schedules:
+    handler: src/api/schedules/index.router
+    events:
       - http:
           method: post
-          path: v1/playlists/{playlistId}
+          path: v1/schedules/{scheduleId}
+          integration: lambda
+      - http:
+          method: get
+          path: v1/schedules
+          integration: lambda
+      - http:
+          method: get
+          path: v1/schedules/{scheduleId}
+          integration: lambda
+      - http:
+          method: patch
+          path: v1/schedules/{scheduleId}
           integration: lambda

@@ -4,6 +4,7 @@ class EventController {
   /**
    * @param dynamo A connection to dynamo db.
    */
+  // TODO: (bdietz) - Need to fix this to be dynamic
   // constructor(dynamo, dbStage = null, currentWave = null) {
   constructor(dynamo, dbStage = 'dev', currentWave = 10) {
     console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);

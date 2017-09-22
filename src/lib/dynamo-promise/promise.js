@@ -11,13 +11,16 @@ class DynamoPromise {
 
   table(tableName) {
     if (!tableName) {
-      throw new Error('ERROR: no table name was supplied as an argument to DynamoPromise#table');
+      throw new Error(
+        'ERROR: no table name was supplied as an argument to DynamoPromise#table'
+      );
     }
 
     return new DynamoTable(this.dynamoConnection, tableName);
   }
 }
 
-const dynamoPromise = dynamoDbConnection => new DynamoPromise(dynamoDbConnection);
+const dynamoPromise = dynamoDbConnection =>
+  new DynamoPromise(dynamoDbConnection);
 
 export default dynamoPromise;

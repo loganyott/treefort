@@ -1,4 +1,4 @@
 import router from './lines.route';
-export {
-  router,
-}
+
+export default router;
+export { router };

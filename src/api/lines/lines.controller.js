@@ -1,8 +1,10 @@
 import uuidV1 from 'uuid/v1';
 import moment from 'moment-timezone';
 import Line from './line.model';
-import { query } from '../../lib/dynamo-promise';
-import { promise as dynamoPromiseFactory } from '../../lib/dynamo-promise';
+import {
+  promise as dynamoPromiseFactory,
+  query
+} from '../../lib/dynamo-promise';
 
 class LineController {
   /**
@@ -14,14 +16,21 @@ class LineController {
 
     if (!dbStage) {
       console.error('stageVariables.db_stage');
-      throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
+      throw new Error(
+        'ERROR: no stage was set. Please set db_stage in the appropriate stage'
+      );
     }
 
     this.lineTable = dynamoPromise.table(`${dbStage}-line`);
   }
 
   create(lineObject) {
-    const newLine = Object.assign({ }, new Line(lineObject), { id: uuidV1(), updated: moment().tz('America/Boise').format('YYYY-MM-DDTHH:mm') });
+    const newLine = Object.assign({}, new Line(lineObject), {
+      id: uuidV1(),
+      updated: moment()
+        .tz('America/Boise')
+        .format('YYYY-MM-DDTHH:mm')
+    });
     const promise = this.lineTable.put(newLine);
 
     return promise;
@@ -31,19 +40,17 @@ class LineController {
     let promise;
 
     if (lineId) {
-      promise = this.lineTable
-        .get(lineId);
+      promise = this.lineTable.get(lineId);
     } else {
-      promise = this.lineTable
-        .scan();
+      promise = this.lineTable.scan();
     }
 
     return promise;
   }
 
   update(id, newProperties) {
-    const query = query.createDynamoPatchQuery({ id: id }, newProperties);
-    const promise = this.lineTable.patch(query);
+    const updateQuery = query.createDynamoPatchQuery({ id }, newProperties);
+    const promise = this.lineTable.patch(updateQuery);
 
     return promise;
   }

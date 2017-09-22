@@ -1,4 +1,4 @@
 import router from './playlists.route';
-export {
-  router,
-}
+
+export default router;
+export { router };

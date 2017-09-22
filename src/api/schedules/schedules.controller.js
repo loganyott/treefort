@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import moment from 'moment-timezone';
 import uuidV1 from 'uuid/v1';
 import {
@@ -19,14 +18,21 @@ class ScheduleController {
 
     if (!dbStage) {
       console.error('stageVariables.db_stage');
-      throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
+      throw new Error(
+        'ERROR: no stage was set. Please set db_stage in the appropriate stage'
+      );
     }
 
     this.ScheduleTable = dynamoPromise.table(`${dbStage}-schedule`);
   }
 
   create(scheduleObject) {
-    const newSchedule = Object.assign({ }, new Schedule(scheduleObject), { id: uuidV1(), updated: moment().tz('America/Boise').format(formatString) });
+    const newSchedule = Object.assign({}, new Schedule(scheduleObject), {
+      id: uuidV1(),
+      updated: moment()
+        .tz('America/Boise')
+        .format(formatString)
+    });
     const promise = this.ScheduleTable.put(newSchedule);
 
     return promise;
@@ -36,19 +42,17 @@ class ScheduleController {
     let promise;
 
     if (scheduleId) {
-      promise = this.ScheduleTable
-        .get(scheduleId);
+      promise = this.ScheduleTable.get(scheduleId);
     } else {
-      promise = this.ScheduleTable
-        .scan();
+      promise = this.ScheduleTable.scan();
     }
 
     return promise;
   }
 
   update(id, newProperties) {
-    const query = query.createDynamoPatchQuery({ id: id }, newProperties);
-    const promise = this.ScheduleTable.patch(query);
+    const updateQuery = query.createDynamoPatchQuery({ id }, newProperties);
+    const promise = this.ScheduleTable.patch(updateQuery);
 
     return promise;
   }

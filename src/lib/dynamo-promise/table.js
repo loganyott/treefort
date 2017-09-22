@@ -7,18 +7,21 @@ class DynamoTable {
   }
 
   patch(query) {
-    const params = Object.assign({ }, { TableName: this.tableName, ReturnValues: 'ALL_NEW' }, query);
+    const params = Object.assign(
+      {},
+      { TableName: this.tableName, ReturnValues: 'ALL_NEW' },
+      query
+    );
 
     return new Promise((resolve, reject) => {
-      this.dynamo
-        .update(params, (patchError, patchResponse) => {
-          if (patchError) {
-            reject(patchError);
-          } else {
-            console.log('patchResponse ', JSON.stringify(patchResponse, null, 2));
-            resolve(patchResponse.Attributes);
-          }
-        });
+      this.dynamo.update(params, (patchError, patchResponse) => {
+        if (patchError) {
+          reject(patchError);
+        } else {
+          console.log('patchResponse ', JSON.stringify(patchResponse, null, 2));
+          resolve(patchResponse.Attributes);
+        }
+      });
     });
   }
 
@@ -31,26 +34,25 @@ class DynamoTable {
   put(item) {
     const putParams = {
       TableName: this.tableName,
-      Item: item,
+      Item: item
     };
 
     return new Promise((resolve, reject) => {
-      this.dynamo
-        .put(putParams, (putError, putResponse) => {
-          if (putError) {
-            reject(putError);
-          } else {
-            // Since dynamodb doesn't support ReturnValues: 'ALL_NEW' return the newly created properties to the client
-            // manually
-            resolve(item);
-          }
-        });
+      this.dynamo.put(putParams, putError => {
+        if (putError) {
+          reject(putError);
+        } else {
+          // Since dynamodb doesn't support ReturnValues: 'ALL_NEW' return the newly created properties to the client
+          // manually
+          resolve(item);
+        }
+      });
     });
   }
 
   scan(params) {
     let scanParams = {
-      TableName: this.tableName,
+      TableName: this.tableName
     };
 
     if (params) {
@@ -58,14 +60,13 @@ class DynamoTable {
     }
 
     return new Promise((resolve, reject) => {
-      this.dynamo
-        .scan(scanParams, (scanError, scanResponse) => {
-          if (scanError) {
-            reject(scanError);
-          } else {
-            resolve(scanResponse.Items);
-          }
-        });
+      this.dynamo.scan(scanParams, (scanError, scanResponse) => {
+        if (scanError) {
+          reject(scanError);
+        } else {
+          resolve(scanResponse.Items);
+        }
+      });
     });
   }
 
@@ -74,19 +75,18 @@ class DynamoTable {
     const getParams = {
       TableName: this.tableName,
       Key: {
-        id,
-      },
+        id
+      }
     };
 
     return new Promise((resolve, reject) => {
-      this.dynamo
-        .get(getParams, (getError, getResponse) => {
-          if (getError) {
-            reject(getError);
-          } else {
-            resolve(getResponse.Item);
-          }
-        });
+      this.dynamo.get(getParams, (getError, getResponse) => {
+        if (getError) {
+          reject(getError);
+        } else {
+          resolve(getResponse.Item);
+        }
+      });
     });
   }
 }

@@ -1,9 +1,9 @@
 import promise from './promise';
-import * as query from './query';
+import createDynamoPatchQuery from './query';
 import * as table from './table';
 
-export {
-  promise,
-  query,
-  table,
-}
+const query = {
+  createDynamoPatchQuery
+};
+
+export { promise, query, table };

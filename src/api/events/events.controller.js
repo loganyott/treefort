@@ -11,7 +11,9 @@ class EventController {
 
     if (!dbStage) {
       console.error('stageVariables.db_stage');
-      throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate api gateway stage.');
+      throw new Error(
+        'ERROR: no stage was set. Please set db_stage in the appropriate api gateway stage.'
+      );
     }
 
     this.eventTable = dynamoPromise.table(`${dbStage}-event`);
@@ -21,11 +23,9 @@ class EventController {
     let promise;
 
     if (eventId) {
-      promise = this.eventTable
-        .get(eventId);
+      promise = this.eventTable.get(eventId);
     } else {
-      promise = this.eventTable
-        .scan();
+      promise = this.eventTable.scan();
     }
 
     return promise;

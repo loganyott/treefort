@@ -4,7 +4,7 @@ import PerformerController from './performers.controller';
 
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
-const router =  (event, context, callback) => {
+const router = (event, context, callback) => {
   console.log('Received event:', JSON.stringify(event, null, 2));
 
   const done = response(callback);
@@ -28,7 +28,7 @@ const router =  (event, context, callback) => {
   switch (event.method) {
     case 'POST':
       performerController
-        .create((event.path ? event.path : null))
+        .create(event.path ? event.path : null)
         .then(postResponse => done(null, postResponse))
         .catch(error => done(error));
       break;
@@ -41,7 +41,7 @@ const router =  (event, context, callback) => {
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
       break;
-      // TODO: (bdietz) - Should probably fix this to be a patch to make it more uniform with the lines endpoint
+    // TODO: (bdietz) - Should probably fix this to be a patch to make it more uniform with the lines endpoint
     case 'PUT':
       performerController
         .update(event.path.performerId, JSON.parse(event.body).performer)

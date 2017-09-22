@@ -20,7 +20,7 @@ const router = (event, context, callback) => {
 
       playlistController
         .create(body)
-        .then((postResponse) => {
+        .then(postResponse => {
           done(null, postResponse);
         })
         .catch(error => done(error));

@@ -16,7 +16,9 @@ class PerformerController {
 
     if (!dbStage) {
       console.error('stageVariables.db_stage');
-      throw new Error('ERROR: no stage was set. Please set db_stage in the appropriate stage');
+      throw new Error(
+        'ERROR: no stage was set. Please set db_stage in the appropriate stage'
+      );
     }
 
     // TODO: (bdietz) deprecate this now that dynamo promise is a viable option.
@@ -33,28 +35,27 @@ class PerformerController {
     console.log(`PerformersController#get: ${performerId}`);
     let promise;
     if (performerId) {
-      promise = this.performerTable
-        .get(performerId)
-        .then((performer) => {
-          if (performer.wave > this.currentWave) {
-            throw new Error('UNAUTHORIZED: You may not access performers that have not been released yet.');
-          }
+      promise = this.performerTable.get(performerId).then(performer => {
+        if (performer.wave > this.currentWave) {
+          throw new Error(
+            'UNAUTHORIZED: You may not access performers that have not been released yet.'
+          );
+        }
 
-          return performer;
-        });
+        return performer;
+      });
     } else {
       const scanParams = {
         FilterExpression: '#wv <= :currentWave',
         ExpressionAttributeNames: {
-          '#wv': 'wave',
+          '#wv': 'wave'
         },
         ExpressionAttributeValues: {
-          ':currentWave': this.currentWave,
-        },
+          ':currentWave': this.currentWave
+        }
       };
 
-      promise = this.performerTable
-        .scan(scanParams);
+      promise = this.performerTable.scan(scanParams);
     }
 
     return promise;
@@ -64,7 +65,7 @@ class PerformerController {
     const updateParams = {
       TableName: this.PERFORMER_TABLE_NAME,
       Key: {
-        id: performerId,
+        id: performerId
       },
       // TODO: Update properties based upon what is passed in.
       UpdateExpression: `set
@@ -85,14 +86,14 @@ class PerformerController {
         ':n': performerInfo.name,
         ':si': performerInfo.social_url,
         ':sn': performerInfo.song_url,
-        ':w': performerInfo.wave,
+        ':w': performerInfo.wave
       },
       // Name is a reserved keyword for dynamo db. See http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html for more details.
       ExpressionAttributeNames: {
-        '#n': 'name',
+        '#n': 'name'
       },
       // The entire item is returned, as it appears after the update.
-      ReturnValues: 'NONE',
+      ReturnValues: 'NONE'
     };
 
     return new Promise((resolve, reject) => {
@@ -104,8 +105,8 @@ class PerformerController {
     const deleteParams = {
       TableName: this.PERFORMER_TABLE_NAME,
       Key: {
-        id: performerId,
-      },
+        id: performerId
+      }
     };
 
     return new Promise((resolve, reject) => {

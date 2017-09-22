@@ -96,3 +96,23 @@ functions:
           method: post
           path: v1/performers/{performerId}
           integration: lambda
+  playlists:
+    handler: src/api/playlists/index.router
+    events:
+      - http:
+          method: get
+          path: v1/playlists
+          integration: lambda
+      - http:
+          method: get
+          path: v1/playlists/{playlistId}
+          integration: lambda
+      # TODO: (bdietz) - Should probably fix this to be a patch to make it more uniform with the playlists endpoint
+      - http:
+          method: put
+          path: v1/playlists/{playlistId}
+          integration: lambda
+      - http:
+          method: post
+          path: v1/playlists/{playlistId}
+          integration: lambda

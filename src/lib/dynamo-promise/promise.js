@@ -1,4 +1,4 @@
-import DynamoTable from './dynamo-table';
+import DynamoTable from './table';
 
 class DynamoPromise {
   constructor(dynamoConnection) {

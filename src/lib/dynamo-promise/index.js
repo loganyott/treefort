@@ -1,6 +1,6 @@
-import promise from './dynamo-promise';
-import * as query from './dynamo-query';
-import * as table from './dynamo-table';
+import promise from './promise';
+import * as query from './query';
+import * as table from './table';
 
 export {
   promise,

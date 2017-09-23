@@ -40,6 +40,10 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "logs:events": "serverless logs -f events",
+    "logs:lines": "serverless logs -f lines",
+    "logs:performers": "serverless logs -f performers",
+    "logs:playlists": "serverless logs -f playlists",
+    "logs:schedules": "serverless logs -f schedules",
     "precommit": "lint-staged"
   },
   "lint-staged": {

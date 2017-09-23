@@ -16,10 +16,8 @@ const router = (event, context, callback) => {
 
   switch (event.method) {
     case 'POST': {
-      const body = JSON.parse(event.body);
-
       playlistController
-        .create(body)
+        .create(event.body)
         .then(postResponse => {
           done(null, postResponse);
         })
@@ -42,10 +40,9 @@ const router = (event, context, callback) => {
       if (event.path && event.path.playlistId) {
         pathParameters = event.path.playlistId;
       }
-      const body = JSON.parse(event.body);
 
       playlistController
-        .update(event.path.playlistId, body)
+        .update(event.path.playlistId, event.body)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 

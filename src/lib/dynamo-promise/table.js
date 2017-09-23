@@ -89,6 +89,25 @@ class DynamoTable {
       });
     });
   }
+
+  delete(id) {
+    const deleteParams = {
+      TableName: this.tableName,
+      Key: {
+        id
+      }
+    };
+
+    return new Promise((resolve, reject) => {
+      this.dynamo.delete(deleteParams, (deleteError, deleteResponse) => {
+        if (deleteError) {
+          reject(deleteError);
+        } else {
+          resolve(deleteResponse);
+        }
+      });
+    });
+  }
 }
 
 export default DynamoTable;

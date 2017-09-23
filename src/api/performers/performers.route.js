@@ -23,10 +23,9 @@ const router = (event, context, callback) => {
     done(new Error('ERROR: Internal server error'));
   }
 
-  let pathParameters = null;
-
   switch (event.method) {
-    case 'GET':
+    case 'GET': {
+      let pathParameters = null;
       if (event.path && event.path.performerId) {
         pathParameters = event.path.performerId;
       }
@@ -35,21 +34,25 @@ const router = (event, context, callback) => {
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
       break;
-    case 'PATCH':
+    }
+    case 'PATCH': {
       performerController
         .update(event.path.performerId, event.body)
         .then(putResponse => done(null, putResponse))
         .catch(error => done(error));
       break;
-    case 'DELETE':
+    }
+    case 'DELETE': {
       performerController
-        .remove(event.path.performerId)
+        .delete(event.path.performerId)
         .then(deleteResponse => done(null, deleteResponse))
         .catch(error => done(error));
       break;
-    default:
+    }
+    default: {
       done(new Error(`Unsupported method "${event.method}"`));
       break;
+    }
   }
 };
 

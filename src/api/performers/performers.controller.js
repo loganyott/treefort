@@ -1,6 +1,9 @@
 // TODO: (bdietz) - Need to remember why Promise is even being used in these scenarios, may want to tease these details back into that dynamo promise util instead.
 import Promise from 'bluebird';
-import { promise as dynamoPromiseFactory } from '../../lib/dynamo-promise';
+import {
+  promise as dynamoPromiseFactory,
+  query
+} from '../../lib/dynamo-promise';
 
 const createDynamoCallback = (resolve, reject) => (error, response) => {
   if (error) {
@@ -61,44 +64,11 @@ class PerformerController {
     return promise;
   }
 
-  update(performerId, performerInfo) {
-    const updateParams = {
-      TableName: this.PERFORMER_TABLE_NAME,
-      Key: {
-        id: performerId
-      },
-      // TODO: Update properties based upon what is passed in.
-      UpdateExpression: `set
-            bio        = :b,
-            forts      = :f,
-            home_town  = :h,
-            image_url  = :i,
-            #n         = :n,
-            social_url = :si,
-            song_url   = :sn,
-            wave       = :w
-            `,
-      ExpressionAttributeValues: {
-        ':b': performerInfo.bio,
-        ':f': performerInfo.forts,
-        ':h': performerInfo.home_town,
-        ':i': performerInfo.image_url,
-        ':n': performerInfo.name,
-        ':si': performerInfo.social_url,
-        ':sn': performerInfo.song_url,
-        ':w': performerInfo.wave
-      },
-      // Name is a reserved keyword for dynamo db. See http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html for more details.
-      ExpressionAttributeNames: {
-        '#n': 'name'
-      },
-      // The entire item is returned, as it appears after the update.
-      ReturnValues: 'NONE'
-    };
+  update(id, performerUpdates) {
+    const updateQuery = query.createDynamoPatchQuery({ id }, performerUpdates);
+    const promise = this.performerTable.patch(updateQuery);
 
-    return new Promise((resolve, reject) => {
-      this.dynamo.update(updateParams, createDynamoCallback(resolve, reject));
-    });
+    return promise;
   }
 
   remove(performerId) {

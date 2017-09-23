@@ -26,12 +26,6 @@ const router = (event, context, callback) => {
   let pathParameters = null;
 
   switch (event.method) {
-    case 'POST':
-      performerController
-        .create(event.path ? event.path : null)
-        .then(postResponse => done(null, postResponse))
-        .catch(error => done(error));
-      break;
     case 'GET':
       if (event.path && event.path.performerId) {
         pathParameters = event.path.performerId;
@@ -41,10 +35,9 @@ const router = (event, context, callback) => {
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
       break;
-    // TODO: (bdietz) - Should probably fix this to be a patch to make it more uniform with the lines endpoint
-    case 'PUT':
+    case 'PATCH':
       performerController
-        .update(event.path.performerId, JSON.parse(event.body).performer)
+        .update(event.path.performerId, event.body)
         .then(putResponse => done(null, putResponse))
         .catch(error => done(error));
       break;

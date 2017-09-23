@@ -63,7 +63,7 @@ functions:
     events:
       - http:
           method: post
-          path: v1/lines/{lineId}
+          path: v1/lines
           integration: lambda
       - http:
           method: get
@@ -82,7 +82,7 @@ functions:
     events:
       - http:
           method: post
-          path: v1/performers/{performerId}
+          path: v1/performers
           integration: lambda
       - http:
           method: get
@@ -106,7 +106,7 @@ functions:
     events:
       - http:
           method: post
-          path: v1/playlists/{playlistId}
+          path: v1/playlists
           integration: lambda
       - http:
           method: get
@@ -125,7 +125,7 @@ functions:
     events:
       - http:
           method: post
-          path: v1/schedules/{scheduleId}
+          path: v1/schedules
           integration: lambda
       - http:
           method: get

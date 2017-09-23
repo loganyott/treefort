@@ -16,6 +16,16 @@ const router = (event, context, callback) => {
   let pathParameters = null;
 
   switch (event.method) {
+    case 'POST': {
+      const body = JSON.parse(event.body);
+
+      lineController
+        .create(body)
+        .then(getResponse => done(null, getResponse))
+        .catch(error => done(error));
+
+      break;
+    }
     case 'GET':
       if (event.path && event.path.lineId) {
         pathParameters = event.path.lineId;
@@ -35,16 +45,6 @@ const router = (event, context, callback) => {
 
       lineController
         .update(event.path.lineId, body)
-        .then(getResponse => done(null, getResponse))
-        .catch(error => done(error));
-
-      break;
-    }
-    case 'POST': {
-      const body = JSON.parse(event.body);
-
-      lineController
-        .create(body)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 

@@ -13,20 +13,18 @@ const router = (event, context, callback) => {
   const lineController = new LineController(dynamo, 'dev', 5);
   const done = response(callback);
 
-  let pathParameters = null;
-
   switch (event.method) {
     case 'POST': {
-      const body = JSON.parse(event.body);
-
       lineController
-        .create(body)
+        .create(event.body)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 
       break;
     }
-    case 'GET':
+    case 'GET': {
+      let pathParameters = null;
+
       if (event.path && event.path.lineId) {
         pathParameters = event.path.lineId;
       }
@@ -37,16 +35,16 @@ const router = (event, context, callback) => {
         .catch(error => done(error));
 
       break;
+    }
     case 'PATCH': {
       if (event.path && event.path.lineId) {
-        pathParameters = event.path.lineId;
+        lineController
+          .update(event.path.lineId, event.body)
+          .then(getResponse => done(null, getResponse))
+          .catch(error => done(error));
+      } else {
+        done(new Error(`Unsupported parameteris`));
       }
-      const body = JSON.parse(event.body);
-
-      lineController
-        .update(event.path.lineId, body)
-        .then(getResponse => done(null, getResponse))
-        .catch(error => done(error));
 
       break;
     }

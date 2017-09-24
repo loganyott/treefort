@@ -13,13 +13,15 @@ module.exports = {
   externals: [nodeExternals()],
   target: 'node',
   module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel-loader'],
-      include: __dirname,
-      // Don't process the node modules directory. Some of the source may not be processable by webpack anyway.
-      exclude: /node_modules/,
-    }]
+    loaders: [
+      {
+        test: /\.js$/,
+        loaders: ['babel-loader'],
+        include: __dirname,
+        // Don't process the node modules directory. Some of the source may not be processable by webpack anyway.
+        exclude: /node_modules/
+      }
+    ]
   },
   output: {
     // Target the usual node environment module.exports = ...

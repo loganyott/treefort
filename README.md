@@ -61,8 +61,8 @@ npm run lint:fix
 
 #### Prettier
 
-We use prettier to enforce code style that is structural, nuff said. Set up your editor and stop bitching about the
-style because it's not going to change:
+We use prettier to enforce code style that is structural, nuff said. Set up your editor to automatically reformat your
+code as you write so you don't have to wait until you commit to find out your code style is wrong.
 
 https://github.com/prettier/prettier#editor-integration
 

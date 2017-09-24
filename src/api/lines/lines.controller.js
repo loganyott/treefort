@@ -23,12 +23,13 @@ class LineController {
   }
 
   create(lineObject) {
-    const newLine = Object.assign({}, new Line(lineObject), {
+    const newLine = {
+      ...new Line(lineObject),
       id: uuidV1(),
       updated: moment()
         .tz('America/Boise')
         .format('YYYY-MM-DDTHH:mm')
-    });
+    };
     const promise = this.lineTable.put(newLine);
 
     return promise;

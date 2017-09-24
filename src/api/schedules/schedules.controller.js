@@ -27,12 +27,13 @@ class ScheduleController {
   }
 
   create(scheduleObject) {
-    const newSchedule = Object.assign({}, new Schedule(scheduleObject), {
+    const newSchedule = {
+      ...new Schedule(scheduleObject),
       id: uuidV1(),
       updated: moment()
         .tz('America/Boise')
         .format(formatString)
-    });
+    };
     const promise = this.ScheduleTable.put(newSchedule);
 
     return promise;

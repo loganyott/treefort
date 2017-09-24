@@ -7,11 +7,11 @@ class DynamoTable {
   }
 
   patch(query) {
-    const params = Object.assign(
-      {},
-      { TableName: this.tableName, ReturnValues: 'ALL_NEW' },
-      query
-    );
+    const params = {
+      TableName: this.tableName,
+      ReturnValues: 'ALL_NEW',
+      ...query
+    };
 
     return new Promise((resolve, reject) => {
       this.dynamo.update(params, (patchError, patchResponse) => {
@@ -55,7 +55,7 @@ class DynamoTable {
     };
 
     if (params) {
-      scanParams = Object.assign({}, scanParams, params);
+      scanParams = { ...scanParams, ...params };
     }
 
     return new Promise((resolve, reject) => {

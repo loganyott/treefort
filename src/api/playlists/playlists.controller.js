@@ -38,10 +38,13 @@ class PlaylistController {
     if (playlistId) {
       promise = this.playlistTable.get(playlistId);
     } else {
-      promise = this.playlistTable.scan();
+      promise = this.playlistTable
+        .scan()
+        // Only sort the list of playlists
+        .then(getResponse => _.sortBy(getResponse, 'order'));
     }
 
-    return promise.then(getResponse => _.sortBy(getResponse, 'order'));
+    return promise;
   }
 
   update(id, newProperties) {

@@ -1,5 +1,7 @@
 import { promise as dynamoPromiseFactory } from '../../lib/dynamo-promise';
+import log from '../../utils/logging';
 
+@log
 class EventController {
   /**
    * @param dynamo A connection to dynamo db.

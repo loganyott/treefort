@@ -6,8 +6,6 @@ import LineController from './lines.controller';
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const router = (event, context, callback) => {
-  console.log('Received line:', JSON.stringify(event, null, 2));
-
   // TODO: (bdietz) - Fix this to be dynamic again
   // const lineController = new LineController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
   const lineController = new LineController(dynamo, 'dev', 5);

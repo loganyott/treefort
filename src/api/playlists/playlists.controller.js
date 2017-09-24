@@ -6,7 +6,9 @@ import {
   query
 } from '../../lib/dynamo-promise';
 import Playlist from './playlist.model';
+import log from '../../utils/logging';
 
+@log
 class PlaylistController {
   constructor(dynamo, dbStage, currentWave) {
     const dynamoPromise = dynamoPromiseFactory(dynamo);

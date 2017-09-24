@@ -5,14 +5,12 @@ import {
   promise as dynamoPromiseFactory,
   query
 } from '../../lib/dynamo-promise';
+import log from '../../utils/logging';
 
+@log
 class LineController {
-  /**
-   * @param dynamo A connection to dynamo db.
-   */
-  constructor(dynamo, dbStage, currentWave) {
+  constructor(dynamo, dbStage) {
     const dynamoPromise = dynamoPromiseFactory(dynamo);
-    console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
 
     if (!dbStage) {
       console.error('stageVariables.db_stage');
@@ -50,9 +48,7 @@ class LineController {
 
   update(id, newProperties) {
     const updateQuery = query.createDynamoPatchQuery({ id }, newProperties);
-    const promise = this.lineTable.patch(updateQuery);
-
-    return promise;
+    return this.lineTable.patch(updateQuery);
   }
 }
 

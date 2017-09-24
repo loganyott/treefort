@@ -5,9 +5,11 @@ import {
   query
 } from '../../lib/dynamo-promise';
 import Schedule from './schedule.model';
+import log from '../../utils/logging';
 
 const formatString = 'YYYY-MM-DDTHH:mm';
 
+@log
 class ScheduleController {
   /**
    * @param dynamo A connection to dynamo db.

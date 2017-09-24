@@ -16,10 +16,8 @@ const router = (event, context, callback) => {
 
   switch (event.method) {
     case 'POST': {
-      const body = JSON.parse(event.body);
-
       scheduleController
-        .create(body)
+        .create(event.body)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 
@@ -37,10 +35,8 @@ const router = (event, context, callback) => {
 
       break;
     case 'PATCH': {
-      const body = JSON.parse(event.body);
-
       scheduleController
-        .update(event.path.scheduleId, body)
+        .update(event.path.scheduleId, event.body)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
 

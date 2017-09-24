@@ -2,7 +2,9 @@ import {
   promise as dynamoPromiseFactory,
   query
 } from '../../lib/dynamo-promise';
+import log from '../../utils/logging';
 
+@log
 class PerformerController {
   constructor(dynamo, dbStage, currentWave) {
     console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);

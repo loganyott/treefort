@@ -10,10 +10,8 @@ import log from '../../utils/logging';
 
 @log
 class PlaylistController {
-  constructor(dynamo, dbStage, currentWave) {
+  constructor(dynamo, dbStage) {
     const dynamoPromise = dynamoPromiseFactory(dynamo);
-    console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
-
     if (!dbStage) {
       console.error('stageVariables.db_stage');
       throw new Error(

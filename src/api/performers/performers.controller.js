@@ -7,8 +7,6 @@ import log from '../../utils/logging';
 @log
 class PerformerController {
   constructor(dynamo, dbStage, currentWave) {
-    console.log(`dbStage: ${dbStage}, currentWave: ${currentWave}`);
-
     if (!dbStage) {
       console.error('stageVariables.db_stage');
       throw new Error(
@@ -24,7 +22,6 @@ class PerformerController {
   }
 
   get(performerId) {
-    console.log(`PerformersController#get: ${performerId}`);
     let promise;
     if (performerId) {
       promise = this.performerTable.get(performerId).then(performer => {

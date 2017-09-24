@@ -18,7 +18,6 @@ class DynamoTable {
         if (patchError) {
           reject(patchError);
         } else {
-          console.log('patchResponse ', JSON.stringify(patchResponse, null, 2));
           resolve(patchResponse.Attributes);
         }
       });

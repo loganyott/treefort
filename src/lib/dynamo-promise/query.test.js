@@ -11,8 +11,7 @@ describe(createDynamoPatchQuery.name, () => {
         // Money says that this will be the cause of intermittent test failures
         // TODO: (bdietz) - I'll buy you a beer if this causes a test failure for you
         ':updated': currentTime()
-      },
-      ExpressionAttributeNames: {}
+      }
     };
 
     expect(result).toEqual(expected);

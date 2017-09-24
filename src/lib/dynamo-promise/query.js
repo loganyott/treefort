@@ -58,12 +58,18 @@ const createDynamoPatchQuery = (primaryKeys, _propertiesToUpdate) => {
     {}
   );
 
-  const dynamoUpdateQuery = {
+  let dynamoUpdateQuery = {
     Key: primaryKeys,
     UpdateExpression: updateExpression,
-    ExpressionAttributeValues: expressionAttributeValues,
-    ExpressionAttributeNames: expressionAttributeNames
+    ExpressionAttributeValues: expressionAttributeValues
   };
+
+  if (Object.keys(expressionAttributeNames).length > 0) {
+    dynamoUpdateQuery = {
+      ...dynamoUpdateQuery,
+      ExpressionAttributeNames: expressionAttributeNames
+    };
+  }
 
   return dynamoUpdateQuery;
 };

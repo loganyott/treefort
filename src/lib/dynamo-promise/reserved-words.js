@@ -1,3 +1,4 @@
+// The Reserved words were taken from http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
 export default new Map([
   ['ABORT', 'A0'],
   ['ABSOLUTE', 'A1'],

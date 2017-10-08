@@ -9,7 +9,7 @@ const router = (event, context, callback) => {
 
   const playlistController = new PlaylistController(
     dynamo,
-    process.env.stage,
+    process.env.STAGE,
     process.env.CURRENT_WAVE
   );
   const done = response(callback);

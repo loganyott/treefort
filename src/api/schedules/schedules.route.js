@@ -9,7 +9,7 @@ const router = (event, context, callback) => {
 
   const scheduleController = new ScheduleController(
     dynamo,
-    process.env.stage,
+    process.env.STAGE,
     process.env.CURRENT_WAVE
   );
 

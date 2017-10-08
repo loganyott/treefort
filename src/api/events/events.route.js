@@ -10,7 +10,7 @@ const router = (event, context, callback) => {
 
   const eventController = new EventController(
     dynamo,
-    process.env.stage,
+    process.env.STAGE,
     process.env.CURRENT_WAVE
   );
   const done = response(callback);

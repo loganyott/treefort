@@ -8,7 +8,7 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 const router = (event, context, callback) => {
   const lineController = new LineController(
     dynamo,
-    process.env.stage,
+    process.env.STAGE,
     process.env.CURRENT_WAVE
   );
   const done = response(callback);

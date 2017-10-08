@@ -18,6 +18,7 @@ provider:
   runtime: nodejs6.10
   # Oregon
   region: us-west-2
+  # Reference the variable custom.stage in this file so it can be used in the env.yml file
   environment: ${file(env.yml):${self:custom.stage}}
   iamRoleStatements:
     - Effect: Allow

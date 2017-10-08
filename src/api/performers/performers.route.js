@@ -15,7 +15,7 @@ const router = (event, context, callback) => {
 
   const performerController = new PerformerController(
     dynamo,
-    process.env.stage,
+    process.env.STAGE,
     process.env.CURRENT_WAVE
   );
 

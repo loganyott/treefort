@@ -13,22 +13,17 @@ const router = (event, context, callback) => {
     done(new Error('Internal server error.'));
   }
 
-  let performerController;
-  try {
-    // TODO: (bdietz) - Fix this to be dynamic again
-    // performerController = new PerformerController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
-    performerController = new PerformerController(dynamo, 'dev', 5);
-  } catch (error) {
-    console.error(JSON.stringify(error));
-    done(new Error('ERROR: Internal server error'));
-  }
+  const performerController = new PerformerController(
+    dynamo,
+    process.env.stage,
+    process.env.CURRENT_WAVE
+  );
 
   switch (event.method) {
     case 'GET': {
-      let pathParameters = null;
-      if (event.path && event.path.performerId) {
-        pathParameters = event.path.performerId;
-      }
+      const pathParameters =
+        event.path && event.path.performerId ? event.path.performerId : null;
+
       performerController
         .get(pathParameters)
         .then(getResponse => done(null, getResponse))

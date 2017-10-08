@@ -7,12 +7,13 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 const router = (event, context, callback) => {
   console.log('Received schedule:', JSON.stringify(event, null, 2));
 
-  // const scheduleController = new ScheduleController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
-  // TODO: (bdietz) - Fix this to be dynamic again
-  const scheduleController = new ScheduleController(dynamo, 'dev', 5);
-  const done = response(callback);
+  const scheduleController = new ScheduleController(
+    dynamo,
+    process.env.stage,
+    process.env.CURRENT_WAVE
+  );
 
-  let pathParameters = null;
+  const done = response(callback);
 
   switch (event.method) {
     case 'POST': {
@@ -23,10 +24,9 @@ const router = (event, context, callback) => {
 
       break;
     }
-    case 'GET':
-      if (event.path && event.path.scheduleId) {
-        pathParameters = event.path.scheduleId;
-      }
+    case 'GET': {
+      const pathParameters =
+        event.path && event.path.scheduleId ? event.path.scheduleId : null;
 
       scheduleController
         .get(pathParameters)
@@ -34,6 +34,7 @@ const router = (event, context, callback) => {
         .catch(error => done(error));
 
       break;
+    }
     case 'PATCH': {
       scheduleController
         .update(event.path.scheduleId, event.body)

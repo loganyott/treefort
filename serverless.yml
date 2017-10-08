@@ -2,7 +2,9 @@ service: treefort-api
 
 # Build specific configurations
 custom:
- webpackIncludeModules: true
+  webpackIncludeModules: true
+  # Default to the dev stage, otherwise use the given stage from cli
+  stage: "${opt:stage, self:provider.stage}"
 package:
   individually: true
 plugins:
@@ -16,13 +18,7 @@ provider:
   runtime: nodejs6.10
   # Oregon
   region: us-west-2
-  environment:
-    # TODO: (bdietz) - Need to figure out how to define stage if possible. Would still be nice
-    EVENT_TABLE: ${opt:stage, self:provider.stage}-event
-    LINE_TABLE: ${opt:stage, self:provider.stage}-line
-    PERFORMER_TABLE: ${opt:stage, self:provider.stage}-performer
-    PLAYLIST_TABLE: ${opt:stage, self:provider.stage}-playlist
-    SCHEDULE_TABLE: ${opt:stage, self:provider.stage}-schedule
+  environment: ${file(env.yml):${self:custom.stage}}
   iamRoleStatements:
     - Effect: Allow
       Action:

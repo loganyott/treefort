@@ -7,12 +7,12 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 const router = (event, context, callback) => {
   console.log('Received event:', JSON.stringify(event, null, 2));
 
-  // TODO: (bdietz) - Fix this to be dynamic again
-  // const playlistController = new PlaylistController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
-  const playlistController = new PlaylistController(dynamo, 'dev', 5);
+  const playlistController = new PlaylistController(
+    dynamo,
+    process.env.stage,
+    process.env.CURRENT_WAVE
+  );
   const done = response(callback);
-
-  let pathParameters = null;
 
   switch (event.method) {
     case 'POST': {
@@ -25,22 +25,17 @@ const router = (event, context, callback) => {
 
       break;
     }
-    case 'GET':
-      if (event.path && event.path.playlistId) {
-        pathParameters = event.path.playlistId;
-      }
+    case 'GET': {
+      const pathParameters =
+        event.path && event.path.playlistId ? event.path.playlistId : null;
 
       playlistController
         .get(pathParameters)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
-
       break;
+    }
     case 'PATCH': {
-      if (event.path && event.path.playlistId) {
-        pathParameters = event.path.playlistId;
-      }
-
       playlistController
         .update(event.path.playlistId, event.body)
         .then(getResponse => done(null, getResponse))

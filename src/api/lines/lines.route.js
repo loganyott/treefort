@@ -6,9 +6,11 @@ import LineController from './lines.controller';
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const router = (event, context, callback) => {
-  // TODO: (bdietz) - Fix this to be dynamic again
-  // const lineController = new LineController(dynamo, event.stageVariables.db_stage, event.stageVariables.current_wave);
-  const lineController = new LineController(dynamo, 'dev', 5);
+  const lineController = new LineController(
+    dynamo,
+    process.env.stage,
+    process.env.CURRENT_WAVE
+  );
   const done = response(callback);
 
   switch (event.method) {
@@ -21,11 +23,8 @@ const router = (event, context, callback) => {
       break;
     }
     case 'GET': {
-      let pathParameters = null;
-
-      if (event.path && event.path.lineId) {
-        pathParameters = event.path.lineId;
-      }
+      const pathParameters =
+        event.path && event.path.lineId ? event.path.lineId : null;
 
       lineController
         .get(pathParameters)

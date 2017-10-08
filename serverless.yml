@@ -1,0 +1,133 @@
+service: treefort-api
+
+# Build specific configurations
+custom:
+  webpackIncludeModules: true
+  # Default to the dev stage, otherwise use the given stage from cli
+  stage: "${opt:stage, self:provider.stage}"
+package:
+  individually: true
+plugins:
+  - serverless-webpack
+
+# Infrastructure provider confs
+provider:
+  name: aws
+  # Default to the dev stage set options to define the stage
+  stage: dev
+  runtime: nodejs6.10
+  # Oregon
+  region: us-west-2
+  # Reference the variable custom.stage in this file so it can be used in the env.yml file
+  environment: ${file(env.yml):${self:custom.stage}}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      # TODO: (bdietz) - depends upon how granular we want to make this, we could let every function have access to
+      # every table, which doesn't feel _wonderful_. Seems like we would want to have a per function role that has
+      # access to specific tables.
+      # or set an iam role per function top level to have more fine grained access
+      Resource:
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.EVENT_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.LINE_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.PERFORMER_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.PLAYLIST_TABLE}"
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCHEDULE_TABLE}"
+
+# Endpoint functions
+functions:
+  # This is for the endpoint of the name "events".
+  events:
+    handler: src/api/events/index.router
+    # This is a generic configuration and is not referring to festival events
+    events:
+      - http:
+          method: get
+          path: v1/events
+          integration: lambda
+      - http:
+          method: get
+          path: v1/events/{eventId}
+          integration: lambda
+  lines:
+    handler: src/api/lines/index.router
+    events:
+      - http:
+          method: post
+          path: v1/lines
+          integration: lambda
+      - http:
+          method: get
+          path: v1/lines
+          integration: lambda
+      - http:
+          method: get
+          path: v1/lines/{lineId}
+          integration: lambda
+      - http:
+          method: patch
+          path: v1/lines/{lineId}
+          integration: lambda
+  performers:
+    handler: src/api/performers/index.router
+    events:
+      - http:
+          method: get
+          path: v1/performers
+          integration: lambda
+      - http:
+          method: get
+          path: v1/performers/{performerId}
+          integration: lambda
+      - http:
+          method: patch
+          path: v1/performers/{performerId}
+          integration: lambda
+      - http:
+          method: delete
+          path: v1/performers/{performerId}
+          integration: lambda
+  playlists:
+    handler: src/api/playlists/index.router
+    events:
+      - http:
+          method: post
+          path: v1/playlists
+          integration: lambda
+      - http:
+          method: get
+          path: v1/playlists
+          integration: lambda
+      - http:
+          method: get
+          path: v1/playlists/{playlistId}
+          integration: lambda
+      - http:
+          method: patch
+          path: v1/playlists/{playlistId}
+          integration: lambda
+  schedules:
+    handler: src/api/schedules/index.router
+    events:
+      - http:
+          method: post
+          path: v1/schedules
+          integration: lambda
+      - http:
+          method: get
+          path: v1/schedules
+          integration: lambda
+      - http:
+          method: get
+          path: v1/schedules/{scheduleId}
+          integration: lambda
+      - http:
+          method: patch
+          path: v1/schedules/{scheduleId}
+          integration: lambda

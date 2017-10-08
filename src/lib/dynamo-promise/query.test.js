@@ -1,4 +1,4 @@
-import createDynamoPatchQuery, { currentTime } from './query';
+import createDynamoPatchQuery from './query';
 
 describe(createDynamoPatchQuery.name, () => {
   it('Creates a basic query', () => {
@@ -8,9 +8,7 @@ describe(createDynamoPatchQuery.name, () => {
       UpdateExpression: 'set foo = :foo, updated = :updated',
       ExpressionAttributeValues: {
         ':foo': 'bar',
-        // Money says that this will be the cause of intermittent test failures
-        // TODO: (bdietz) - I'll buy you a beer if this causes a test failure for you
-        ':updated': currentTime()
+        ':updated': result.ExpressionAttributeValues[':updated']
       }
     };
 
@@ -32,9 +30,7 @@ describe(createDynamoPatchQuery.name, () => {
         ':list': [1, 2, 3, 4],
         ':name': 'foobar',
         ':order': 1,
-        // Money says that this will be the cause of intermittent test failures
-        // TODO: (bdietz) - I'll buy you a beer if this causes a test failure for you
-        ':updated': currentTime()
+        ':updated': result.ExpressionAttributeValues[':updated']
       },
       Key: {
         id: 1

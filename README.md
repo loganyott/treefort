@@ -14,13 +14,20 @@ The backend api for web-fort and app-fort
 
 ## Setting up your box
 
-### Node
+### Node & NVM
 
-Make sure that you install the node modules associated with this package. We do not use yarn, instead we use npm v5.
+Install `nvm`, this makes sure we're all running the same version of node. See 
+https://github.com/creationix/nvm for install steps. After you get `nvm` setup you'll want to make
+sure that you are running version of node is specified in the `.nvmrc` file by running `nvm use`.
 
-In the project directory run the following command to install the project dependencies and developer dependencies.
+After you get the proper version of node installed make sure that you install the node modules
+associated with this package. We do not use yarn, instead we use npm v5. In the project directory 
+run the following command to install the project dependencies and developer dependencies.
 
 ```bash
+# install serverless globally
+npm install serverless -g
+
 # install all modules specified in the package.json
 npm i
 ```
@@ -30,16 +37,6 @@ npm i
 // TODO: (bdietz) - Need to make this more descriptive
 
 Make sure that you have your aws profile set up
-
-### Environment consistency
-
-#### nvm
-
-Install nvm, this makes sure we're all running the same version of node.
-
-https://github.com/creationix/nvm
-
-You'll want to make sure that this is set up to default to whatever version of node is specified in the .nvmrc file.
 
 ### Code consistency
 

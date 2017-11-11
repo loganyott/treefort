@@ -11,7 +11,7 @@ const router = (event, context, callback) => {
   const eventController = new EventController(
     dynamo,
     process.env.STAGE,
-    process.env.CURRENT_WAVE
+    process.env.CURRENT_YEAR
   );
   const done = response(callback);
 

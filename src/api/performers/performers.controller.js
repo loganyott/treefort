@@ -4,43 +4,44 @@ import {
 } from '../../lib/dynamo-promise';
 import log from '../../utils/logging';
 
+/**
+ * A class to encapsulate CRUD operations on the $PREFIX-performer tables
+ */
 @log
 class PerformerController {
-  constructor(dynamo, dbStage, currentWave) {
-    if (!dbStage) {
-      console.error('stageVariables.db_stage');
-      throw new Error(
-        'ERROR: no stage was set. Please set db_stage in the appropriate stage'
-      );
-    }
-
-    this.dbStage = dbStage;
-    this.dynamoPromise = dynamoPromiseFactory(dynamo);
-    this.performerTable = this.dynamoPromise.table(`${dbStage}-performer`);
-    // The API Gateway stage variable forces it to be a string cast to Number.
-    this.currentWave = Number(currentWave);
+  /**
+   * @param {object} dynamo object connection to dynamodb
+   * @param {string} dbStage 'dev' or 'prod' to determine the dynamodb table prefix
+   * @param {string} currentYear ex. '2018' 
+   */
+  constructor(dynamo, dbStage, currentYear) {
+    const dynamoPromise = dynamoPromiseFactory(dynamo);
+    this.performerTable = dynamoPromise.table(`${dbStage}-performer`);
+    this.currentYear = currentYear;
   }
 
+  /**
+   * Simple table scan of a filter query against the performer table for the given dbStage
+   * @param {string} performerId the ID of the performer someone is interested in getting
+   */
   get(performerId) {
     let promise;
     if (performerId) {
-      promise = this.performerTable.get(performerId).then(performer => {
-        if (performer.wave > this.currentWave) {
-          throw new Error(
-            'UNAUTHORIZED: You may not access performers that have not been released yet.'
-          );
-        }
+      promise = this.performerTable.get(performerId).then(performer => 
+        // TODO: fix this check for 2018
+        // if (performer.wave > this.currentWave) {
+        //   throw new Error(
+        //     'UNAUTHORIZED: You may not access performers that have not been released yet.'
+        //   );
+        // }
 
-        return performer;
-      });
+         performer
+      );
     } else {
       const scanParams = {
-        FilterExpression: '#wv <= :currentWave',
-        ExpressionAttributeNames: {
-          '#wv': 'wave'
-        },
+        FilterExpression: 'begins_with(id, :currentYear)',
         ExpressionAttributeValues: {
-          ':currentWave': this.currentWave
+          ':currentYear': this.currentYear
         }
       };
 

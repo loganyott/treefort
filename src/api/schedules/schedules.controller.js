@@ -9,21 +9,20 @@ import log from '../../utils/logging';
 
 const formatString = 'YYYY-MM-DDTHH:mm';
 
+/**
+ * A class to encapsulate CRUD operations on the $PREFIX-schedule tables
+ */
 @log
 class ScheduleController {
   /**
-   * @param dynamo A connection to dynamo db.
+   * @param {object} dynamo object connection to dynamodb
+   * @param {string} dbStage 'dev' or 'prod' to determine the dynamodb table prefix
+   * @param {string} currentYear ex. '2018' 
    */
-  constructor(dynamo, dbStage) {
+  constructor(dynamo, dbStage, currentYear) {
     const dynamoPromise = dynamoPromiseFactory(dynamo);
-
-    if (!dbStage) {
-      throw new Error(
-        'ERROR: no stage was set. Please set db_stage in the appropriate stage'
-      );
-    }
-
     this.ScheduleTable = dynamoPromise.table(`${dbStage}-schedule`);
+    this.currentYear = currentYear;
   }
 
   create(scheduleObject) {

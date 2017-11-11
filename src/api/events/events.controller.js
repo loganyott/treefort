@@ -1,24 +1,26 @@
 import { promise as dynamoPromiseFactory } from '../../lib/dynamo-promise';
 import log from '../../utils/logging';
 
+/**
+ * A class to encapsulate CRUD operations on the $PREFIX-events tables
+ */
 @log
 class EventController {
   /**
-   * @param dynamo A connection to dynamo db.
+   * @param {object} dynamo object connection to dynamodb
+   * @param {string} dbStage 'dev' or 'prod' to determine the dynamodb table prefix
+   * @param {string} currentYear ex. '2018' 
    */
-  constructor(dynamo, dbStage = 'dev') {
+  constructor(dynamo, dbStage, currentYear) {
     const dynamoPromise = dynamoPromiseFactory(dynamo);
-
-    if (!dbStage) {
-      console.error('stageVariables.db_stage');
-      throw new Error(
-        'ERROR: no stage was set. Please set db_stage in the appropriate api gateway stage.'
-      );
-    }
-
     this.eventTable = dynamoPromise.table(`${dbStage}-event`);
+    this.currentYear = currentYear;
   }
 
+  /**
+   * TODO: filter by this.currentYear
+   * @param {string} eventId the Dynamo id column of an event a user is trying to retrieve
+   */
   get(eventId) {
     let promise;
 

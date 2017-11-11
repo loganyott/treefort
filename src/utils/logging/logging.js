@@ -3,11 +3,11 @@ import winston from 'winston';
 winston.level = process.env.LOG_LEVEL || 'debug';
 const methods = new Set(['get', 'update', 'create', 'delete']);
 
-const winstonLogDecorator = Controller => (dynamo, dbStage, wave = null) => {
+const winstonLogDecorator = Controller => (dynamo, dbStage, currentYear) => {
   // eslint-disable-next-line
-  winston.log('debug', `dynamo: ${dynamo}, dbStage: ${dbStage}, wave: ${wave}`);
+  winston.log('debug', `dbStage: ${dbStage}, currentYear: ${currentYear}`);
 
-  const controller = new Controller(dynamo, dbStage, wave);
+  const controller = new Controller(dynamo, dbStage, currentYear);
 
   // Turns out that es6 class methods are not immediately enumerable. This is why getOwnPropertyNames is required
   // eslint-disable-next-line

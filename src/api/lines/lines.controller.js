@@ -7,19 +7,20 @@ import {
 } from '../../lib/dynamo-promise';
 import log from '../../utils/logging';
 
+/**
+ * A class to encapsulate CRUD operations on the $PREFIX-line tables
+ */
 @log
 class LineController {
-  constructor(dynamo, dbStage) {
+  /**
+   * @param {object} dynamo object connection to dynamodb
+   * @param {string} dbStage 'dev' or 'prod' to determine the dynamodb table prefix
+   * @param {string} currentYear ex. '2018' 
+   */
+  constructor(dynamo, dbStage, currentYear) {
     const dynamoPromise = dynamoPromiseFactory(dynamo);
-
-    if (!dbStage) {
-      console.error('stageVariables.db_stage');
-      throw new Error(
-        'ERROR: no stage was set. Please set db_stage in the appropriate stage'
-      );
-    }
-
     this.lineTable = dynamoPromise.table(`${dbStage}-line`);
+    this.currentYear = currentYear;
   }
 
   create(lineObject) {

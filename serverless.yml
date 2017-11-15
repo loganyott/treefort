@@ -51,10 +51,12 @@ functions:
           method: get
           path: v1/events
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/events/{eventId}
           integration: lambda
+          cors: true
   lines:
     handler: src/api/lines/index.router
     events:
@@ -62,18 +64,22 @@ functions:
           method: post
           path: v1/lines
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/lines
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/lines/{lineId}
           integration: lambda
+          cors: true
       - http:
           method: patch
           path: v1/lines/{lineId}
           integration: lambda
+          cors: true
   performers:
     handler: src/api/performers/index.router
     events:
@@ -81,18 +87,22 @@ functions:
           method: get
           path: v1/performers
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/performers/{performerId}
           integration: lambda
+          cors: true
       - http:
           method: patch
           path: v1/performers/{performerId}
           integration: lambda
+          cors: true
       - http:
           method: delete
           path: v1/performers/{performerId}
           integration: lambda
+          cors: true
   playlists:
     handler: src/api/playlists/index.router
     events:
@@ -100,18 +110,22 @@ functions:
           method: post
           path: v1/playlists
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/playlists
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/playlists/{playlistId}
           integration: lambda
+          cors: true
       - http:
           method: patch
           path: v1/playlists/{playlistId}
           integration: lambda
+          cors: true
   schedules:
     handler: src/api/schedules/index.router
     events:
@@ -119,15 +133,19 @@ functions:
           method: post
           path: v1/schedules
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/schedules
           integration: lambda
+          cors: true
       - http:
           method: get
           path: v1/schedules/{scheduleId}
           integration: lambda
+          cors: true
       - http:
           method: patch
           path: v1/schedules/{scheduleId}
           integration: lambda
+          cors: true

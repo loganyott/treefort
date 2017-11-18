@@ -44,8 +44,8 @@ jobs:
           command: npm install
 
       - run:
-          name: deploy to https://api.tmf.zone/dev
-          command: npm deploy:$CIRCLE_BRANCH
+          name: deploying $CIRCLE_BRANCH api
+          command: npm run deploy:$CIRCLE_BRANCH
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}

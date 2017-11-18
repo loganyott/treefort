@@ -43,12 +43,9 @@ jobs:
           name: npm install
           command: npm install
 
-      # - run:
-      #     name: deploy to https://api.tmf.zone/dev
-      #     command: npm deploy:$CIRCLE_BRANCH
       - run:
-          name: test serverless install
-          command: serverless --version
+          name: deploy to https://api.tmf.zone/dev
+          command: npm deploy:$CIRCLE_BRANCH
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}

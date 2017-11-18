@@ -1,0 +1,70 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/node:8.5.0
+    steps:
+      - checkout
+
+      - run:
+          name: update npm
+          command: sudo npm install -g npm@latest
+
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+
+      - run:
+          name: npm install
+          command: npm install
+
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+      - run:
+          name: run unit tests
+          command: npm test
+
+      - run:
+          name: run linter
+          command: npm run lint
+
+  deploy:
+    docker:
+      - image: circleci/node:8.5.0
+    steps:
+      - checkout
+
+      - run:
+          name: update npm
+          command: sudo npm install -g npm@latest
+
+      - run:
+          name: install serverless globally
+          command: npm install -g serverless
+
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+
+      - run:
+          name: npm install
+          command: npm install
+
+      - run:
+          name: deploy to https://api.tmf.zone/dev
+          command: npm deploy:$CIRCLE_BRANCH
+
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+workflows:
+  version: 2
+  test-and-deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test

@@ -34,7 +34,7 @@ jobs:
 
       - run:
           name: install serverless globally
-          command: npm install -g serverless
+          command: sudo npm install -g serverless
 
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
@@ -43,9 +43,12 @@ jobs:
           name: npm install
           command: npm install
 
+      # - run:
+      #     name: deploy to https://api.tmf.zone/dev
+      #     command: npm deploy:$CIRCLE_BRANCH
       - run:
-          name: deploy to https://api.tmf.zone/dev
-          command: npm deploy:$CIRCLE_BRANCH
+          name: test serverless install
+          command: serverless --version
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}

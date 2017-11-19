@@ -1,36 +1,85 @@
 {
   "name": "api-fort",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "The treefort public API hosted on AWS Lambda.",
   "main": "index.js",
   "dependencies": {
+    "aws-sdk": "^2.121.0",
+    "babel-runtime": "^6.26.0",
     "bluebird": "^3.4.6",
     "lodash": "^4.17.2",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "winston": "^2.3.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.7.10",
-    "chai": "^3.5.0",
-    "eslint": "^3.12.0",
-    "eslint-config-airbnb": "^13.0.0",
-    "eslint-plugin-import": "^2.2.0",
-    "mocha": "^3.2.0"
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^8.0.0",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^4.7.2",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-config-prettier": "^2.5.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jest": "^21.1.0",
+    "husky": "^0.14.3",
+    "jest": "^21.1.0",
+    "lint-staged": "^4.2.1",
+    "prettier": "^1.7.0",
+    "serverless-webpack": "^3.0.0",
+    "webpack": "^3.6.0",
+    "webpack-node-externals": "^1.6.0"
   },
-  "engineStrict": true,
-  "engines": {
-    "npm": "4.3"
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ]
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha \"src/**/*.test.js\"",
-    "deploy:api-gateway": "aws apigateway put-rest-api --rest-api-id 7n74ikdn58 --mode overwrite --body 'file://./src/api-gateway/TreefortAPI-dev-swagger.json'; aws apigateway create-deployment --rest-api-id 7n74ikdn58 --stage-name dev",
-    "deploy:all": "npm run deploy:events; npm run deploy:performers; npm run deploy:playlists; npm run deploy:venues; npm run deploy:all",
-    "deploy:events": "zip -j events-api.zip ./src/events-api.js aws; lambda update-function-code --function-name eventsAPI --zip-file fileb://events-api.zip",
-    "deploy:performers": "zip -j performers-api.zip ./src/performers-api.js; aws lambda update-function-code --function-name performersAPI --zip-file fileb://performers-api.zip",
-    "deploy:playlists": "pushd src; zip -r ../playlists-api.zip ./playlists-api.js ./lib ./controllers ../node_modules; popd; aws lambda update-function-code --function-name playlistsAPI --zip-file fileb://playlists-api.zip",
-    "deploy:venues": "zip -j venues-api.zip ./src/venues-api.js; aws lambda update-function-code --function-name venuesAPI --zip-file fileb://venues-api.zip",
-    "lint": "eslint src"
+    "build": "serverless webpack --out dist",
+    "deploy:develop": "serverless deploy --stage dev",
+    "deploy:dev-all": "serverless deploy --stage dev",
+    "deploy:dev-events": "serverless deploy --stage dev --function events",
+    "deploy:dev-lines": "serverless deploy --stage dev --function lines",
+    "deploy:dev-performers": "serverless deploy --stage dev --function performers",
+    "deploy:dev-playlists": "serverless deploy --stage dev --function playlists",
+    "deploy:dev-schedules": "serverless deploy --stage dev --function schedules",
+    "deploy:master": "serverless deploy --stage prod",
+    "deploy:prod-all": "serverless deploy --stage prod",
+    "deploy:prod-events": "serverless deploy --stage prod --function events",
+    "deploy:prod-lines": "serverless deploy --stage prod --function lines",
+    "deploy:prod-performers": "serverless deploy --stage prod --function performers",
+    "deploy:prod-playlists": "serverless deploy --stage prod --function playlists",
+    "deploy:prod-schedules": "serverless deploy --stage prod --function schedules",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "logs:dev-events": "serverless logs --stage dev  --function events",
+    "logs:dev-lines": "serverless logs --stage dev  --function lines",
+    "logs:dev-performers": "serverless logs --stage dev  --function performers",
+    "logs:dev-playlists": "serverless logs --stage dev  --function playlists",
+    "logs:dev-schedules": "serverless logs --stage dev  --function schedules",
+    "logs:prod-events": "serverless logs --stage prod --function events",
+    "logs:prod-lines": "serverless logs --stage prod --function lines",
+    "logs:prod-performers": "serverless logs --stage prod --function performers",
+    "logs:prod-playlists": "serverless logs --stage prod --function playlists",
+    "logs:prod-schedules": "serverless logs --stage prod --function schedules",
+    "precommit": "lint-staged",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -41,7 +90,7 @@
     "lambda",
     "api"
   ],
-  "author": "bdietz, junger, bernhardtgl",
+  "author": "bdietz, junger",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/treefortmusicfest/api-fort/issues"

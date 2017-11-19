@@ -36,7 +36,13 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-# Amazingly, not everyone uses IntelliJ ¯\_(ツ)_/¯
+# IDEs
 .idea
-
 *.iml
+.vscode
+
+# serverless configuration
+.serverless
+
+# webpack build
+.webpack

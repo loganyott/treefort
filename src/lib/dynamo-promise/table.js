@@ -50,23 +50,41 @@ class DynamoTable {
   }
 
   scan(params) {
+    // suitable defaults
     let scanParams = {
       TableName: this.tableName
     };
 
+    // add in callers options
     if (params) {
       scanParams = { ...scanParams, ...params };
     }
 
-    return new Promise((resolve, reject) => {
+    // items to aggregate the items through the possible recursion
+    let items = [];
+    const queryExecute = (resolve, reject) => {
       this.dynamo.scan(scanParams, (scanError, scanResponse) => {
+        // something bad happened, reject this promise and output the error
         if (scanError) {
           reject(scanError);
         } else {
-          resolve(scanResponse.Items);
+          // we got some usable items back, concat them to our array and either
+          // recurse or resolve
+          items = items.concat(scanResponse.Items);
+
+          // DynamoDB only gives us 1MB of items back at a time, if we have more than
+          // 1MB this value will be set and we recurse, otherwise return our aggregated
+          // array of items
+          if (scanResponse.LastEvaluatedKey) {
+            scanParams.ExclusiveStartKey = scanResponse.LastEvaluatedKey;
+            queryExecute(resolve, reject);
+          } else {
+            resolve(items);
+          }
         }
       });
-    });
+    };
+    return new Promise(queryExecute);
   }
 
   // TODO: (bdietz) this could be better support dynamo db's api.

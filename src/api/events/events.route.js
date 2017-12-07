@@ -6,31 +6,29 @@ import response from '../../utils/response';
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const router = (event, context, callback) => {
-  console.log('Received event:', JSON.stringify(event, null, 2));
+  const done = response(callback);
 
   const eventController = new EventController(
     dynamo,
     process.env.STAGE,
     process.env.CURRENT_YEAR
   );
-  const done = response(callback);
-
-  let pathParameters = null;
 
   switch (event.method) {
-    case 'GET':
-      if (event.path && event.path.eventId) {
-        pathParameters = event.path.eventId;
-      }
+    case 'GET': {
+      const pathParameters =
+        event.path && event.path.eventId ? event.path.eventId : null;
+
       eventController
         .get(pathParameters)
         .then(getResponse => done(null, getResponse))
         .catch(error => done(error));
-
       break;
-    default:
+    }
+    default: {
       done(new Error(`Unsupported method "${event.method}"`));
       break;
+    }
   }
 };
 

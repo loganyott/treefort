@@ -10,6 +10,7 @@ jobs:
       - run:
           name: Print the Current Time
           command: date
+      - run: apt-get update    
       - run:
           name: install sshpass
           command: apt-get install sshpass

@@ -18,13 +18,8 @@ jobs:
       - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
       - run: apt-get update && apt-get install yarn
       - run: ls
-      - run: 
-        - command: cd /root/project/web-fort/tf-app
-        - command: yarn
-        - command: yarn build
-      - run: cd /root/project/web-fort/tf-sched
-      - run: yarn
-      - run: yarn build
+      - run: cd /root/project/web-fort/tf-app && yarn && yarn build
+      - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
     # - npm install:
     #     pwd: tf-app
     # - npm run build:

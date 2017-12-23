@@ -20,6 +20,10 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app
       - run: yarn
+      - run: yarn build
+      - run: cd /root/project/web-fort/tf-sched
+      - run: yarn
+      - run: yarn build
     # - npm install:
     #     pwd: tf-app
     # - npm run build:

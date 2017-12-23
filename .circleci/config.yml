@@ -18,10 +18,10 @@ jobs:
       - run: apt-get update && apt-get install yarn
       # debugging
     #   - run: pwd
-    #   - run: ls
+      - run: ls
     #   - run: echo "${CIRCLE_WORKING_DIRECTORY}"
       # /end debugging
-      - run: cd /root/project//web-fort/tf-app
+      - run: cd /root/project/web-fort/tf-app
       - run: yarn
     # - npm install:
     #     pwd: tf-app

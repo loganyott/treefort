@@ -10,3 +10,17 @@ jobs:
       - run:
           name: Print the Current Time
           command: date
+      - run:
+          name: install sshpass
+          command: sudo apt-get install sshpass
+      - run: 
+          name: npm install tf-app
+          command: cd $CIRCLE_WORKING_DIRECTORY/web-fort/tf-app && npm install
+    # - npm install:
+    #     pwd: tf-app
+    # - npm run build:
+    #     pwd: tf-app
+    # - npm install:
+    #     pwd: tf-sched
+    # - npm run build:
+    #     pwd: tf-sched

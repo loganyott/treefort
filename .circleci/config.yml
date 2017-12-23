@@ -11,9 +11,8 @@ jobs:
           name: Print the Current Time
           command: date
       - run: apt-get update    
-      - run:
-          name: install sshpass
-          command: apt-get install sshpass
+      - run: apt-get install sshpass
+      - run: brew install yarn --without-node
       - run: 
           name: npm install tf-app
           command: cd $CIRCLE_WORKING_DIRECTORY/web-fort/tf-app && npm install

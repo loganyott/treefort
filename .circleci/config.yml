@@ -20,6 +20,9 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
+  deploy:
+    steps:
+      - run: echo date
     # - npm install:
     #     pwd: tf-app
     # - npm run build:
@@ -28,3 +31,15 @@ jobs:
     #     pwd: tf-sched
     # - npm run build:
     #     pwd: tf-sched
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

@@ -15,7 +15,7 @@ jobs:
       - run: apt-get install apt-transport-https
       - run:  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
       - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-      - run: apt-get install yarn
+      - run: apt-get update && apt-get install yarn
       - run: 
           name: npm install tf-app
           command: cd $CIRCLE_WORKING_DIRECTORY/web-fort/tf-app && npm install

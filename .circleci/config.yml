@@ -12,7 +12,7 @@ jobs:
           command: date
       - run:
           name: install sshpass
-          command: sudo apt-get install sshpass
+          command: apt-get install sshpass
       - run: 
           name: npm install tf-app
           command: cd $CIRCLE_WORKING_DIRECTORY/web-fort/tf-app && npm install

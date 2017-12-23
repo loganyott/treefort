@@ -21,6 +21,8 @@ jobs:
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
   deploy:
+    docker:
+      - image: node:8
     steps:
       - run: echo date
     # - npm install:

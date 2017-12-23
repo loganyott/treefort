@@ -22,7 +22,7 @@ jobs:
       - run: ls
     #   - run: echo "${CIRCLE_WORKING_DIRECTORY}"
       # /end debugging
-      - run: cd $CIRCLE_WORKING_DIRECTORY/web-fort/tf-app
+      - run: cd ${CIRCLE_WORKING_DIRECTORY}/web-fort/tf-app
       - run: yarn
     # - npm install:
     #     pwd: tf-app

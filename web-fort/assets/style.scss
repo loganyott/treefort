@@ -1,0 +1,53 @@
+/*
+Theme Name: webfort
+Theme URI:    
+Description:  Custom Wordpress Theme for Treefort Music Festival
+Author:       WebFort
+Author URI:   
+Template:     
+Version:      1.0
+License:      
+License URI:  
+Tags:         
+Text Domain:
+@link https://codex.wordpress.org/Theme_Development#Theme_Stylesheet  
+*/
+
+
+// -------------------------------------------------- //
+// @import "_bootstrap_variables.scss";
+//  
+// Local version of _varibles.scss. Override any default 
+// bootstrap values for our theme here, leaving the original copy 
+// of the file intact.
+// -------------------------------------------------- //
+
+@import "_bootstrap_variables.scss";
+
+
+// -------------------------------------------------- //
+// Import original _bootstrap.scss,
+// -------------------------------------------------- //
+
+@import "stylesheets/_bootstrap.scss";
+
+
+// -------------------------------------------------- //
+// Import basic WP Core Styles
+// -------------------------------------------------- //
+
+@import "_wpcore.scss";
+
+
+// Add your styles here
+@import "stylesheets/global.scss";
+@import "stylesheets/hover-min.scss";
+@import "stylesheets/animate.scss";
+@import "stylesheets/header.scss";
+@import "stylesheets/flashlights.scss";
+@import "stylesheets/frontpage.scss";
+@import "stylesheets/twitter.scss";
+@import "stylesheets/forts.scss";
+@import "stylesheets/fortslanding.scss";
+@import "stylesheets/itc.scss";
+@import "stylesheets/footer.scss";

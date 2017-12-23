@@ -1,0 +1,21 @@
+#clockdiv { position: absolute; top: -30px; right: -10px; z-index: 9999; -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */ transform: rotate(90deg); }
+
+.cdtext { text-align: left; font-size: .62em; line-height: 1.03em; font-weight: bold; }
+.cdtext .progress { display: inline-block; width: 50px; height: 10px; margin-bottom: 0; background-color: transparent; -webkit-box-shadow: none; box-shadow: none; border-radius: 0px; }
+.cdtext .progress-bar { float: right; }
+
+.d { color: #146aa5; }
+.d .progress-bar { background-color: #146aa5; }
+
+.h { color: #ef5e95; }
+.h .progress-bar { background-color: #ef5e95; }
+
+.m { color: #F57B20; }
+.m .progress-bar { background-color: #F57B20; }
+
+.s { color: #fcd738; }
+.s .progress-bar { background-color: #fcd738; }
+
+.stuck #clockdiv { position: fixed; top: 2px; right: 5px; -webkit-transform: rotate(0deg); /* Chrome, Safari, Opera */ transform: rotate(0deg); }
+
+@media (max-width: 1080px) { #clockdiv { z-index: 0; } }

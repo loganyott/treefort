@@ -1,0 +1,199 @@
+.sched-body {
+    background:#1b2253 !important;
+    color:#ccc;
+}
+a.artist-link {
+    color: #fff;
+}
+.no-print, .day {
+    display:inline-block;
+}
+.sched-item {
+    position:relative;
+    background:transparent;
+    color:#ccc;
+    height:100px;
+    box-shadow: 5px 5px 0 rgba(239, 94, 149, 0.5);
+}
+.time {
+    width:22%;
+    overflow:hidden;
+}
+.event {
+    width:44%;
+    overflow:hidden;
+}
+.venue {
+    background:#08B4AA url(../../assets/doodles/TFMF_2017_Background_Pattern.png);
+    background-size:cover;
+    color:#1b2253;
+    font-weight:700 !important;
+    position:absolute;
+    right:0;
+    padding-right:40px;
+    text-align:right;
+    height:100%;
+    width:34%;
+    margin:auto;
+    display:table;
+}
+.venue-text {
+    display:table-cell;
+    vertical-align:middle;
+}
+.bg-yellow {
+    color:#1b2253;
+}
+.print {
+    display:none;
+}
+
+/**
+ * Fort specific
+**/
+.Treefort {
+    box-shadow: 5px 5px 0  #ddd;
+}
+.Alefort {
+    box-shadow: 5px 5px 0  #08b4aa;
+}
+.Alefort .fort-text {
+    color:#08b4aa;
+}
+.Comedyfort {
+    box-shadow: 5px 5px 0  #fcd738;
+}
+.Comedyfort .fort-text{
+    color:#fcd738;
+}
+.Filmfort {
+    box-shadow: 5px 5px 0  #f57b20;
+}
+.Filmfort .fort-text{
+    color:#f57b20;
+}
+.Foodfort {
+    box-shadow: 5px 5px 0  #ef5e95;
+}
+.Foodfort .fort-text{
+    color:#ef5e95;
+}
+.Hackfort {
+    box-shadow: 5px 5px 0  #146aa5;
+}
+.Hackfort .fort-text{
+    color:#146aa5;
+}
+.Kidfort {
+    box-shadow: 5px 5px 0  #868686;
+}
+.Kidfort .fort-text{
+    color:#868686;
+}
+.Skatefort {
+    box-shadow: 5px 5px 0  #D11E49;
+}  
+.Skatefort .fort-text{
+    color:#D11E49;
+}
+.Storyfort {
+    box-shadow: 5px 5px 0  #98CA3C;
+}
+.Storyfort .fort-text{
+    color:#98CA3C;
+}
+.Yogafort {
+    box-shadow: 5px 5px 0  #6b0ecb;
+}
+.Yogafort .fort-text{
+    color:#6b0ecb;
+}
+
+@media only screen and (max-width: 1830px) {
+    .f1, .f1 a {
+        font-size:1.0em !important;
+    }
+    .time .f2, .time .f4 {
+        font-size:0.9em !important;
+        text-align: center;
+    }
+}
+@media only screen and (max-width : 992px) {
+    .venue {
+        padding-right:5px;
+    }
+    .f1, .f1 a {
+        font-size:0.8em !important;
+    }
+    .time .f2, .time .f4 {
+        font-size:0.6em !important;
+        text-align: center;
+    }
+}
+@media only screen and (max-width : 540px) {
+    .f1, .f1 a {
+    font-size:0.7em !important;
+    }
+}
+@media print {
+    a[href]:after {
+        content: none !important;
+    }
+    .no-print, .day {
+        display:none !important;
+    }
+    .date22:after {
+        content:" 3/22";
+    }
+    .date23:after {
+        content:" 3/23";
+    }
+    .date24:after {
+        content:" 3/24";
+    }
+    .date25:after {
+        content:" 3/25";
+    }
+    .date26:after {
+        content:" 3/26";
+    }
+    .start:after {
+        content:" ";
+    }
+    .print {
+        display:block;
+    }
+    .yellow {
+        display:inline-block !important;
+        font-size:1.5em;
+        width:100%;
+        text-align:center;
+        margin:auto;
+    }
+    .yellow:before {
+        content:"Treefort Music Fest  -  "
+    }
+    .sched-item {
+        border-bottom:solid 1px;
+        height:initial;
+        padding-bottom:3px;
+        page-break-inside: avoid;
+    }
+    .f1, .f2, .f3, .f4 {
+        font-size:14px !important;
+        line-height:1.0em !important;
+    }
+    .time {
+        width:25%;
+        display:inline !important;
+    }
+    .time span {
+        margin:0 !important;
+    }
+    .time span:first-child:after{
+        content:' ';
+    }
+    .event {
+       width:40%; 
+    }
+}

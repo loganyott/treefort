@@ -1,0 +1,97 @@
+.fort-content { margin-top: 300px; }
+
+#menu-fort-page-menu { background: #fcd738; }
+
+.fort-menu { top: -200px; }
+
+.fort-menu.stuck ul { display: inline; }
+
+.fort-menu.stuck { top: 80px; -webkit-transition: 0.6s; -moz-transition: 0.6s; -o-transition: 0.6s; transition: 0.6s; }
+.fort-menu.stuck li, .fort-menu.stuck a { background: transparent !important; }
+
+.fort-menu > .dropdown-menu > li a, .menu > li a { height: 80px; padding-top: 37px; }
+
+.fortheader { background: #08B4AA; height: 420px; padding-top: 105px; position: absolute; top: 0; right: 0; left: 0; }
+.fortheader h1 { text-align: center; font-size: 400%; text-transform: uppercase; }
+.fortheader img { max-height: 300px; }
+
+@media (max-width: 990px) { .fortheader { height: 820px; }
+  .fort-content { margin-top: 800px; } }
+/* ALEFORT */
+.alefortheader { background: #03B3AA; }
+
+.alefortheader h1:before { content: "NOT A GLORIFIED BEER GARDEN"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.alefortheader h1:after { content: "MARCH 23 - 25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END ALEFORT */
+/* COMEDYFORT */
+.comedyfortheader { background: #7191CB; }
+
+.comedyfortheader h1:before { content: "THE FUNNIEST FORT"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.comedyfortheader h1:after { content: "MARCH 22-25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END COMEDYFORT */
+/* FILMFORT */
+.filmfortheader { background: #F47B20; }
+
+.filmfortheader h1:before { content: "MAKING ROOM FOR CINEPHILES"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.filmfortheader h1:after { content: "MARCH 21 - 24, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END FILMFORT */
+/* FOODFORT */
+.foodfortheader { background: #EE5E95; }
+
+.foodfortheader h1:before { content: "A FARM TO FORT FOCUS"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.foodfortheader h1:after { content: "MARCH 23 - 25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END FOODFORT */
+/* HACKFORT */
+.hackfortheader { background: #136AA5; }
+
+.hackfortheader h1:before { content: "A DIGITAL HUMANITIES CONFERENCE"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.hackfortheader h1:after { content: "MARCH 23 - 24, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END HACKFORT */
+/* KIDFORT */
+.kidfortheader { background: #F26667; }
+
+.kidfortheader h1:before { content: "CREATING THE NEXT TREEFORT GENERATION"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.kidfortheader h1:after { content: "MARCH 24 - 25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END KIDFORT */
+/* PERFORMANCE ARTFORT */
+.performanceartfortheader h1:before { content: "BEYOND THE STAGE"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.performanceartfortheader h1:after { content: "MARCH 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END PERFORMANCE-ARTFORT */
+/* SKATEFORT */
+.skatefortheader { background: #33C6F4; }
+
+.skatefortheader h1:before { content: "RIPPING & GRIPPING"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.skatefortheader h1:after { content: "MARCH 24, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END SKATEFORT */
+/* STORYFORT */
+.storyfortheader { background: #A4CE39; }
+
+.storyfortheader h1:before { content: "WE'RE FILLING THE FORT FULL OF STORIES"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.storyfortheader h1:after { content: "MARCH 21 - 25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END STORYFORT */
+/* YOGAFORT */
+.yogafortheader { background: #B99BC9; }
+
+.yogafortheader h1:before { content: "RE'FORT'IFY"; font-size: 22px; position: absolute; top: 180px; left: 0; width: 100%; }
+
+.yogafortheader h1:after { content: "MARCH 23 - 25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
+
+/* END YOGAFORT */

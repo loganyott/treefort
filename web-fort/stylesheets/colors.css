@@ -1,0 +1,118 @@
+body { background: #000 fixed; color: #fff; background-size: 100%; background-repeat: no-repeat; background-position: center; }
+
+body.active { background-image: url("assets/images/flashLightBack.jpg"); }
+
+@media (max-width: 990px) { .dropdown-menu, .dropdown-menu > li > a, .navbar-nav > li > a { background-color: transparent !important; } }
+.dropdown-menu, .dropdown-menu > li > a, .navbar-nav > li > a { background-color: #fcd738; color: #000; }
+
+.dropdown-menu a:hover, .dropdown-menu a:focus, .dropdown-menu a:active, .navbar-nav > li > a:hover, .navbar-nav > li > a:focus { color: #ef5e95 !important; }
+
+.dropdown-menu > li > a:hover { background: transparent !important; }
+
+/*!
+ * Fonts
+ */
+h1 small, h1 .small, h2 small, h2 .small, h3 small, h3 .small, h4 small, h4 .small, h5 small, h5 .small, h6 small, h6 .small, .h1 small, .h1 .small, .h2 small, .h2 .small, .h3 small, .h3 .small, .h4 small, .h4 .small, .h5 small, .h5 .small, .h6 small, .h6 .small { color: #fff; }
+
+.navbar-default .navbar-nav > li > a { color: #000; }
+
+input, #pwbox-1976 { color: #1b2253; }
+
+/*!
+ * Link Color
+ */
+a { color: #FFF; }
+
+a:hover, a:focus { color: #fcd738; }
+
+#top-link a { color: #F57B20; }
+
+.btn, .btn-blue { background: #146aa5 !important; color: #fff !important; }
+
+.btn-yellow { background: #fcd738 !important; color: #000 !important; }
+
+.btn-green { background: #08B4AA !important; color: #fff !important; }
+
+/*!
+ * Color Jumbotrons
+ */
+.jumbotron { background: transparent; color: #fff; }
+
+.orange-jumbo { background: #F57B20 !important; color: #fff !important; }
+
+.yellow-jumbo { background: #fcd738 !important; color: #333; }
+
+.rose-jumbo { background: #ef5e95 !important; color: #fff !important; }
+
+.white-jumbo { background: #fff !important; }
+
+.orange-t, .orange-t a { color: #F57B20 !important; }
+
+.rose-t, .rose-t a { color: #ef5e95 !important; }
+
+.white-t, .white-t a { color: #fff !important; }
+
+.niagara-t, .niagara-t a { color: #08B4AA !important; }
+
+.yellow-drop { box-shadow: #fcd738 17px 17px 0px 0px; }
+
+/*!
+ * About Page colors
+ */
+#music, #explore, #friends-of-treefort { background: #868686; color: #fff; }
+
+#community { background: #146aa5; color: #fff; }
+
+#structure { background: #08B4AA; }
+
+/*!
+ * Volunteer Page colors
+ */
+#general-volunteer { background: #146aa5; color: #fff; }
+
+#ranger-station { background: #868686; color: #fff; }
+
+#green-team { background: #08B4AA; color: #fff; }
+
+.self_check_email { color: #555 !important; }
+
+/*!
+ * Fort Page colors
+ */
+/*!
+* Header Logo
+*/
+.logo-date { color: #1b2253; }
+
+/*!
+ * Navigation colors
+ */
+#masthead { background: #000 !important; }
+
+#tfMenu { background: #fcd738; }
+
+.hvr-back-pulse:before { background: #08B4AA !important; }
+
+.current-page-ancestor, .current-menu-parent { color: #fcd738; right: 0 !important; }
+
+.current-menu-item a { color: #fff !important; }
+
+.navbar-default .navbar-nav > .active > a { color: #ef5e95 !important; background: #fcd738; }
+
+.navbar-default .navbar-nav > .active > a:before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 0; background: #08B4AA !important; height: 100%; }
+
+.logo-badge, #info-menu, #navbar-main, .info-menu, #lineup-menu, .lineup-menu, #fort-menu, .fort-menu, #involved-menu, .involved-menu, #about-menu, .about-menu { background: transparent; }
+
+.current_page_item > a { background: #fff; color: #ef5e95; }
+
+@media (max-width: 768px) { .navbar-default .navbar-nav .open .dropdown-menu > li > a { color: #fff; } }
+/*!
+ * Custom Pagination
+ */
+.custom-pagination a { background-color: #1b2253; color: #fcd738; }
+
+.custom-pagination a:hover { background-color: #fcd738; color: #fff; }
+
+.custom-pagination span.current { background-color: #fcd738; color: #fff; }
+
+.custom-pagination span.dots { color: #1b2253; }

@@ -1,0 +1,28 @@
+{
+  "name": "tf-sched",
+  "homepage": "/wp-content/themes/web-fort/tf-sched/build/",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "react-scripts": "0.7.0"
+  },
+  "dependencies": {
+    "axios": "^0.15.3",
+    "better-react-spinkit": "2.0.2",
+    "immutable": "^3.8.1",
+    "inline-style-prefixer": "^2.0.5",
+    "lodash": "^4.17.4",
+    "moment": "^2.17.1",
+    "moment-range": "^3.0.1",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "tachyons": "^4.6.2",
+    "url": "^0.11.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

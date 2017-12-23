@@ -1,0 +1,144 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.ReactModal__Content--after-open, .ReactModal__Overlay--after-open {
+  z-index: 99999 !important;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/** Disable audio download plz **/
+audio::-internal-media-controls-download-button {
+  display:none;
+}
+
+audio::-webkit-media-controls-enclosure {
+  overflow:hidden;
+}
+
+audio::-webkit-media-controls-panel {
+    width: calc(100% + 30px); /* Adjust as needed */
+}
+
+/** SEARCH BAR **/
+#filter-label {
+  background: #fcd738;
+  color:rgb(0, 0, 0);
+  border:none;
+}
+.input-group > input {
+  border:none;
+  border-radius:0;
+}
+
+/** SOCIAL ICONS PINK HOVER **/
+.triggeryt:hover .iconyt {
+  display:none;
+}
+.iconytp {
+  display:none;
+}
+.triggeryt:hover .iconytp {
+  display:inline;
+}
+
+.triggerfb:hover .iconfb {
+  display:none;
+}
+.iconfbp {
+  display:none;
+}
+.triggerfb:hover .iconfbp {
+  display:inline;
+}
+
+.triggerig:hover .iconig {
+  display:none;
+}
+.iconigp {
+  display:none;
+}
+.triggerig:hover .iconigp {
+  display:inline;
+}
+
+.triggertw:hover .icontw {
+  display:none;
+}
+.icontwp {
+  display:none;
+}
+.triggertw:hover .icontwp {
+  display:inline;
+}
+
+.triggerml:hover .iconml {
+  display:none;
+}
+.iconmlp {
+  display:none;
+}
+.triggerml:hover .iconmlp {
+  display:inline;
+}
+
+.triggerwl:hover .iconwl {
+  display:none;
+}
+.iconwlp {
+  display:none;
+}
+.triggerwl:hover .iconwlp {
+  display:inline;
+}
+
+
+/** PEFRORMER CARDS **/
+.performerImage:hover {
+  box-shadow: 17px 17px 0px 0px rgba(252,215,56,1); 
+}
+
+/** YOGAFORT SPECIFIC **/
+.yogalineup {
+  padding-top:20px;
+  padding-bottom:20px;
+}
+.yogalineup h2 {
+  margin:20px;
+}
+.yogaartists {
+  margin-top:40px;
+}
+
+/** DETAIL SCHEDULE **/
+.item-sched {
+  margin-bottom: 32px !important;
+  color: #ddd;
+}
+.item-sched h3 {
+  font-size:22px;
+}
+.street {
+  font-size:16px;
+  color:#fcd738;
+}

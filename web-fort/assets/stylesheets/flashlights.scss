@@ -1,0 +1,122 @@
+
+  .foot-overlay {
+      position:fixed;
+      bottom:0;
+      left:0;
+      right:0;
+      height:500px;
+      margin:0;
+      padding:0;
+    //   background: url("assets/images/overlay-flashlights.png") no-repeat;
+    //   background-size: 100vw;
+    //   background-position: bottom;
+      pointer-events: none;
+  }
+  #flashlights {
+    position: fixed;
+    height: 0;
+    width: 100%;
+  }
+  .flashlight-left {
+    background: url("/wp-content/uploads/2017/08/flashLightLeft.png") no-repeat;
+    background-size: 100%;
+    background-position: bottom;
+    position: fixed;
+    left: -30px;
+    bottom: 0;
+    width: 309px;
+    height: 340px;
+    z-index: 99999;
+    cursor: pointer;
+    -webkit-animation-delay: 2s; /* Safari 4.0 - 8.0 */
+    animation-delay: 2s;
+  }
+  .flashlight-left-bg {
+    background: transparent;
+    position: fixed;
+    bottom: 0;
+    width: 40vw;
+    height: 100%;
+    z-index: -99998;
+    pointer-events: none;
+  }
+.flashlight-left-bg.active {
+    background: url("/wp-content/uploads/2017/08/flashlight-left-bg.jpg");  background-repeat: no-repeat;
+    background-position: center left !important;
+    background-size: 60%;
+    animation: flicker 3s linear infinite;
+}
+  .flashlight-right {
+    background: url("/wp-content/uploads/2017/08/flashLightRight.png") no-repeat;
+    background-size: 100%;
+    background-position: bottom;
+    position: fixed;
+    right: -30px;
+    bottom: 0;
+    width: 309px;
+    height: 340px;
+    z-index: 99999;
+    cursor: pointer;
+    -webkit-animation-delay: 2s; /* Safari 4.0 - 8.0 */
+    animation-delay: 2s;
+  }
+  .flashlight-right-bg {
+    background: transparent;
+    position: fixed;
+    bottom: 0;
+    right:0;
+    width: 40vw;
+    height: 100%;
+    z-index: -99998;
+    pointer-events: none;
+  }
+.flashlight-right-bg.active {
+    background: url("assets/images/flashlight-right-bg.jpg");
+    background-repeat: no-repeat;
+    background-position: center right !important;
+    background-size: 60%;
+    animation: flicker 3s linear infinite;
+}
+
+@media (max-width: 1720px) {
+    .flashlight-left, .flashlight-right {
+        width:320px;
+    }
+    .flashlight-left-bg.active, .flashlight-right-bg.active {
+        background-size: 50% !important;
+    }
+    .flashlight-right-bg.active {
+        background: url("assets/images/flashlight-right-bg.jpg") no-repeat top !important;
+    }
+    .flashlight-left-bg.active {
+        background: url("/wp-content/uploads/2017/08/flashlight-left-bg.jpg") no-repeat top !important;
+    }
+}
+@media (max-width: 900px) {
+    .flashlight-left, .flashlight-right {
+        width:220px;
+    }
+    .flashlight-left-bg.active, .flashlight-right-bg.active {
+        background-size: 40% !important;
+    }
+}
+@media (max-width: 380px) {
+    .flashlight-left, .flashlight-right {
+        width:220px;
+    }
+    .flashlight-left-bg.active, .flashlight-right-bg.active {
+        display:none;
+    }
+}
+
+@keyframes flicker {
+	20%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+		opacity: .99;
+	}
+	30%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+		opacity: 0.4;
+    }
+	70%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+		opacity: 0.1;
+	}
+}

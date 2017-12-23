@@ -1,0 +1,10 @@
+.hidebrand { visibility: hidden; transition: opacity 0.5s linear; }
+
+#hot { color: #fcd738; font-size: 80px; font-weight: 700; text-align: center; }
+@media (max-width: 990px) { #hot { font-size: 50px; } }
+
+@media (max-width: 768px) { #FPsponsor h2 { font-size: 20px !important; }
+  #FPsponsor .architects img { width: 5.0em; }
+  #FPsponsor .builders img { width: 4.2em; }
+  #FPsponsor .partners img { width: 3.7em; }
+  #FPsponsor .sponsors img { width: 3.5em; } }

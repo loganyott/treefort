@@ -1,0 +1,252 @@
+// Color Variables
+$Niagara: #08B4AA;
+$Yellow: #fcd738;
+$Orange: #F57B20;
+$Rose: #ef5e95;
+$Light-Blue: #146aa5;
+$Grey: #868686;
+$Dark-Blue: #1b2253;
+
+
+body {
+    background:#000 fixed;
+    color:#fff;
+    background-size:100%;
+    background-repeat:no-repeat;
+    background-position: center;
+}
+body.active {
+    background-image:url('assets/images/flashLightBack.jpg');
+}
+@media (max-width:990px) {
+    .dropdown-menu, .dropdown-menu > li > a, .navbar-nav > li > a {
+        background-color:transparent !important;
+    }
+}
+.dropdown-menu, .dropdown-menu > li > a, .navbar-nav > li > a {
+    background-color:$Yellow;
+    color:#000;
+}
+.dropdown-menu a:hover, .dropdown-menu a:focus, .dropdown-menu a:active, .navbar-nav > li > a:hover, .navbar-nav > li > a:focus {
+    color:$Rose !important;
+}
+.dropdown-menu > li > a:hover {
+    background: transparent !important;
+}
+/*!
+ * Fonts
+ */
+h1 small, h1 .small, h2 small, h2 .small, h3 small, h3 .small, h4 small, h4 .small, h5 small, h5 .small, h6 small, h6 .small, .h1 small, .h1 .small, .h2 small, .h2 .small, .h3 small, .h3 .small, .h4 small, .h4 .small, .h5 small, .h5 .small, .h6 small, .h6 .small {
+    color:#fff;
+}
+.navbar-default .navbar-nav > li > a {
+    color: #000;
+}
+input, #pwbox-1976 {
+    color:$Dark-Blue;
+}
+
+ /*!
+  * Link Color
+  */
+a {
+    color:#FFF;
+}
+a:hover, a:focus {
+    color:$Yellow;
+}
+#top-link a {
+    color:$Orange;
+}
+.btn, .btn-blue {
+    background:$Light-Blue !important;
+    color:#fff !important;
+}
+.btn-yellow {
+    background:$Yellow !important;
+    color:#000 !important;
+}
+.btn-green {
+    background:$Niagara !important;
+    color:#fff !important;
+}
+ /*!
+  * Color Jumbotrons
+  */
+.jumbotron {
+    background:transparent;
+    color:#fff;
+}
+.orange-jumbo {
+    background:$Orange !important;
+    color:#fff !important;
+}
+.yellow-jumbo {
+    background:$Yellow !important;
+    color:#333;
+}
+.rose-jumbo {
+    background:$Rose !important;
+    color:#fff !important;
+}
+.white-jumbo {
+    background:#fff !important;
+}
+.orange-t, .orange-t a {
+    color:$Orange !important;
+}
+.rose-t, .rose-t a {
+    color:$Rose !important;
+}
+.white-t, .white-t a {
+    color:#fff !important;
+}
+.niagara-t, .niagara-t a {
+    color:$Niagara !important;
+}
+.yellow-drop {
+    box-shadow:rgb(252, 215, 56) 17px 17px 0px 0px
+}
+
+/*!
+ * About Page colors
+ */
+#music, #explore, #friends-of-treefort {
+  background:$Grey;
+  color:#fff;
+}
+#community {
+    background:$Light-Blue;
+    color:#fff
+}
+#structure {
+    background:$Niagara;
+}
+
+/*!
+ * Volunteer Page colors
+ */
+#general-volunteer {
+  background:$Light-Blue;
+  color:#fff;
+}
+#ranger-station {
+    background:$Grey;
+    color:#fff;
+}
+#green-team {
+    background:$Niagara;
+    color:#fff;
+}
+.self_check_email {
+    color:#555 !important;
+}
+
+/*!
+ * Fort Page colors
+ */
+.alefort {
+
+}
+.comedyfort {
+
+}
+.filmfort {
+
+}
+.foodfort {
+
+}
+.hackfort {
+
+}
+.kidfort {
+
+}
+.artfort {
+
+}
+.skatefort {
+
+}
+.storyfort {
+
+}
+.yogafort {
+
+}
+
+
+/*!
+* Header Logo
+*/
+.logo-date {
+    color:$Dark-Blue;
+}
+/*!
+ * Navigation colors
+ */
+#masthead {
+    background:#000 !important;
+}
+#tfMenu {
+    background:$Yellow;
+}
+.hvr-back-pulse:before {
+    background:$Niagara !important;
+}
+.current-page-ancestor, .current-menu-parent {
+    color:$Yellow;
+    right:0 !important;
+}
+.current-menu-item a {
+    color:#fff !important;
+}
+.navbar-default .navbar-nav > .active > a {
+    color:$Rose !important;
+    background:$Yellow;
+}
+.navbar-default .navbar-nav > .active > a:before{
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: $Niagara !important;
+    height: 100%;
+}
+.logo-badge, #info-menu, #navbar-main, .info-menu, #lineup-menu, .lineup-menu, #fort-menu, .fort-menu, #involved-menu, .involved-menu, #about-menu, .about-menu {
+    background:transparent;
+}
+.current_page_item > a {
+    background:#fff;
+    color:$Rose;
+}
+@media (max-width: 768px) { 
+    // #menu-main-menu > li {
+    //     background:$Grey;
+    //     border-bottom: 1px solid #333;
+    // }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color:#fff;
+    }
+}
+/*!
+ * Custom Pagination
+ */
+.custom-pagination a {
+  background-color: $Dark-Blue;
+  color: $Yellow;
+}
+.custom-pagination a:hover {
+  background-color: $Yellow;
+  color: #fff;
+}
+.custom-pagination span.current {
+  background-color: $Yellow;
+  color: #fff;
+}
+.custom-pagination span.dots {
+  color: $Dark-Blue;
+}

@@ -1,0 +1,32 @@
+machine:
+  node:
+    version: 8.9.3
+
+dependencies:
+  cache_directories:
+    - tf-app/node_modules
+    - tf-sched/node_modules
+  override:
+    - sudo apt-get install sshpass
+    - npm install:
+        pwd: tf-app
+    - npm run build:
+        pwd: tf-app
+    - npm install:
+        pwd: tf-sched
+    - npm run build:
+        pwd: tf-sched
+
+test:
+  override:
+    - echo "No tests! This is a Wordpress theme"
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - ./deploy.sh treefortfest-deploy $SSHPASS_PROD
+  staging:
+    branch: develop
+    commands:
+      - ./deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING

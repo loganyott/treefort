@@ -1,0 +1,131 @@
+.hidebrand {
+    visibility: hidden;
+    transition:opacity 0.5s linear;
+}
+#hot {
+    color:#fcd738;
+    font-size:80px;
+    font-weight:700;
+    text-align:center;
+    @media (max-width:990px) {
+        font-size:50px;
+    }
+}
+
+#FPsponsor {
+    @media (max-width:768px) {
+        h2 {
+            font-size: 20px !important;
+        }
+        .architects img {
+            width:5.0em;
+        }
+        .builders img {
+            width:4.2em;
+        }
+        .partners img {
+            width:3.7em;
+        }
+        .sponsors img {
+            width:3.5em;
+        }
+    }
+}
+
+// #fpticketbtn {
+//     overflow:hidden;
+//     border:none;
+// }
+// #fpticketbtn span {
+//     -webkit-transition: 0.6s;
+//     -moz-transition: 0.6s;
+//     -o-transition: 0.6s;
+//     transition: 0.6s;
+//     -webkit-transition-delay: 0.2s;
+//     -moz-transition-delay: 0.2s;
+//     -o-transition-delay: 0.2s;
+//     transition-delay: 0.2s;
+// }
+// #fpticketbtn:before,
+// #fpticketbtn:after {
+//     content: '';
+//     position: absolute;
+//     top: 0.67em;
+//     left: 0;
+//     width: 100%;
+//     text-align: center;
+//     opacity: 0;
+//     -webkit-transition: .4s,opacity .6s;
+//     -moz-transition: .4s,opacity .6s;
+//     -o-transition: .4s,opacity .6s;
+//     transition: .4s,opacity .6s;
+// }
+
+// /* :before */
+
+// #fpticketbtn:before {
+//     content: attr(data-hover);
+//     -webkit-transform: translate(-150%,0);
+//     -moz-transform: translate(-150%,0);
+//     -ms-transform: translate(-150%,0);
+//     -o-transform: translate(-150%,0);
+//     transform: translate(-150%,0);
+// }
+
+// /* :after */
+
+// #fpticketbtn:after {
+//     content: attr(data-active);
+//     -webkit-transform: translate(150%,0);
+//     -moz-transform: translate(150%,0);
+//     -ms-transform: translate(150%,0);
+//     -o-transform: translate(150%,0);
+//     transform: translate(150%,0);
+// }
+
+// /* Span on :hover and :active */
+
+// #fpticketbtn:hover span,
+// #fpticketbtn:active span {
+//     opacity: 0;
+//     -webkit-transform: scale(0.3);
+//     -moz-transform: scale(0.3);
+//     -ms-transform: scale(0.3);
+//     -o-transform: scale(0.3);
+//     transform: scale(0.3);
+// }
+
+// /*  
+//     We show :before pseudo-element on :hover 
+//     and :after pseudo-element on :active 
+// */
+
+// #fpticketbtn:hover:before,
+// #fpticketbtn:active:after {
+//     opacity: 1;
+//     -webkit-transform: translate(0,0);
+//     -moz-transform: translate(0,0);
+//     -ms-transform: translate(0,0);
+//     -o-transform: translate(0,0);
+//     transform: translate(0,0);
+//     -webkit-transition-delay: .4s;
+//     -moz-transition-delay: .4s;
+//     -o-transition-delay: .4s;
+//     transition-delay: .4s;
+// }
+
+// /* 
+//   We hide :before pseudo-element on :active
+// */
+
+// #fpticketbtn:active:before {
+//     -webkit-transform: translate(-150%,0);
+//     -moz-transform: translate(-150%,0);
+//     -ms-transform: translate(-150%,0);
+//     -o-transform: translate(-150%,0);
+//     transform: translate(-150%,0);
+//     -webkit-transition-delay: 0s;
+//     -moz-transition-delay: 0s;
+//     -o-transition-delay: 0s;
+//     transition-delay: 0s;
+// }

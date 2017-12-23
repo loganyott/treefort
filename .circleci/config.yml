@@ -17,11 +17,11 @@ jobs:
       - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
       - run: apt-get update && apt-get install yarn
       # debugging
-      - run: pwd
-      - run: ls
-      - run: echo "${CIRCLE_WORKING_DIRECTORY}"
+    #   - run: pwd
+    #   - run: ls
+    #   - run: echo "${CIRCLE_WORKING_DIRECTORY}"
       # /end debugging
-      - run: cd ${CIRCLE_WORKING_DIRECTORY}/web-fort/tf-app
+      - run: cd /root/project//web-fort/tf-app
       - run: yarn
     # - npm install:
     #     pwd: tf-app

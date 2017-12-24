@@ -1,6 +1,8 @@
 # Treefort Music Fest 2018
 
-Treefort Music Fest happens each year thanks to the hundreds of volunteers who lend a hand, and 2018 is no different! We’re looking for new and familiar faces (and hands) to help out before and during the festival.
+# Contributing
+If you are interested in fixing issues and contributing directly to the code base, please follow the following guidelines:
+- // TODO add guidelines
 
 [Volunteer Here!](https://www.treefortmusicfest.com/get-involved/volunteer/)
 

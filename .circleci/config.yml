@@ -24,7 +24,7 @@ jobs:
     docker:
       - image: node:8
     steps:
-      - run: echo date
+      - run: ./deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
     # - npm install:
     #     pwd: tf-app
     # - npm run build:

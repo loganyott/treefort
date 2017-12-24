@@ -20,11 +20,15 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
-  deploy:
-    docker:
-      - image: node:8
-    steps:
       - run: /root/project/web-fort/deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
+    branches:
+      only:
+        - master      
+  # deploy:
+  #   docker:
+  #     - image: node:8
+  #   steps:
+  #     - run: /root/project/web-fort/deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
     # - npm install:
     #     pwd: tf-app
     # - npm run build:
@@ -34,14 +38,14 @@ jobs:
     # - npm run build:
     #     pwd: tf-sched
 
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+# workflows:
+#   version: 2
+#   build_and_test:
+#     jobs:
+#       - build
+#       - deploy:
+#           requires:
+#             - build
+#           filters:
+#             branches:
+#               only: master

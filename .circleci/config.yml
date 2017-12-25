@@ -6,7 +6,8 @@ jobs:
     steps:
       - checkout
 
-      - mkdir /root/.ssh/
+# because path is messed up
+      - /bin/mkdir /root/.ssh/
       - ssh-keyscan -t rsa 104.199.122.45 >> /root/.ssh/known_hosts
 
 

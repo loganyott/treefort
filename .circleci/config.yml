@@ -20,7 +20,7 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
-      - run: /root/project/web-fort/deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
+      - run: cd /root/prodjct/web-fort && deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
     branches:
       only:
         - master      

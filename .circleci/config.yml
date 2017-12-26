@@ -6,11 +6,8 @@ jobs:
     steps:
       - checkout
 
-# because path is messed up
-      - /bin/mkdir /root/.ssh/
+      # - /bin/mkdir /root/.ssh/
       - ssh-keyscan -t rsa 104.199.122.45 >> /root/.ssh/known_hosts
-
-
       - run: apt-get update    
       - run: apt-get install sshpass
       - run: apt-get install apt-transport-https

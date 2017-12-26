@@ -22,7 +22,7 @@ echo "Uploading webfort theme with SFTP..."
 
 # SSHPASS and username are passed in by circle.yml set in CircleCI config
 export SSHPASS=$2
-sshpass -e sftp -o BatchMode=no -o Port=2222 -o PreferredAuthentications=password -o PubkeyAuthentication=no -b - $1@104.199.122.45 << !
+sshpass -e sftp -o BatchMode=no -o Port=2222 -o StrictHostKeyChecking=no -o PreferredAuthentications=password -o PubkeyAuthentication=no -b - $1@104.199.122.45 << !
   -mkdir /web-fort
   put -r . /web-fort
   bye

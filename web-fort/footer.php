@@ -44,7 +44,7 @@
             <!-- click the text to expose the branch and build currently running in production -->
             <div style="color:#fff;text-align: center;font-size: 80%;padding: 10px;margin:0;">
             <span onclick="document.getElementById('branch-and-build').style.display = ''">♥ lovingly built in Boise</span>
-            <p id="branch-and-build" style="font-size: 80%; opacity: 0.5; display: none">__branch__ #__build__</p>
+            <p id="branch-and-build" style="font-size: 80%; opacity: 0.5; display: none">__repo__/__branch__ #__build__</p>
             </div>
             <div class="container center vert-pad">
             <p><a href="<?php site_url(); ?>/privacy/" style="color:#fff;text-align: center;font-size: 80%;padding: 10px;margin:40px 0;">Privacy Policy</a></p>

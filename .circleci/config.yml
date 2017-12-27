@@ -6,25 +6,17 @@ jobs:
     steps:
       - checkout
 
+      # - /bin/mkdir /root/.ssh/
       - run: apt-get update    
       - run: apt-get install sshpass
       - run: apt-get install apt-transport-https
       - run: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
       - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
       - run: apt-get update && apt-get install yarn
-      - run:
-          name: Yarn install & build Performers App
-          command: yarn && yarn build
-          working_directory: /root/project/webfort/tf-app
-      - run:
-          name: Yarn install & build Schedule App
-          command: yarn && yarn build
-          working_directory: /root/project/webfort/tf-sched
-      - run:
-          name: Deploy Wordpress Theme w/ Bundled Assets
-          command: ./deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
-          working_directory: /root/project/web-fort
-
+      - run: ls
+      - run: cd /root/project/web-fort/tf-app && yarn && yarn build
+      - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
+      - run: cd /root/project/web-fort && ./deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
     branches:
       only:
         - master      

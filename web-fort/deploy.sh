@@ -6,7 +6,8 @@ rm -rf .[!.]*
 echo "Removing any node_modules subdirectories in this repo"
 find . -name "node_modules" -type d -exec rm -rf "{}" \;
 
-echo "Writing in repo, build, and branch version in footer.php"
+echo "Writing build details to footer.php"
+sed -i "s/__user__/$CIRCLE_PROJECT_USERNAME/g" footer.php
 sed -i "s/__repo__/$CIRCLE_PROJECT_REPONAME/g" footer.php
 sed -i "s/__branch__/$CIRCLE_BRANCH/g" footer.php
 sed -i "s/__build__/$CIRCLE_BUILD_NUM/g" footer.php

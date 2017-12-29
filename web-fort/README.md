@@ -14,7 +14,10 @@ SITE** so please exercise caution when closing PRs or modifying `origin/master` 
 
 Download a copy of the production backup database from WPEngine
 
+Start docker -
+
 ```
+cd web-fort/
 docker-compose up
 ```
 

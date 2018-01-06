@@ -24,7 +24,8 @@ docker-compose up
 Open a new terminal and type -
 ```
 unzip site-archive-treefortfest-live-1514435930-T8GN8MLgvN9pKgNGhPiCvk3q5qvl6KeK3M2o.zip
-mysql -h 127.0.0.1 -u root -ptreefort wordpress < ~/Downloads/wp-content/mysql.sql
+mysql -h 127.0.0.1 -u root -peveryone-is-welcome -e "SET GLOBAL show_compatibility_56 = ON;"
+mysql -h 127.0.0.1 -u root -peveryone-is-welcome wordpress < ~/Downloads/wp-content/mysql.sql
 ```
 - You'll need a local WP installation, XAMPP or something like [Server Press](https://serverpress.com/)
 - point your local repo at the theme folder on your local installation

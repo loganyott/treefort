@@ -1,5 +1,20 @@
 version: 2
 jobs:
+  test:
+    docker:
+      - image: circleci/node:8.5.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: cd /root/project/api-fort && npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run: cd /root/project/api-fort && npm test
+      - run: npm run lint
+
   build:
     docker:
       - image: node:8

@@ -5,6 +5,7 @@ jobs:
       - image: node:8
     steps:
       - run: bash --version
+      - run: echo \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^}
       - checkout
       - run: apt-get update    
       - run: apt-get install sshpass

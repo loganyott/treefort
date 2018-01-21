@@ -5,8 +5,6 @@ jobs:
       - image: node:8
     steps:
       - checkout
-
-      # - /bin/mkdir /root/.ssh/
       - run: apt-get update    
       - run: apt-get install sshpass
       - run: apt-get install apt-transport-https
@@ -16,7 +14,7 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
-      - run: cd /root/project/web-fort && ./deploy.sh echo \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^} $SSHPASS_STAGING
+      - run: cd /root/project/web-fort && ./deploy.sh \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^} $SSHPASS_STAGING
 
   # deploy:
   #   docker:

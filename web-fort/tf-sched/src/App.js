@@ -83,7 +83,7 @@ const App = React.createClass({
     // use dev endpoints on localhost and staging, prod for everything else
     let devOrProd = 'prod'
 
-    const apiUrl = 'https://7n74ikdn58.execute-api.us-west-2.amazonaws.com/' + devOrProd + '/v1/events'
+    const apiUrl = 'https://api.tmf.zone/' + devOrProd + '/v1/events'
 
     const { time, hidePastEvents, sharedSchedId } = this.state
     axios
@@ -96,7 +96,7 @@ const App = React.createClass({
 
     if (!!sharedSchedId) {
       axios
-        .get('https://7n74ikdn58.execute-api.us-west-2.amazonaws.com/' +
+        .get('https://api.tmf.zone/' +
               devOrProd +
               '/v1/schedules/' +
               sharedSchedId

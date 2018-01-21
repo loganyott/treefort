@@ -84,7 +84,7 @@ export default ({item, event}) => {
       <header className='col-xs-12' style={{ background:`#000 url('${bgimg}')`}}>
         <div  className='container'>
           <div className='col-xs-12 col-md-6'>
-            <img src={`${item.get('image_url') ? item.get('image_url') : cardPlaceholderImage}`}
+            <img src={`${item.get('image_url_med') ? item.get('image_url_med') : cardPlaceholderImage}`}
               alt={item.get('name')}
               className='img-responsive center'
               role='presentation'
@@ -95,13 +95,16 @@ export default ({item, event}) => {
           <h1 style={{ color: 'rgba(252,215,56,1)' }}>{item.get('name')}</h1>
           <h3 style={{ fontSize: '34px' }}>{item.get('home_town')}</h3>
           <p><SocialLinks item={item} /></p>
-            {song
+          {song.get('stream_url') && <div>            
+          {song
               ? (
                 <audio controls='controls' className='mt4 w-100'>
                   <source src={song.get('stream_url')} type='audio/mp3' />
                 </audio>
               ) : null
             }
+            </div>}
+
           </div>
         </div>
       </header>

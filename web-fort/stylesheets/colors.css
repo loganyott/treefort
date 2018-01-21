@@ -44,7 +44,9 @@ a:hover, a:focus { color: #fcd738; }
 
 .rose-jumbo { background: #ef5e95 !important; color: #fff !important; }
 
-.white-jumbo { background: #fff !important; }
+.white-jumbo { background: #fff url("assets/images/sticksPattern.png") !important; color: #000; }
+.white-jumbo a { color: #000; }
+.white-jumbo a:hover, .white-jumbo a:focus { color: #146aa5; }
 
 .orange-t, .orange-t a { color: #F57B20 !important; }
 

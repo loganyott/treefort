@@ -15,10 +15,12 @@
 			var navHeight = 145;
 			var loc = window.location.href;
 			if ($(window).scrollTop() > navHeight) {
-				$('nav').addClass('stuck');
-				$('.headerbrand').addClass('stuck');
-				$('.headerbrand-mobile').addClass('stuck');
-				$('.fort-menu').addClass('stuck');
+				var stuckString = "nav,headerbrand,headerbrand-mobile,fort-menu,site-header,headermenu";
+				var stuckArray = stuckString.split(",");
+				$.each(stuckArray, function(i, elem) {
+					console.log(elem);
+					$('.'+elem).addClass('stuck');
+				});
 				$('.hidebrand').css({
 					"visibility" : "visible", 
 					"opacity" : "1"
@@ -33,6 +35,8 @@
 				$('.headerbrand').removeClass('stuck');
 				$('.headerbrand-mobile').removeClass('stuck');
 				$('.fort-menu').removeClass('stuck');
+				$('.site-header').removeClass('stuck');
+				$('.headermenu').removeClass('stuck');
 				$('.hidebrand').css({
 					"visibility" : "hidden", 
 					"opacity" : "0"
@@ -81,10 +85,10 @@
 		});
 
 		// header menu icons
-		$('.headeritems').find(' > li:nth-child(1)').prepend('<img src="/wp-content/uploads/2017/08/tickets.png" height=30 />');
-		$('.headeritems').find(' > li:nth-child(2)').prepend('<img src="/wp-content/uploads/2017/08/forts.png" height=30 />');
+		$('.headeritems').find(' > li:nth-child(1)').prepend('<img src="/wp-content/uploads/2017/08/tickets.png" height=30 style="float:left;" />');
+		$('.headeritems').find(' > li:nth-child(2)').prepend('<img src="/wp-content/uploads/2017/08/forts.png" height=30 style="float:left;" />');
 		$('.headeritems').find(' > li:nth-child(3)').prepend('<img src="/wp-content/uploads/2017/08/info.png" height=30 />');
-		$('.headeritems').find(' > li:nth-child(4)').prepend('<img src="/wp-content/uploads/2017/12/mic.png" height=30 />');
+		$('.headeritems').find(' > li:nth-child(4)').prepend('<img src="/wp-content/uploads/2017/12/mic.png" height=30 style="float:left;" />');
 
 
 		// append header menu to mobile stickburger menu

@@ -39,7 +39,7 @@ const App = React.createClass({
     /**
      * UNCOMMENT FOR MANUAL FORT OVERRIDE
      */
-    // fort = 'Foodfort'
+     //fort = 'Yogafort'
 
     this.setState({isFetching: true, fort: fort})
     this.fetchData(fort)
@@ -103,7 +103,7 @@ const App = React.createClass({
       'Skatefort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Storyfort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Performanceart': <TreefortLineup partitionedList={partitionedList} events={events} />,
-      'Yogafort': <YogafortLineup perfs={splitLineup(perfList, 'YogafortArtist', 'YogafortInstructor', 'null', CARDS_PER_ROW)} events={events} />,
+      'Yogafort': <YogafortLineup perfs={splitLineup(perfList, 'YogafortArtist', 'YogafortTeacher', 'null', CARDS_PER_ROW)} events={events} />,
       'Filmfort': <FilmfortLineup perfs={splitLineup(perfList, 'Filmfortfeature', 'Filmfortshort', 'Filmfortspecial', CARDS_PER_ROW)} events={events} />,
       'Foodfort': <FoodfortLineup perfs={splitLineup(perfList, 'Foodforttalks', 'Foodforttastes', 'null', CARDS_PER_ROW)} events={events} />
     }

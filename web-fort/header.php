@@ -50,7 +50,7 @@
 
 <body <?php body_class(); ?>>
 
-<div id="top"></div>
+<div id="top" class="top"></div>
     <div class="flashlight-left-bg hidden-xs hidden-sm"></div>
     <div class="flashlight-right-bg hidden-xs hidden-sm"></div>
     <div class="flashlight-left hidden-xs hidden-sm"></div>

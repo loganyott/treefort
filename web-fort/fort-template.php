@@ -40,7 +40,7 @@ get_header(); ?>
 	</div><!-- #primary -->
     <div class="hrWave"></div>
 	<!-- Setup our custom react app to filter based on the fort for this page -->
-	<!-- div id="root" fort="< ?php echo get_post_meta($post->ID, 'fort', true); ?>" class="center container"></div -->
+	<div id="root" fort="<?php echo get_post_meta($post->ID, 'fort', true); ?>" class="center container"></div>
 
 	<?php $childpages = query_posts('orderby=menu_order&order=asc&post_type=page&post_parent='.$thispage);
 	if($childpages){ /* display the children content  */

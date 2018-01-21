@@ -107,6 +107,19 @@ get_header(); ?>
             <h2><a href="https://www.eventbrite.com/e/treefort-music-fest-2018-tickets-33252299523?aff=wbbnrfp" target="_blank">2018 TICKETS ON SALE NOW!</a></h2>
         </div>
     </div>
+    
+    <!-- lineup list -->
+    <div id="lineup-frontpage" class="jumbotron white-jumbo" style="overflow:hidden;position:relative;">
+        <?php 
+        $query = new WP_Query( array( 'pagename' => 'lineup-frontpage' ) );
+        ?>
+        <?php while ( $query->have_posts() ) : $query->the_post(); ?>
+        <div class="container">
+            <h1 style="color:#000;" class="center"><?php the_title(); ?></h1>
+            <?php the_content();?>
+            <?php endwhile; ?>
+        </div>
+    </div>
 
     <!-- Explore section -->
     <div class="jumbotron" style="position:relative;padding:0;">

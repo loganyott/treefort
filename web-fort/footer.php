@@ -16,7 +16,7 @@
       <style type="text/css">
 
         .foot-overlay {
-          filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='<?php bloginfo('template_directory'); ?>/assets/images/overlay-plants.png', sizingMethod='scale');
+          filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='< ?php bloginfo('template_directory'); ?>/assets/images/overlay-plants.png', sizingMethod='scale');
           background:none !important;
         }
 
@@ -30,9 +30,16 @@
                 <div class="col-xs-6 col-xs-offset-3" style="position:static;">
                 <img src="<?php site_url(); ?>/wp-content/uploads/2017/08/footerAnimated.gif" class="img-responsive center" />
                 </div>
-            
-
-            </div><!-- .site-info -->
+            </div>
+            <div class="tf-footer col-xs-12">
+                <div class="col-xs-12 col-md-2 col-md-offset-4 v-center">
+                    <img src="<?php bloginfo('template_directory'); ?>/assets/images/Proj_Filter_Monster.png" class="img-responsive center" style="max-height:210px;">
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-2 v-center">
+                    <h4 style="color:#146aa5;">In partnership with Project Filter, we are striving to keep Treefort family-friendly and smoke-free in all festival areas.</h4>
+                </div>
+            </div>
+            <!-- .site-info -->
             <div class="footer-social">
                 <div class="col-xs-12" style="margin:80px auto;">
                     <a href="http://mayor.cityofboise.org/news-releases/2014/12/mayor-bieter-names-treefort-as-2015-cultural-ambassador/" target="_blank" class="city-of-boise hidden-xs hidden-sm"><img src="<?php site_url(); ?>/wp-content/uploads/2017/08/CA1.png" class="img-responsive hidden-xs hidden-sm" style="max-width:150px;margin:auto;"></a>

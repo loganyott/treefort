@@ -90,7 +90,14 @@ a:hover, a:focus {
     color:#fff !important;
 }
 .white-jumbo {
-    background:#fff !important;
+    background:#fff url('assets/images/sticksPattern.png') !important;
+    color:#000;
+    a {
+        color:#000;
+    }
+    a:hover, a:focus {
+        color:$Light-Blue;
+    }
 }
 .orange-t, .orange-t a {
     color:$Orange !important;

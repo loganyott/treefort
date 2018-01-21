@@ -31,7 +31,7 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
-      - run: cd /root/project/web-fort && eval ./deploy.sh \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^} $SSHPASS_STAGING
+      - run: cd /root/project/web-fort && eval ./deploy.sh \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^} \$WPENGINE_PASSWORD_${CIRCLE_BRANCH^^}
 
   # deploy:
   #   docker:

@@ -16,10 +16,8 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
-      - run: cd /root/project/web-fort && ./deploy.sh treefortfest-staging-deploy $SSHPASS_STAGING
-    branches:
-      only:
-        - master      
+      - run: cd /root/project/web-fort && ./deploy.sh echo \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^} $SSHPASS_STAGING
+
   # deploy:
   #   docker:
   #     - image: node:8

@@ -7,13 +7,13 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
-      - run: cd /root/project/api-fort && npm install
+      - run: cd /root/project/api-fort && yarn
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-      - run: cd /root/project/api-fort && npm test
-      - run: npm run lint
+      - run: cd /root/project/api-fort && yarn test
+      - run: yarn lint
 
   build:
     docker:

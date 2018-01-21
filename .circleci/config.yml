@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: node:8
     steps:
+      - run: echo bash --version
       - checkout
       - run: apt-get update    
       - run: apt-get install sshpass

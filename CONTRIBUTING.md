@@ -15,3 +15,6 @@ it. Hey, you might even get a free sticker!
 ## Getting Started
 
 1. Fork this project
+2. Create a branch in your fork to start work (because you can only fork a project once in GitHub).
+3. Commit your work.
+4. Create a pull request.

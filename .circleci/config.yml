@@ -1,9 +1,26 @@
 version: 2
 jobs:
+  test:
+    docker:
+      - image: circleci/node:8.5.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: cd /root/project/api-fort && yarn
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run: cd /root/project/api-fort && yarn test
+      - run: yarn lint
+
   build:
     docker:
       - image: node:8
     steps:
+      - run: bash --version
+      # - run: echo \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^}
       - checkout
       - run: apt-get update    
       - run: apt-get install sshpass
@@ -14,7 +31,7 @@ jobs:
       - run: ls
       - run: cd /root/project/web-fort/tf-app && yarn && yarn build
       - run: cd /root/project/web-fort/tf-sched && yarn && yarn build
-      - run: cd /root/project/web-fort && ./deploy.sh \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^} $SSHPASS_STAGING
+      - run: cd /root/project/web-fort && eval ./deploy.sh \$WPENGINE_USERNAME_${CIRCLE_BRANCH^^} \$WPENGINE_PASSWORD_${CIRCLE_BRANCH^^}
 
   # deploy:
   #   docker:

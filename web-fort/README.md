@@ -12,10 +12,30 @@ SITE** so please exercise caution when closing PRs or modifying `origin/master` 
 
 ### Getting started
 
+Download a copy of the production backup database from WPEngine. See Will or Josh for instructions.
+
+Start docker -
+
+```
+cd web-fort/
+docker-compose up
+```
+
+Open a new terminal and type -
+```
+cd ~/Downloads/
+unzip site-archive-treefortfest-live-1514435930-T8GN8MLgvN9pKgNGhPiCvk3q5qvl6KeK3M2o.zip
+mysql -h 127.0.0.1 -u root -peveryone-is-welcome -e "SET GLOBAL show_compatibility_56 = ON;"
+mysql -h 127.0.0.1 -u root -peveryone-is-welcome wordpress < ~/Downloads/wp-content/mysql.sql
+```
+
+OLD
 - You'll need a local WP installation, XAMPP or something like [Server Press](https://serverpress.com/)
 - point your local repo at the theme folder on your local installation
 - 'npm install' 
 - 'grunt' will watch for changes and compile your sass and build your js
+
+
 
 ### Screenshot 
 ![screenshot](screenshot.png)

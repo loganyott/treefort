@@ -1,0 +1,16 @@
+wordpress:
+  image: wordpress
+  links:
+    - mysql
+  ports:
+    - 80:80
+  volumes:
+    - ~/dev/treefort/web-fort:/var/www/html
+    - $HOME:$HOME
+
+mysql:
+  image: mysql:latest
+  environment:
+    MYSQL_ROOT_PASSWORD: everyoneiswelcome
+  ports:
+    - 3306:3306

@@ -24,9 +24,10 @@ docker-compose up
 Open a new terminal and type -
 ```
 cd ~/Downloads/
-unzip site-archive-treefortfest-live-1514435930-T8GN8MLgvN9pKgNGhPiCvk3q5qvl6KeK3M2o.zip
+unzip site-archive-treefortfest-live-1515213575-QwnFzNMQiiuv04gVCpMWDwByC6Q41TjteQPc.zip -d /tmp/treefortweb
 mysql -h 127.0.0.1 -u root -peveryoneiswelcome -e "SET GLOBAL show_compatibility_56 = ON;"
 mysql -h 127.0.0.1 -u root -peveryoneiswelcome wordpress < ~/Downloads/wp-content/mysql.sql
+mysql -h 127.0.0.1 -u root -peveryoneiswelcome wordpress -e "update wp_options set option_value = 'http://localhost' where option_name in ('siteurl','home')";
 ```
 
 OLD

@@ -28,17 +28,12 @@ unzip site-archive-treefortfest-live-1515213575-QwnFzNMQiiuv04gVCpMWDwByC6Q41Tjt
 mysql -h 127.0.0.1 -u root -peveryoneiswelcome -e "SET GLOBAL show_compatibility_56 = ON;"
 mysql -h 127.0.0.1 -u root -peveryoneiswelcome wordpress < ~/Downloads/wp-content/mysql.sql
 mysql -h 127.0.0.1 -u root -peveryoneiswelcome wordpress -e "update wp_options set option_value = 'http://localhost' where option_name in ('siteurl','home')";
+cd $TREEFORT_DEV_ROOT/web-fort/
+yarn
+./node_modules/.bin/grunt
 ```
 
 Visit http://localhost
-
-OLD
-- You'll need a local WP installation, XAMPP or something like [Server Press](https://serverpress.com/)
-- point your local repo at the theme folder on your local installation
-- 'npm install' 
-- 'grunt' will watch for changes and compile your sass and build your js
-
-
 
 ### Screenshot 
 ![screenshot](screenshot.png)

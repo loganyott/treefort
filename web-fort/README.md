@@ -30,6 +30,8 @@ mysql -h 127.0.0.1 -u root -peveryoneiswelcome wordpress < ~/Downloads/wp-conten
 mysql -h 127.0.0.1 -u root -peveryoneiswelcome wordpress -e "update wp_options set option_value = 'http://localhost' where option_name in ('siteurl','home')";
 ```
 
+Visit http://localhost
+
 OLD
 - You'll need a local WP installation, XAMPP or something like [Server Press](https://serverpress.com/)
 - point your local repo at the theme folder on your local installation

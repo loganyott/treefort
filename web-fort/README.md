@@ -12,7 +12,7 @@ SITE** so please exercise caution when closing PRs or modifying `origin/master` 
 
 ### Getting started
 
-Download a copy of the production backup database from WPEngine. See Will or Josh for instructions.
+Download a copy of the production backup database from WPEngine by [requesting a production backup point](https://my.wpengine.com/installs/treefortfest/backup_points#production). See Will or Josh for permission.
 
 Start docker -
 

@@ -38,13 +38,27 @@
 <!-- CSS for our React app in ./tf-app & ./tf-sched -->
 <link rel="stylesheet" href="https://unpkg.com/tachyons@4.5.5/css/tachyons.min.css"/>
 
-<!-- JS for our React app in ./tf-app -->
-<script type="text/javascript" src="<?php bloginfo('template_directory'); ?>/__PERFORMER_REACT_BUNDLE_JS__" async></script>
-<link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/__PERFORMER_REACT_BUNDLE_CSS__"/>
+<?php
+switch ($_SERVER[SERVER_NAME]) {
+  case 'localhost':
+    $__PERFORMER_REACT_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
+    $__PERFORMER_REACT_BUNDLE_CSS__ = '';
+    $__SCHEDULE_REACT_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
+    $__SCHEDULE_REACT_BUNDLE_CSS__ = '';
+    break;
+  default:
+    $__PERFORMER_REACT_BUNDLE_JS__ = bloginfo('template_directory') + '__PERFORMER_REACT_BUNDLE_JS__';
+    $__PERFORMER_REACT_BUNDLE_CSS__ = bloginfo('template_directory') + '__PERFORMER_REACT_BUNDLE_CSS__';
+    $__SCHEDULE_REACT_BUNDLE_JS__ = bloginfo('template_directory') + '__SCHEDULE_REACT_BUNDLE_JS__';
+    $__SCHEDULE_REACT_BUNDLE_CSS__ = bloginfo('template_directory') + '__SCHEDULE_REACT_BUNDLE_CSS__';
+    break;
+}
+?>
 
-<!-- JS for our React app in ./tf-sched -->
-<script type="text/javascript" src="<?php bloginfo('template_directory'); ?>/__SCHEDULE_REACT_BUNDLE_JS__" async></script>
-<link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/__SCHEDULE_REACT_BUNDLE_CSS__"/>
+<script type="text/javascript" src="<?php echo $__PERFORMER_REACT_BUNDLE_JS__?>" async></script>
+<link rel="stylesheet" href="<?php echo $__PERFORMER_REACT_BUNDLE_CSS__?>" />
+<script type="text/javascript" src="<?php echo $__SCHEDULE_REACT_BUNDLE_JS__?>" async></script>
+<link rel="stylesheet" href="<?php echo $__SCHEDULE_REACT_BUNDLE_CSS__?>"/>
 
 </head>
 

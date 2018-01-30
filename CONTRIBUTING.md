@@ -8,8 +8,6 @@ Thanks for taking the time to contribute!  :tada:  We really appreciate it.
 Yes, we want your bugs!  If you find an issue in the code, [please file an issue](https://github.com/treefortmusicfest/treefort/issues/new).  We'll review the issue and see if we can fix
 it. Hey, you might even get a free sticker!
 
-### Documentation
-
 ## Getting Started
 
 1. Find a [help wanted issue](https://github.com/treefortmusicfest/treefort/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) that you like

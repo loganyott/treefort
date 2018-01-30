@@ -18,7 +18,7 @@
 				var stuckString = "nav,headerbrand,headerbrand-mobile,fort-menu,site-header,headermenu";
 				var stuckArray = stuckString.split(",");
 				$.each(stuckArray, function(i, elem) {
-					console.log(elem);
+					// console.log(elem);
 					$('.'+elem).addClass('stuck');
 				});
 				$('.hidebrand').css({

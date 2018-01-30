@@ -15,7 +15,7 @@ it. Hey, you might even get a free sticker!
 3. Add questions to make sure you understand the issue
 4. Fork the project
 5. Create a branch in your fork to start work (because you can only fork a project once in GitHub)
-6. Fix it!
+6. Do what Oscar Rogers does it and [Fix it!](https://view.yahoo.com/show/saturday-night-live/clip/14207468/update-oscar-rogers)
 7. Add a test if you think it makes sense
 8. Commit your work
 9. Create a pull request (PR)

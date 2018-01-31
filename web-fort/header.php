@@ -41,16 +41,16 @@
 <?php
 switch ($_SERVER[SERVER_NAME]) {
   case 'localhost':
-    $__PERFORMER_REACT_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
+    $__PERFORMER_REACT_BUNDLE_JS__ = 'asdasd' . 'http://localhost:3000/static/js/bundle.js';
     $__PERFORMER_REACT_BUNDLE_CSS__ = '';
     $__SCHEDULE_REACT_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
     $__SCHEDULE_REACT_BUNDLE_CSS__ = '';
     break;
   default:
-    $__PERFORMER_REACT_BUNDLE_JS__ = bloginfo('template_directory') + '__PERFORMER_REACT_BUNDLE_JS__';
-    $__PERFORMER_REACT_BUNDLE_CSS__ = bloginfo('template_directory') + '__PERFORMER_REACT_BUNDLE_CSS__';
-    $__SCHEDULE_REACT_BUNDLE_JS__ = bloginfo('template_directory') + '__SCHEDULE_REACT_BUNDLE_JS__';
-    $__SCHEDULE_REACT_BUNDLE_CSS__ = bloginfo('template_directory') + '__SCHEDULE_REACT_BUNDLE_CSS__';
+    $__PERFORMER_REACT_BUNDLE_JS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_JS__';
+    $__PERFORMER_REACT_BUNDLE_CSS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_CSS__';
+    $__SCHEDULE_REACT_BUNDLE_JS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_JS__';
+    $__SCHEDULE_REACT_BUNDLE_CSS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_CSS__';
     break;
 }
 ?>

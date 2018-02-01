@@ -5,8 +5,8 @@ wordpress:
   ports:
     - 80:80
   volumes:
-    - ~/dev/treefort/web-fort:/var/www/html/wp-content/themes/web-fort
-    - /tmp/treefortweb/:/var/www/html/
+    - $WEBFORT_THEME_ROOT:/var/www/html/wp-content/themes/web-fort
+    - $WEBFORT_ROOT:/var/www/html/
     - $HOME:$HOME
 
 mysql:

@@ -105,7 +105,7 @@ const App = React.createClass({
       'Yogafort': <YogafortLineup perfs={splitLineup(perfList, 'YogafortArtist', 'YogafortTeacher', 'null', CARDS_PER_ROW)} events={events} />,
       'Filmfort': <FilmfortLineup perfs={splitLineup(perfList, 'Filmfortfeature', 'Filmfortshort', 'Filmfortspecial', CARDS_PER_ROW)} events={events} />,
       'Foodfort': <FoodfortLineup perfs={splitLineup(perfList, 'Foodforttalks', 'Foodforttastes', 'null', CARDS_PER_ROW)} events={events} />,
-      'Hackfort': <HackfortLineup perfs={splitLineup(perfList, 'HackfortEvent', 'Hackfort', 'null', CARDS_PER_ROW)} events={events} />
+      'Hackfort': <HackfortLineup perfs={splitLineup(perfList, 'HackfortEvent', 'HackfortSpeaker', 'null', CARDS_PER_ROW)} events={events} />
     }
 
     // If a hash has been provided directly, render the detailed content.

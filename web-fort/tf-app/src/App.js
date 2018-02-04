@@ -11,7 +11,7 @@ import FilterInput from './comp/FilterInput'
 import modalclose from '../../assets/close.png'
 import fortMap from './utils/fortMap'
 import { partitionList, getPerformers, splitLineup } from './utils'
-import { TreefortLineup, YogafortLineup, FilmfortLineup, FoodfortLineup } from './comp/Forts'
+import { TreefortLineup, YogafortLineup, FilmfortLineup, FoodfortLineup, HackfortLineup } from './comp/Forts'
 
 const CARDS_PER_ROW = 3
 const modalStyles = {
@@ -39,7 +39,7 @@ const App = React.createClass({
     /**
      * UNCOMMENT FOR MANUAL FORT OVERRIDE
      */
-     //fort = 'Yogafort'
+     fort = 'Hackfort' 
 
     this.setState({isFetching: true, fort: fort})
     this.fetchData(fort)
@@ -98,14 +98,14 @@ const App = React.createClass({
       'Treefort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Comedyfort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Alefort': <TreefortLineup partitionedList={partitionedList} events={events} />,
-      'Hackfort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Kidfort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Skatefort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Storyfort': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Performanceart': <TreefortLineup partitionedList={partitionedList} events={events} />,
       'Yogafort': <YogafortLineup perfs={splitLineup(perfList, 'YogafortArtist', 'YogafortTeacher', 'null', CARDS_PER_ROW)} events={events} />,
       'Filmfort': <FilmfortLineup perfs={splitLineup(perfList, 'Filmfortfeature', 'Filmfortshort', 'Filmfortspecial', CARDS_PER_ROW)} events={events} />,
-      'Foodfort': <FoodfortLineup perfs={splitLineup(perfList, 'Foodforttalks', 'Foodforttastes', 'null', CARDS_PER_ROW)} events={events} />
+      'Foodfort': <FoodfortLineup perfs={splitLineup(perfList, 'Foodforttalks', 'Foodforttastes', 'null', CARDS_PER_ROW)} events={events} />,
+      'Hackfort': <HackfortLineup perfs={splitLineup(perfList, 'HackfortEvent', 'Hackfort', 'null', CARDS_PER_ROW)} events={events} />
     }
 
     // If a hash has been provided directly, render the detailed content.

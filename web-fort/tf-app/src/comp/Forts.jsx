@@ -75,15 +75,15 @@ export const FoodfortLineup = ({perfs, events}) => {
 }
 
 export const HackfortLineup = ({perfs, events}) => {
-  const talks = perfs['typeA']
-  const tastes = perfs['typeB']
+  const hacks = perfs['typeA']
+  const bios = perfs['typeB']
   return (
     <div>
       { perfs['typeA'].size > 0
         ? (
         <div className='yogaartists yogalineup clearfix'>
           <h2 className='center'>Events</h2>
-          {talks.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
+          {hacks.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
         </div>
         ) : <div />
       }
@@ -92,7 +92,7 @@ export const HackfortLineup = ({perfs, events}) => {
         ? (
           <div className='yogateachers yogalineup clearfix'>
             <h2 className='center'>Bios</h2>
-            {tastes.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
+            {bios.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
           </div>
         ) : <div />
       }

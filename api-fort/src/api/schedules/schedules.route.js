@@ -5,7 +5,7 @@ import ScheduleController from './schedules.controller';
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const router = (event, context, callback) => {
-  console.log('Received schedule:', JSON.stringify(event, null, 2));
+  // console.log('Received schedule:', JSON.stringify(event, null, 2));
 
   const scheduleController = new ScheduleController(
     dynamo,

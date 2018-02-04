@@ -1,0 +1,17 @@
+wordpress:
+  image: wordpress
+  links:
+    - mysql
+  ports:
+    - 80:80
+  volumes:
+    - $WEBFORT_THEME_ROOT:/var/www/html/wp-content/themes/web-fort
+    - $WEBFORT_ROOT:/var/www/html/
+    - $HOME:$HOME
+
+mysql:
+  image: mysql:latest
+  environment:
+    MYSQL_ROOT_PASSWORD: everyoneiswelcome
+  ports:
+    - 3306:3306

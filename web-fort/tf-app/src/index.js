@@ -12,6 +12,3 @@ if (document.getElementById('root')) {
     document.getElementById('root')
     );
 }
-else {
-  console.log('Treefort Rules! No tf-app on this page')
-}

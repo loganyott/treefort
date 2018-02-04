@@ -5,7 +5,7 @@ import PlaylistController from './playlists.controller';
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const router = (event, context, callback) => {
-  console.log('Received event:', JSON.stringify(event, null, 2));
+  // console.log('Received event:', JSON.stringify(event, null, 2));
 
   const playlistController = new PlaylistController(
     dynamo,

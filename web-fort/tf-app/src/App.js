@@ -39,7 +39,7 @@ const App = React.createClass({
     /**
      * UNCOMMENT FOR MANUAL FORT OVERRIDE
      */
-     fort = 'Hackfort' 
+     //fort = 'Hackfort' 
 
     this.setState({isFetching: true, fort: fort})
     this.fetchData(fort)

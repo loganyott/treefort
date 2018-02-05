@@ -118,16 +118,28 @@ audio::-webkit-media-controls-panel {
   box-shadow: 17px 17px 0px 0px rgba(252,215,56,1); 
 }
 
-/** YOGAFORT SPECIFIC **/
-.yogalineup {
+/** SPLITLINEUP **/
+.splitlineup {
   padding-top:20px;
   padding-bottom:20px;
 }
-.yogalineup h2 {
+.splitlineup h2 {
   margin:20px;
+  font-size:1.9em;
 }
-.yogaartists {
+.type-a {
   margin-top:40px;
+}
+.type-b {
+
+}
+.type-b:before{
+  width:90%;
+  height:30px;
+  margin:40px auto 80px auto;
+  content: "";
+  background-image:url('https://www.treefortmusicfest.com/wp-content/themes/web-fort/assets/images/wave.gif');
+  background-repeat:repeat-x;
 }
 
 /** DETAIL SCHEDULE **/

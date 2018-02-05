@@ -14,11 +14,11 @@ export const YogafortLineup = ({perfs, events}) => {
   const yogaInstructors = perfs['typeB']
   return (
     <div>
-      <div className='yogaartists yogalineup clearfix'>
+      <div className='type-a splitlineup clearfix'>
         <h2 className='center'>Music Provided By</h2>
         {yogaArtists.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
       </div>
-      <div className='yogateachers yogalineup clearfix'>
+      <div className='type-b splitlineup clearfix'>
         <h2 className='center'>Yogafort Instructors</h2>
         {yogaInstructors.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
       </div>
@@ -32,15 +32,15 @@ export const FilmfortLineup = ({perfs, events}) => {
   const specials = perfs['typeC']
   return (
     <div>
-      <div className='yogaartists yogalineup clearfix'>
+      <div className='type-a splitlineup clearfix'>
         <h2 className='center'>Features</h2>
         {features.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
       </div>
-      <div className='yogateachers yogalineup clearfix'>
+      <div className='type-b splitlineup clearfix'>
         <h2 className='center'>Shorts</h2>
         {shorts.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
       </div>
-      <div className='yogateachers yogalineup clearfix'>
+      <div className='type-b splitlineup clearfix'>
         <h2 className='center'>Special Events</h2>
         {specials.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
       </div>
@@ -55,7 +55,7 @@ export const FoodfortLineup = ({perfs, events}) => {
     <div>
       { perfs['typeA'].size > 0
         ? (
-        <div className='yogaartists yogalineup clearfix'>
+        <div className='type-a splitlineup clearfix'>
           <h2 className='center'>Talks</h2>
           {talks.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
         </div>
@@ -64,7 +64,7 @@ export const FoodfortLineup = ({perfs, events}) => {
 
       { perfs['typeB'].size > 0
         ? (
-          <div className='yogateachers yogalineup clearfix'>
+          <div className='type-b splitlineup clearfix'>
             <h2 className='center'>Tastes</h2>
             {tastes.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
           </div>
@@ -81,7 +81,7 @@ export const HackfortLineup = ({perfs, events}) => {
     <div>
       { perfs['typeA'].size > 0
         ? (
-        <div className='yogaartists yogalineup clearfix'>
+        <div className='type-a splitlineup clearfix'>
           <h2 className='center'>Events</h2>
           {hacks.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
         </div>
@@ -90,7 +90,7 @@ export const HackfortLineup = ({perfs, events}) => {
 
       { perfs['typeB'].size > 0
         ? (
-          <div className='yogateachers yogalineup clearfix'>
+          <div className='type-b splitlineup clearfix'>
             <h2 className='center'>Bios</h2>
             {bios.valueSeq().map((i, j) => <Row items={i} key={j} events={events} />)}
           </div>

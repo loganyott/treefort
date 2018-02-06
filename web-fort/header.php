@@ -41,24 +41,24 @@
 <?php
 switch ($_SERVER[SERVER_NAME]) {
   case 'localhost':
-    $__PERFORMER_REACT_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
-    $__PERFORMER_REACT_BUNDLE_CSS__ = '';
-    $__SCHEDULE_REACT_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
-    $__SCHEDULE_REACT_BUNDLE_CSS__ = '';
+    $__PERFORMER_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
+    $__PERFORMER_BUNDLE_CSS__ = '';
+    $__SCHEDULE_BUNDLE_JS__ = 'http://localhost:3000/static/js/bundle.js';
+    $__SCHEDULE_BUNDLE_CSS__ = '';
     break;
   default:
-    $__PERFORMER_REACT_BUNDLE_JS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_JS__';
-    $__PERFORMER_REACT_BUNDLE_CSS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_CSS__';
-    $__SCHEDULE_REACT_BUNDLE_JS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_JS__';
-    $__SCHEDULE_REACT_BUNDLE_CSS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_CSS__';
+    $__PERFORMER_BUNDLE_JS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_JS__';
+    $__PERFORMER_BUNDLE_CSS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_CSS__';
+    $__SCHEDULE_BUNDLE_JS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_JS__';
+    $__SCHEDULE_BUNDLE_CSS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_CSS__';
     break;
 }
 ?>
 
-<script type="text/javascript" src="<?php echo $__PERFORMER_REACT_BUNDLE_JS__?>" async></script>
-<link rel="stylesheet" href="<?php echo $__PERFORMER_REACT_BUNDLE_CSS__?>" />
-<script type="text/javascript" src="<?php echo $__SCHEDULE_REACT_BUNDLE_JS__?>" async></script>
-<link rel="stylesheet" href="<?php echo $__SCHEDULE_REACT_BUNDLE_CSS__?>"/>
+<script type="text/javascript" src="<?php echo $__PERFORMER_BUNDLE_JS__?>" async></script>
+<link rel="stylesheet" href="<?php echo $__PERFORMER_BUNDLE_CSS__?>" />
+<script type="text/javascript" src="<?php echo $__SCHEDULE_BUNDLE_JS__?>" async></script>
+<link rel="stylesheet" href="<?php echo $__SCHEDULE_BUNDLE_CSS__?>"/>
 
 </head>
 

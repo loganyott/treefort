@@ -47,10 +47,10 @@ switch ($_SERVER[SERVER_NAME]) {
     $__SCHEDULE_BUNDLE_CSS__ = '';
     break;
   default:
-    $__PERFORMER_BUNDLE_JS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_JS__';
-    $__PERFORMER_BUNDLE_CSS__ = bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_CSS__';
-    $__SCHEDULE_BUNDLE_JS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_JS__';
-    $__SCHEDULE_BUNDLE_CSS__ = bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_CSS__';
+    $__PERFORMER_BUNDLE_JS__ = get_bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_JS__';
+    $__PERFORMER_BUNDLE_CSS__ = get_bloginfo('template_directory') . '__PERFORMER_REACT_BUNDLE_CSS__';
+    $__SCHEDULE_BUNDLE_JS__ = get_bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_JS__';
+    $__SCHEDULE_BUNDLE_CSS__ = get_bloginfo('template_directory') . '__SCHEDULE_REACT_BUNDLE_CSS__';
     break;
 }
 ?>

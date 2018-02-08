@@ -184,8 +184,8 @@ get_header(); ?>
                 <a class="btn-blue btn" href="<?php echo esc_url( get_permalink( get_page_by_title( '2016' ) ) ); ?>">2016</a>
                 <a class="btn-blue btn" href="<?php site_url(); ?>/lineups/2017-lineup/">2017</a>
                 <br/>
-                <a class="btn-green btn visible-xs visible-sm" style="width:80%;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018 - ROUND 2</a>
-                <a class="btn-green btn visible-md visible-lg" style="width:334px;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018 - ROUND 2</a>
+                <a class="btn-green btn visible-xs visible-sm" style="width:80%;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018</a>
+                <a class="btn-green btn visible-md visible-lg" style="width:334px;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018</a>
             </div>
         </div>
     </div>

@@ -129,7 +129,7 @@ get_header(); ?>
                 </div>
                 <div class="col-xs-12 col-md-6">
                     <h2 style="color:#fcd738;margin-top:40px;">EXPLORE TREEFORT 7</h2>
-                    <h3 style="color:#ef5e95;">Jump inside the land of Treefort Your digital flashlight is charged and waiting for you to discover bands on the initial lineup</h3>
+                    <h3 style="color:#ef5e95;">Jump inside the land of Treefort Your digital flashlight is charged and waiting for you to discover bands on the lineup</h3>
                     <a class="btn btn-blue" href="https://www.treefortmusicfest.com/7/" target="_blank">EXPLORE</a>
                 </div>
             </div>
@@ -184,8 +184,8 @@ get_header(); ?>
                 <a class="btn-blue btn" href="<?php echo esc_url( get_permalink( get_page_by_title( '2016' ) ) ); ?>">2016</a>
                 <a class="btn-blue btn" href="<?php site_url(); ?>/lineups/2017-lineup/">2017</a>
                 <br/>
-                <a class="btn-green btn visible-xs visible-sm" style="width:80%;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018 - ROUND 1</a>
-                <a class="btn-green btn visible-md visible-lg" style="width:334px;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018 - ROUND 1</a>
+                <a class="btn-green btn visible-xs visible-sm" style="width:80%;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018 - ROUND 2</a>
+                <a class="btn-green btn visible-md visible-lg" style="width:334px;margin-top:20px;margin-left:auto;margin-right:auto;" href="<?php echo get_permalink( get_page_by_path('lineup')) ?>">2018 - ROUND 2</a>
             </div>
         </div>
     </div>

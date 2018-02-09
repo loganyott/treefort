@@ -266,3 +266,11 @@
     width: 100%;
 }
 /* END YOGAFORT */
+
+/* Media max-width: 1199px */
+@media (max-width: 1199px) {
+    .fort-content .content-area {
+        margin-top: 10px !important;
+    }
+
+}

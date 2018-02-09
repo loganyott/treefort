@@ -95,3 +95,5 @@
 .yogafortheader h1:after { content: "MARCH 23 - 25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
 
 /* END YOGAFORT */
+/* Media max-width: 1199px */
+@media (max-width: 1199px) { .fort-content .content-area { margin-top: 10px !important; } }

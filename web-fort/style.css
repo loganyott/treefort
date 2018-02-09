@@ -4411,6 +4411,8 @@ blockquote.twitter-timeline a:hover, blockquote.twitter-timeline a:focus { text-
 .yogafortheader h1:after { content: "MARCH 23 - 25, 2018"; font-size: 30px; position: absolute; top: 105px; left: 0; width: 100%; }
 
 /* END YOGAFORT */
+/* Media max-width: 1199px */
+@media (max-width: 1199px) { .fort-content .content-area { margin-top: 10px !important; } }
 .alefortbadge { background: url("/wp-content/uploads/2017/08/ale.png") no-repeat center; background-size: 65%; height: 300px; }
 
 .alefortbadge:hover { background: url("/wp-content/uploads/2017/08/litAle.png") no-repeat center; background-size: 65%; }
@@ -4446,44 +4448,5 @@ blockquote.twitter-timeline a:hover, blockquote.twitter-timeline a:focus { text-
 .yogafortbadge { background: url("/wp-content/uploads/2017/08/yoga.png") no-repeat center; background-size: 65%; height: 300px; }
 
 .yogafortbadge:hover { background: url("/wp-content/uploads/2017/08/litYoga.png") no-repeat center; background-size: 65%; }
-
-.itc-container { /* trip guides */ /* featured trip guides */ /* bookings + boise green bike */ /* two col */ }
-.itc-container .itc-trip-guide { position: relative; box-sizing: border-box; box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.2); }
-.itc-container .itc-trip-guide header { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px 20px 15px; background: rgba(27, 34, 83, 0.65); }
-.itc-container .itc-trip-guide header h3 { color: #fff; font-size: 18px; margin: 0; }
-.itc-container .itc-trip-guide header span { font-size: 13px; color: #f57b20; margin: 0; line-height: 1; }
-.itc-container .itc-trip-guide img { width: 100%; height: auto; }
-.itc-container .itc-trip-guide a:hover span { color: #f57b20; }
-.itc-container .itc-trip-guide.featured { box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.2); margin-bottom: 20px; }
-.itc-container .itc-trip-guide.featured header { top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(27, 34, 83, 0.3); background-image: -webkit-linear-gradient(transparent, rgba(27, 34, 83, 0.6)); background-image: linear-gradient(to bottom, transparent, rgba(27, 34, 83, 0.6)); }
-.itc-container .itc-trip-guide.featured header > div { text-align: center; position: absolute; width: calc(100% - 60px); max-width: 680px; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%); }
-.itc-container .itc-trip-guide.featured header h3 { font-size: 28px; font-size: calc(16px + 2.5vw); line-height: 1.15; margin: 0; margin-bottom: 14px; text-shadow: 0 1px 5px rgba(0, 0, 0, 0.35); }
-.itc-container .itc-trip-guide.featured header span { margin: 0; font-size: 18px; font-size: calc(11px + 0.5vw); width: auto; height: auto; line-height: 1.5; padding: 7px 50px 12px; }
-.itc-container .itc-trip-guide.featured header span:hover { color: #fcd738 !important; }
-@media (min-width: 1620px) { .itc-container .itc-trip-guide.featured header h3 { font-size: 60px; } }
-@media (max-width: 1199px) { .itc-container .delta-container { width: 30% !important; }
-  .itc-container .delta-container img { width: auto; max-height: 100%; margin: auto; } }
-.itc-container .cta > div { padding: 24px 20px 28px; min-height: 300px; }
-.itc-container .bookings { background: #186ba7 url("assets/itc/hotels.jpg"); background-size: cover; }
-.itc-container .boise-green-bike { background: #186ba7 url("assets/itc/bgb.jpg"); background-size: cover; }
-.itc-container .bookings p, .itc-container .boise-green-bike p { font-size: 16px; line-height: 1.5; }
-.itc-container .bookings .btn-long-o, .itc-container .boise-green-bike .btn-long-o { margin: 5px; font-size: 14px; width: auto; height: auto; line-height: 1.5; padding: 7px 28px 12px; }
-.itc-container .btn-long-o { border-radius: 9px 11px 12px 14px; }
-.itc-container .bookings .btn-long-o:hover, .itc-container .boise-green-bike .btn-long-o:hover { color: #1b2253 !important; }
-.itc-container .bookings h2 { margin-top: 0; }
-.itc-container .boise-green-bike h2 { background: url("/wp-content/uploads/2016/05/boise-green-bike.png") no-repeat center; width: 100px; height: 100px; background-size: cover; margin: 0; margin: 0 20px 20px 0; float: left; }
-.itc-container .boise-green-bike h2 > span { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
-@media (min-width: 768px) { .itc-container .cta > div { min-height: 283px; }
-  .itc-container .boise-green-bike h2 { margin: 0 20px 20px 0; } }
-@media (min-width: 992px) { .itc-container .cta > div { min-height: 261px; }
-  .itc-container .boise-green-bike h2 { width: 136px; height: 136px; margin: 0 20px 20px 0; } }
-.itc-container .trip-guides, .itc-container .cta { margin: 0 -10px; }
-.itc-container .trip-guides::after, .itc-container .cta::after { content: ""; display: table; clear: both; }
-.itc-container .trip-guides .itc-trip-guide, .itc-container .cta > div { float: left; width: calc(100% - 20px); margin: 0 10px 20px; }
-.itc-container .trip-guides { margin-bottom: 20px !important; }
-@media (min-width: 768px) { .itc-container .trip-guides .itc-trip-guide, .itc-container .cta > div { float: left; width: calc(50% - 20px); margin: 0 10px 20px; } }
-@media (min-width: 992px) { .itc-container .trip-guides, .itc-container .cta { margin: 0 -15px; }
-  .itc-container .trip-guides .itc-trip-guide, .itc-container .cta > div { float: left; width: calc(50% - 30px); margin: 0 15px 20px; }
-  .itc-container .trip-guides { margin-bottom: 40px !important; } }
 
 @media (max-width: 768px) { .site-footer img { max-width: 120px !important; } }
